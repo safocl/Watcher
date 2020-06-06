@@ -4,20 +4,24 @@
 #include "aclock/aclock.hpp"
 #include "timer/timer.hpp"
 #include "loger/loger.hpp"
+#include <gtkmm/application.h>
+#include <gtkmm/frame.h>
+#include <gtkmm/window.h>
+#include <gtkmm/notebook.h>
+#include "ui/wnotebook/wnotebook.hpp"
 
-int main() {
-    constexpr int sec = 5;
+int main(int argc, char *argv[])
+{
+  Glib::RefPtr<Gtk::Application> app =
+    Gtk::Application::create(argc, argv,
+      "org.gtkmm.examples.base");
 
-    std::chrono::seconds timeToStop { sec };
+  Gtk::Window window;
+  window.set_default_size(400, 400);
 
-    Timer timer {};
-    timer.start( timeToStop );
+  WNotebook nb1{};
+  window.add(nb1);
+  nb1.show_all();
 
-    Loger loger1 { "unsleep" };
-    loger1.log();
-
-    Aclock ac {};
-    ac.on( 2020, 5, 6, 16, 24, 0 );
-
-    return 0;
+  return app->run(window);
 }
