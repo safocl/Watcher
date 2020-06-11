@@ -3,7 +3,7 @@
 class Loger {
     std::string str;
 
-    public:
+public:
     Loger( const std::string & );
     void log();
 };
