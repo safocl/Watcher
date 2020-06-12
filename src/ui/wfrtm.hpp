@@ -9,8 +9,8 @@ namespace core::ui {
 
 class WFrTm final : public Gtk::Frame {
     const Glib::ustring Label { "Timer" };
-    Gtk::Grid grid;
-    TimerEntity timerEntity;
+    Gtk::Grid           grid;
+    TimerEntity         timerEntity;
 
 protected:
 public:

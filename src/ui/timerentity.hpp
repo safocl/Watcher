@@ -7,17 +7,17 @@
 namespace core::ui {
 
 class TimerEntity final : public Gtk::Grid {
-    Gtk::SpinButton     spHours, spMinutes, spSeconds;
-    Glib::ustring delimiterString;
-    Glib::ustring strStart;
-    Glib::ustring strStop;
-    Gtk::Button         btn;
+    Gtk::SpinButton spHours, spMinutes, spSeconds;
+    Glib::ustring   delimiterString;
+    Glib::ustring   strStart;
+    Glib::ustring   strStop;
+    Gtk::Button     btn;
 
     void onButtonClicked();
 
 public:
-TimerEntity ();
-~TimerEntity ();
+    TimerEntity();
+    ~TimerEntity();
 };
 
 }   // namespace core::ui

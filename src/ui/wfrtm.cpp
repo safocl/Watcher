@@ -3,12 +3,11 @@
 
 namespace core::ui {
 
-WFrTm::WFrTm() :
-grid(), timerEntity() {
+WFrTm::WFrTm() : grid(), timerEntity() {
     set_label( Label );
 
-    grid.attach( timerEntity,1,1);
-    add(grid);
+    grid.attach( timerEntity, 1, 1 );
+    add( grid );
     show_all_children();
 }
 WFrTm::~WFrTm() {}

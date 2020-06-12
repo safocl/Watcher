@@ -7,7 +7,7 @@ WFrAclock::WFrAclock() : grid() {
 
     grid.attach( clockEntity, 1, 1 );
 
-    add( grid);
+    add( grid );
 
     show_all();
 }

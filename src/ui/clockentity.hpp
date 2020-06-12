@@ -7,12 +7,13 @@
 namespace core::ui {
 
 class ClockEntity final : public Gtk::Grid {
-    Gtk::SpinButton     spHours, spMinutes, spSeconds;
-    Gtk::Switch         sw;
-    Glib::ustring delimiterString { " : " };
+    Gtk::SpinButton spHours, spMinutes, spSeconds;
+    Gtk::Switch     sw;
+    Glib::ustring   delimiterString { " : " };
 
-    bool onSwStateSet(bool state );
-    void onFlagChanged(Gtk::StateFlags previous_state_flags);
+    bool onSwStateSet( bool state );
+    void
+    onFlagChanged( Gtk::StateFlags previous_state_flags );
 
 public:
     ClockEntity();
