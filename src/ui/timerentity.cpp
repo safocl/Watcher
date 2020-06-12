@@ -1,16 +1,17 @@
-#include "clockentity.hpp"
-#include "gtkmm/enums.h"
-#include "gtkmm/label.h"
-#include "gtkmm/object.h"
-#include "sigc++/functors/mem_fun.h"
+#include "timerentity.hpp"
+#include "timer/timer.hpp"
+#include <gtkmm/enums.h>
+#include <gtkmm/label.h>
+#include <gtkmm/object.h>
+#include <sigc++/functors/mem_fun.h>
 
 namespace core::ui {
 
-ClockEntity::ClockEntity() :
+TimerEntity::TimerEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-sw() {
+delimiterString(" : "), strStart("Start"), strStop("Stop"), btn(strStart) {
 
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
@@ -32,52 +33,32 @@ sw() {
     attach( spMinutes, 3, 1 );
     attach(*delimiter2,4,1,1,1);
     attach( spSeconds, 5, 1 );
-    attach( sw, 7, 1 );
+    attach( btn, 7, 1 );
 //set_column_homogeneous(true);
 //delimiter.set_hexpand();
     show_all_children();
 
-    //sw.signal_state_flags_changed().connect(sigc::mem_fun(*this,&ClockEntity::onFlagChanged));
-    sw.signal_state_set().connect(sigc::mem_fun(*this, &ClockEntity::onSwStateSet));
+    btn.signal_clicked().connect(sigc::mem_fun(*this, &TimerEntity::onButtonClicked));
 }
-ClockEntity::~ClockEntity() {}
+TimerEntity::~TimerEntity() {}
 
-void ClockEntity::onFlagChanged(Gtk::StateFlags previous_state_flags){
+void TimerEntity::onButtonClicked() {
 
-    if (previous_state_flags)
-    {}
-
-    if (sw.get_active()){
+    if (btn.get_label() == strStart){
     spHours.set_sensitive(false);
     spMinutes.set_sensitive(false);
     spSeconds.set_sensitive(false);
+    btn.set_label(strStop);
     }
 else{
     spHours.set_sensitive(true);
     spMinutes.set_sensitive(true);
     spSeconds.set_sensitive(true);
+    btn.set_label(strStart);
 
 }
 
 }
 
-bool ClockEntity::onSwStateSet(bool state){
-
-    if (state){}
-
-    if (state){
-    spHours.set_sensitive(false);
-    spMinutes.set_sensitive(false);
-    spSeconds.set_sensitive(false);
-    }
-else{
-    spHours.set_sensitive(true);
-    spMinutes.set_sensitive(true);
-    spSeconds.set_sensitive(true);
-    }
-
-
-return true;
-}
 
 }   // namespace core::ui

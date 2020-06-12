@@ -4,26 +4,12 @@
 namespace core::ui {
 
 WFrTm::WFrTm() :
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-btn( "Start" ) {
+grid(), timerEntity() {
     set_label( Label );
 
-    spHours.set_width_chars( 2 );
-    spHours.set_numeric();
-    spHours.set_wrap();
-    add( spHours );
-
-    spMinutes.set_width_chars( 2 );
-    spMinutes.set_numeric();
-    spMinutes.set_wrap();
-    add( spMinutes );
-
-    spSeconds.set_width_chars( 2 );
-    spSeconds.set_numeric();
-    spSeconds.set_wrap();
-    add( spSeconds );
+    grid.attach( timerEntity,1,1);
+    add(grid);
+    show_all_children();
 }
 WFrTm::~WFrTm() {}
 Glib::ustring WFrTm::getName() const { return Label; }

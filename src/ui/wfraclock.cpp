@@ -5,9 +5,9 @@ namespace core::ui {
 WFrAclock::WFrAclock() : grid() {
     set_label( Label );
 
-//    grid.attach( clockEntity, 1, 1 );
+    grid.attach( clockEntity, 1, 1 );
 
-    add( clockEntity);
+    add( grid);
 
     show_all();
 }
