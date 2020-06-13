@@ -1,5 +1,6 @@
 #include "timerentity.hpp"
 #include "timer/timer.hpp"
+#include <thread>
 #include <chrono>
 #include <gtkmm/enums.h>
 #include <gtkmm/label.h>
@@ -14,7 +15,7 @@ spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 delimiterString( " : " ), strStart( "Start" ),
-strStop( "Stop" ), btn( strStart ) {
+strStop( "Stop" ), btn( strStart ), timerPtr() {
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -49,14 +50,15 @@ TimerEntity::~TimerEntity() {}
 
 void TimerEntity::onButtonClicked() {
     if ( btn.get_label() == strStart ) {
-
-        int secValue = spSeconds.get_value_as_int();
-        int minValue = spMinutes.get_value_as_int();
+        int secValue  = spSeconds.get_value_as_int();
+        int minValue  = spMinutes.get_value_as_int();
         int hourValue = spHours.get_value_as_int();
-        std::chrono::seconds fullValueSec{secValue + minValue + hourValue};
+        std::chrono::seconds fullValueSec {
+            secValue + minValue + hourValue
+        };
 
-        auto timer = std::make_unique<Timer>();
-        timer->start(fullValueSec);
+        timerPtr = std::make_unique< Timer >();
+        timerPtr->start( fullValueSec );
 
         spHours.set_sensitive( false );
         spMinutes.set_sensitive( false );
@@ -67,6 +69,7 @@ void TimerEntity::onButtonClicked() {
         spMinutes.set_sensitive( true );
         spSeconds.set_sensitive( true );
         btn.set_label( strStart );
+        timerPtr->stop();
     }
 }
 

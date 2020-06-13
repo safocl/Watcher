@@ -8,9 +8,9 @@ namespace core::ui {
 
 class WFrLog final : public Gtk::Frame {
     const Glib::ustring Label { "Logger" };
-    Gtk::Button btnAdd;
-    Gtk::Grid grid;
-    LogEntity logEntity;
+    Gtk::Button         btnAdd;
+    Gtk::Grid           grid;
+    LogEntity           logEntity;
 
 public:
     WFrLog();

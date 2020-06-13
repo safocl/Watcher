@@ -7,13 +7,18 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include <atomic>
 
 class Timer {
-    std::chrono::seconds timerDuration;
+    std::atomic_bool closeThreadFlag { false };
 
 public:
-    Timer(  );
+    Timer();
     ~Timer();
     void
-    start( const std::chrono::seconds & timerDuration);
+         start( const std::chrono::seconds & timerDuration );
+    void stop();
+
+    static std::chrono::milliseconds ticksTime;
 };
+//std::chrono::milliseconds Timer::ticksTime{1};

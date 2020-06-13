@@ -1,3 +1,7 @@
+#include "timer/timer.hpp"
+#include <thread>
+#include <vector>
+#include <memory>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
@@ -12,6 +16,8 @@ class TimerEntity final : public Gtk::Grid {
     Glib::ustring   strStart;
     Glib::ustring   strStop;
     Gtk::Button     btn;
+
+    std::unique_ptr< Timer > timerPtr;
 
     void onButtonClicked();
 
