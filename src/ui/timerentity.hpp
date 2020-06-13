@@ -19,7 +19,8 @@ class TimerEntity final : public Gtk::Grid {
 
     std::unique_ptr< Timer > timerPtr;
 
-    void onButtonClicked();
+    void        onButtonClicked();
+    static void returnSensitiveElements( TimerEntity * );
 
 public:
     TimerEntity();

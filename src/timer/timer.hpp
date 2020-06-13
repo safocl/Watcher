@@ -9,6 +9,10 @@
 #include <ctime>
 #include <atomic>
 
+namespace core::ui {
+class TimerEntity;
+}
+
 class Timer {
     std::atomic_bool closeThreadFlag { false };
 
@@ -16,7 +20,10 @@ public:
     Timer();
     ~Timer();
     void
-         start( const std::chrono::seconds & timerDuration );
+         start( const std::chrono::seconds & timerDuration,
+                core::ui::TimerEntity *,
+                void ( *returnSensitiveFunc )(
+           core::ui::TimerEntity * ) );
     void stop();
 
     static std::chrono::milliseconds ticksTime;

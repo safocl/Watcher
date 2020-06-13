@@ -1,5 +1,6 @@
 #include "timerentity.hpp"
 #include "timer/timer.hpp"
+#include <atomic>
 #include <thread>
 #include <chrono>
 #include <gtkmm/enums.h>
@@ -48,6 +49,14 @@ strStop( "Stop" ), btn( strStart ), timerPtr() {
 }
 TimerEntity::~TimerEntity() {}
 
+void TimerEntity::returnSensitiveElements(
+TimerEntity * obj ) {
+    obj->spHours.set_sensitive();
+    obj->spMinutes.set_sensitive();
+    obj->spSeconds.set_sensitive();
+    obj->btn.set_label( obj->strStart );
+}
+
 void TimerEntity::onButtonClicked() {
     if ( btn.get_label() == strStart ) {
         int secValue  = spSeconds.get_value_as_int();
@@ -58,7 +67,8 @@ void TimerEntity::onButtonClicked() {
         };
 
         timerPtr = std::make_unique< Timer >();
-        timerPtr->start( fullValueSec );
+        timerPtr->start(
+        fullValueSec, this, &returnSensitiveElements );
 
         spHours.set_sensitive( false );
         spMinutes.set_sensitive( false );

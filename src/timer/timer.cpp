@@ -8,7 +8,9 @@ Timer::Timer() {}
 Timer::~Timer() {}
 
 void Timer::start(
-const std::chrono::seconds & timerDuration ) {
+const std::chrono::seconds & timerDuration,
+core::ui::TimerEntity *      obj,
+void ( *func )( core::ui::TimerEntity * ) ) {
     closeThreadFlag = false;
     //std::thread thrd {
     //    []( const std::chrono::seconds timerDuration ) {
@@ -35,34 +37,33 @@ const std::chrono::seconds & timerDuration ) {
     std::thread thrd {
         []( const std::chrono::time_point<
             std::chrono::high_resolution_clock >
-                             doneSleepTimePoint_,
-            std::atomic_bool &closeThreadFlag_ ) {
+                                     doneSleepTimePoint_,
+            const std::atomic_bool & closeThreadFlag_,
+            core::ui::TimerEntity *  obj,
+            void ( *func )( core::ui::TimerEntity * ) ) {
             while (
             doneSleepTimePoint_ >=
             std::chrono::high_resolution_clock::now() &&
-            closeThreadFlag_ == false) {
+            closeThreadFlag_ == false ) {
                 std::this_thread::sleep_for(
                 Timer::ticksTime );
             }
-auto t = std::chrono::system_clock::to_time_t(
- std::chrono::high_resolution_clock::now() );
- auto timeOutput =
- std::put_time( std::localtime( &t ), "%F %T" );
- std::cout << "Timer stoped at: " << timeOutput
-           << std::endl;
 
+            func( obj );
 
+            auto t = std::chrono::system_clock::to_time_t(
+            std::chrono::high_resolution_clock::now() );
+            auto timeOutput = std::put_time(
+            std::localtime( &t ), "%F %T" );
+            std::cout << "Timer stoped at: " << timeOutput
+                      << std::endl;
         },
         doneSleepTimePoint,
-        std::ref( closeThreadFlag )
+        std::cref( closeThreadFlag ),
+        obj,
+        func
     };
     thrd.detach();
-    
-    
-    
-    
-    
-    
 }
 
 void Timer::stop() { closeThreadFlag = true; }
