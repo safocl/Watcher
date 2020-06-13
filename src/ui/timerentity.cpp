@@ -1,8 +1,10 @@
 #include "timerentity.hpp"
 #include "timer/timer.hpp"
+#include <chrono>
 #include <gtkmm/enums.h>
 #include <gtkmm/label.h>
 #include <gtkmm/object.h>
+#include <memory>
 #include <sigc++/functors/mem_fun.h>
 
 namespace core::ui {
@@ -47,6 +49,15 @@ TimerEntity::~TimerEntity() {}
 
 void TimerEntity::onButtonClicked() {
     if ( btn.get_label() == strStart ) {
+
+        int secValue = spSeconds.get_value_as_int();
+        int minValue = spMinutes.get_value_as_int();
+        int hourValue = spHours.get_value_as_int();
+        std::chrono::seconds fullValueSec{secValue + minValue + hourValue};
+
+        auto timer = std::make_unique<Timer>();
+        timer->start(fullValueSec);
+
         spHours.set_sensitive( false );
         spMinutes.set_sensitive( false );
         spSeconds.set_sensitive( false );

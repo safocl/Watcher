@@ -1,0 +1,9 @@
+cmake_install.cmake
+.git
+main
+upup
+Makefile
+build
+a.out
+initialVar.sh
+.clangd

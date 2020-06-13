@@ -38,16 +38,12 @@ sw() {
     //delimiter.set_hexpand();
     show_all_children();
 
-    //sw.signal_state_flags_changed().connect(sigc::mem_fun(*this,&ClockEntity::onFlagChanged));
-    sw.signal_state_set().connect(
-    sigc::mem_fun( *this, &ClockEntity::onSwStateSet ) );
+    sw.property_active().signal_changed().connect(
+    sigc::mem_fun( *this, &ClockEntity::onFlagChanged ) );
 }
 ClockEntity::~ClockEntity() {}
 
-void ClockEntity::onFlagChanged(
-Gtk::StateFlags previous_state_flags ) {
-    if ( previous_state_flags ) {}
-
+void ClockEntity::onFlagChanged() {
     if ( sw.get_active() ) {
         spHours.set_sensitive( false );
         spMinutes.set_sensitive( false );
@@ -57,22 +53,6 @@ Gtk::StateFlags previous_state_flags ) {
         spMinutes.set_sensitive( true );
         spSeconds.set_sensitive( true );
     }
-}
-
-bool ClockEntity::onSwStateSet( bool state ) {
-    if ( state ) {}
-
-    if ( state ) {
-        spHours.set_sensitive( false );
-        spMinutes.set_sensitive( false );
-        spSeconds.set_sensitive( false );
-    } else {
-        spHours.set_sensitive( true );
-        spMinutes.set_sensitive( true );
-        spSeconds.set_sensitive( true );
-    }
-
-    return true;
 }
 
 }   // namespace core::ui

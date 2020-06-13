@@ -1,14 +1,20 @@
 cmake_minimum_required( VERSION 3.12 )
 
+
+
+
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
-
-project( Watcher )
-
 add_compile_options(-Wall -Wextra -pedantic -Werror -g)
 
-find_package(PkgConfig)
 
+
+project( Watcher LANGUAGES CXX )
+set(CMAKE_CXX_STANDARD 17)
+find_package(PkgConfig)
 pkg_search_module( GTKMM REQUIRED gtkmm-3.0 )
+
+#find_package(Threads)     
+#target_link_libraries(${PROJECT_NAME} Threads::Threads)
 
 #message("root: ${GTKMM_INCLUDE_DIRS}")
 

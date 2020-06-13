@@ -11,9 +11,7 @@ class ClockEntity final : public Gtk::Grid {
     Gtk::Switch     sw;
     Glib::ustring   delimiterString { " : " };
 
-    bool onSwStateSet( bool state );
-    void
-    onFlagChanged( Gtk::StateFlags previous_state_flags );
+    void onFlagChanged();
 
 public:
     ClockEntity();
