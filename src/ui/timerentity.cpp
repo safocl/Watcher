@@ -1,6 +1,8 @@
 #include "timerentity.hpp"
 #include "timer/timer.hpp"
 #include <atomic>
+#include <functional>
+#include <mutex>
 #include <thread>
 #include <chrono>
 #include <gtkmm/enums.h>
@@ -12,6 +14,7 @@
 namespace core::ui {
 
 TimerEntity::TimerEntity() :
+    mutex_(),
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
@@ -46,16 +49,10 @@ strStop( "Stop" ), btn( strStart ), timerPtr() {
 
     btn.signal_clicked().connect( sigc::mem_fun(
     *this, &TimerEntity::onButtonClicked ) );
+
+    dispatcher_.connect(sigc::mem_fun(*this, &TimerEntity::onDispatcherEmit));
 }
 TimerEntity::~TimerEntity() {}
-
-void TimerEntity::returnSensitiveElements(
-TimerEntity * obj ) {
-    obj->spHours.set_sensitive();
-    obj->spMinutes.set_sensitive();
-    obj->spSeconds.set_sensitive();
-    obj->btn.set_label( obj->strStart );
-}
 
 void TimerEntity::onButtonClicked() {
     if ( btn.get_label() == strStart ) {
@@ -66,9 +63,25 @@ void TimerEntity::onButtonClicked() {
             secValue + minValue + hourValue
         };
 
+
+
+//
+//        std::function<void(core::ui::TimerEntity &obj, std::recursive_mutex &mutex_)> func = 
+//            [](core::ui::TimerEntity &obj, std::recursive_mutex &mutex_){
+//    std::lock_guard<std::recursive_mutex> lg{mutex_};
+//    obj.spHours.set_sensitive();
+//    obj.spMinutes.set_sensitive();
+//    obj.spSeconds.set_sensitive();
+//    obj.btn.set_label( obj.strStart );
+//};
+
+
+
         timerPtr = std::make_unique< Timer >();
         timerPtr->start(
-        fullValueSec, this, &returnSensitiveElements );
+        fullValueSec, *this 
+
+        );
 
         spHours.set_sensitive( false );
         spMinutes.set_sensitive( false );
@@ -81,6 +94,23 @@ void TimerEntity::onButtonClicked() {
         btn.set_label( strStart );
         timerPtr->stop();
     }
+}
+
+void TimerEntity::returnSens(){
+
+    dispatcher_.emit();
+
+}
+
+void TimerEntity::onDispatcherEmit()
+{
+    std::lock_guard<std::recursive_mutex> lg{mutex_};
+spHours.set_sensitive();
+spMinutes.set_sensitive();
+spSeconds.set_sensitive();
+btn.set_label( strStart );
+
+
 }
 
 }   // namespace core::ui

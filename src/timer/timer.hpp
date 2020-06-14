@@ -1,6 +1,8 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
+#include <mutex>
 #include <ratio>
 #include <type_traits>
 #include <thread>
@@ -21,9 +23,7 @@ public:
     ~Timer();
     void
          start( const std::chrono::seconds & timerDuration,
-                core::ui::TimerEntity *,
-                void ( *returnSensitiveFunc )(
-           core::ui::TimerEntity * ) );
+                core::ui::TimerEntity &);
     void stop();
 
     static std::chrono::milliseconds ticksTime;

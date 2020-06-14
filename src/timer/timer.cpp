@@ -1,7 +1,9 @@
 #include "timer.hpp"
+#include "ui/timerentity.hpp"
 #include <atomic>
 #include <chrono>
 #include <functional>
+#include <mutex>
 #include <thread>
 
 Timer::Timer() {}
@@ -9,8 +11,8 @@ Timer::~Timer() {}
 
 void Timer::start(
 const std::chrono::seconds & timerDuration,
-core::ui::TimerEntity *      obj,
-void ( *func )( core::ui::TimerEntity * ) ) {
+core::ui::TimerEntity &      obj
+) {
     closeThreadFlag = false;
     //std::thread thrd {
     //    []( const std::chrono::seconds timerDuration ) {
@@ -39,8 +41,7 @@ void ( *func )( core::ui::TimerEntity * ) ) {
             std::chrono::high_resolution_clock >
                                      doneSleepTimePoint_,
             const std::atomic_bool & closeThreadFlag_,
-            core::ui::TimerEntity *  obj,
-            void ( *func )( core::ui::TimerEntity * ) ) {
+            core::ui::TimerEntity &  obj){
             while (
             doneSleepTimePoint_ >=
             std::chrono::high_resolution_clock::now() &&
@@ -49,7 +50,7 @@ void ( *func )( core::ui::TimerEntity * ) ) {
                 Timer::ticksTime );
             }
 
-            func( obj );
+            obj.returnSens();
 
             auto t = std::chrono::system_clock::to_time_t(
             std::chrono::high_resolution_clock::now() );
@@ -60,8 +61,7 @@ void ( *func )( core::ui::TimerEntity * ) ) {
         },
         doneSleepTimePoint,
         std::cref( closeThreadFlag ),
-        obj,
-        func
+        std::ref(obj)
     };
     thrd.detach();
 }
