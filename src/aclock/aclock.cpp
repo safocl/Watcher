@@ -9,22 +9,7 @@
 #include <thread>
 #include "ui/clockentity.hpp"
 
-std::tm tmFill( int year,
-                int month,
-                int mday,
-                int hour,
-                int minute,
-                int sec ) {
-    std::tm tmTmp {};
-    tmTmp.tm_year = year - 1900;
-    tmTmp.tm_mon  = month;
-    tmTmp.tm_mday = mday;
-    tmTmp.tm_hour = hour;
-    tmTmp.tm_min  = minute;
-    tmTmp.tm_sec  = sec;
 
-    return tmTmp;
-}
 
 void Aclock::on( const int               hour,
                  const int               minute,

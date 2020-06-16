@@ -1,9 +1,10 @@
+#pragma once
+
+#include "glibmm/ustring.h"
 #include <string>
 
 class Loger {
-    std::string str;
 
 public:
-    Loger( const std::string & );
-    void log();
+    void log(const Glib::ustring str);
 };

@@ -21,10 +21,3 @@ public:
 
     void off();
 };
-
-std::tm tmFill( int year,
-                int month,
-                int mday,
-                int hour,
-                int minute,
-                int sec );
