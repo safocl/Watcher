@@ -4,7 +4,6 @@
 #include <string>
 
 class Loger {
-
 public:
-    void log(const Glib::ustring str);
+    void log( const Glib::ustring str );
 };

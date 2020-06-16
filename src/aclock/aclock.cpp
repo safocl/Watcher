@@ -9,8 +9,6 @@
 #include <thread>
 #include "ui/clockentity.hpp"
 
-
-
 void Aclock::on( const int               hour,
                  const int               minute,
                  const int               sec,

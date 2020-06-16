@@ -13,7 +13,7 @@ ClockEntity::ClockEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-sw(), dispatcher_(), aclock_(), swBlock(false) {
+sw(), dispatcher_(), aclock_(), swBlock( false ) {
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -50,7 +50,7 @@ sw(), dispatcher_(), aclock_(), swBlock(false) {
 ClockEntity::~ClockEntity() {}
 
 void ClockEntity::onSwChanged() {
-    if ( sw.get_active()) {
+    if ( sw.get_active() ) {
         aclock_.on( spHours.get_value_as_int(),
                     spMinutes.get_value_as_int(),
                     spSeconds.get_value_as_int(),
