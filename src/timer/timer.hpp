@@ -23,7 +23,7 @@ public:
     ~Timer();
     void
          start( const std::chrono::seconds & timerDuration,
-                core::ui::TimerEntity &);
+                core::ui::TimerEntity & );
     void stop();
 
     static std::chrono::milliseconds ticksTime;

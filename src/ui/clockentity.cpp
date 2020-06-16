@@ -1,8 +1,11 @@
 #include "clockentity.hpp"
+#include "glibmm/dispatcher.h"
 #include "gtkmm/enums.h"
 #include "gtkmm/label.h"
 #include "gtkmm/object.h"
 #include "sigc++/functors/mem_fun.h"
+#include "timer/timer.hpp"
+#include <chrono>
 
 namespace core::ui {
 
@@ -10,7 +13,7 @@ ClockEntity::ClockEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-sw() {
+sw(), dispatcher_(), aclock_(), swBlock(false) {
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -39,20 +42,38 @@ sw() {
     show_all_children();
 
     sw.property_active().signal_changed().connect(
-    sigc::mem_fun( *this, &ClockEntity::onFlagChanged ) );
+    sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );
+
+    dispatcher_.connect( sigc::mem_fun(
+    *this, &ClockEntity::onDispatcherEmit ) );
 }
 ClockEntity::~ClockEntity() {}
 
-void ClockEntity::onFlagChanged() {
-    if ( sw.get_active() ) {
+void ClockEntity::onSwChanged() {
+    if ( sw.get_active()) {
+        aclock_.on( spHours.get_value_as_int(),
+                    spMinutes.get_value_as_int(),
+                    spSeconds.get_value_as_int(),
+                    *this );
         spHours.set_sensitive( false );
         spMinutes.set_sensitive( false );
         spSeconds.set_sensitive( false );
     } else {
+        aclock_.off();
         spHours.set_sensitive( true );
         spMinutes.set_sensitive( true );
         spSeconds.set_sensitive( true );
     }
 }
 
+void ClockEntity::returnSensElements() {
+    dispatcher_.emit();
+}
+
+void ClockEntity::onDispatcherEmit() {
+    spHours.set_sensitive();
+    spMinutes.set_sensitive();
+    spSeconds.set_sensitive();
+    sw.set_active( false );
+}
 }   // namespace core::ui

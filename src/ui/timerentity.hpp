@@ -13,17 +13,17 @@
 namespace core::ui {
 
 class TimerEntity final : public Gtk::Grid {
-    std::recursive_mutex mutex_;
-    Gtk::SpinButton spHours, spMinutes, spSeconds;
-    Glib::ustring   delimiterString;
-    Glib::ustring   strStart;
-    Glib::ustring   strStop;
-    Gtk::Button     btn;
+    //    std::recursive_mutex mutex_;
+    Gtk::SpinButton  spHours, spMinutes, spSeconds;
+    Glib::ustring    delimiterString;
+    Glib::ustring    strStart;
+    Glib::ustring    strStop;
+    Gtk::Button      btn;
     Glib::Dispatcher dispatcher_;
 
     std::unique_ptr< Timer > timerPtr;
 
-    void        onButtonClicked();
+    void onButtonClicked();
     void onDispatcherEmit();
 
 public:

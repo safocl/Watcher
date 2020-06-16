@@ -11,8 +11,7 @@ Timer::~Timer() {}
 
 void Timer::start(
 const std::chrono::seconds & timerDuration,
-core::ui::TimerEntity &      obj
-) {
+core::ui::TimerEntity &      obj ) {
     closeThreadFlag = false;
     //std::thread thrd {
     //    []( const std::chrono::seconds timerDuration ) {
@@ -41,7 +40,7 @@ core::ui::TimerEntity &      obj
             std::chrono::high_resolution_clock >
                                      doneSleepTimePoint_,
             const std::atomic_bool & closeThreadFlag_,
-            core::ui::TimerEntity &  obj){
+            core::ui::TimerEntity &  obj ) {
             while (
             doneSleepTimePoint_ >=
             std::chrono::high_resolution_clock::now() &&
@@ -61,7 +60,7 @@ core::ui::TimerEntity &      obj
         },
         doneSleepTimePoint,
         std::cref( closeThreadFlag ),
-        std::ref(obj)
+        std::ref( obj )
     };
     thrd.detach();
 }
