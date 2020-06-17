@@ -37,6 +37,11 @@ strStop( "Stop" ), btn( strStart ), timerPtr() {
     Gtk::Label * delimiter2 =
     Gtk::make_managed< Gtk::Label >( delimiterString );
 
+    btn.set_margin_left(15);
+    btn.set_margin_right(15);
+
+    spHours.set_margin_left(15);
+
     attach( spHours, 1, 1 );
     attach( *delimiter1, 2, 1, 1, 1 );
     attach( spMinutes, 3, 1 );
@@ -58,8 +63,8 @@ TimerEntity::~TimerEntity() {}
 void TimerEntity::onButtonClicked() {
     if ( btn.get_label() == strStart ) {
         int secValue  = spSeconds.get_value_as_int();
-        int minValue  = spMinutes.get_value_as_int();
-        int hourValue = spHours.get_value_as_int();
+        int minValue  = spMinutes.get_value_as_int() * 60;
+        int hourValue = spHours.get_value_as_int() * 3600;
         std::chrono::seconds fullValueSec {
             secValue + minValue + hourValue
         };
