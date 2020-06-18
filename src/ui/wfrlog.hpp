@@ -8,13 +8,13 @@
 
 namespace core::ui {
 
-    using LogEntityArr = std::vector<LogEntity*>;
+using LogEntityArr = std::vector< LogEntity * >;
 
 class WFrLog final : public Gtk::Frame {
     const Glib::ustring Label { "Logger" };
     Gtk::Button         btnAdd;
     Gtk::Grid           grid;
-    LogEntityArr logEntityArr;
+    LogEntityArr        logEntityArr;
 
     void onBtnClicked();
 

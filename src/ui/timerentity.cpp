@@ -37,10 +37,10 @@ strStop( "Stop" ), btn( strStart ), timerPtr() {
     Gtk::Label * delimiter2 =
     Gtk::make_managed< Gtk::Label >( delimiterString );
 
-    btn.set_margin_left(15);
-    btn.set_margin_right(15);
+    btn.set_margin_left( 15 );
+    btn.set_margin_right( 15 );
 
-    spHours.set_margin_left(15);
+    spHours.set_margin_left( 15 );
 
     attach( spHours, 1, 1 );
     attach( *delimiter1, 2, 1, 1, 1 );
