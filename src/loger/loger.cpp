@@ -19,9 +19,12 @@ void Loger::log( const Glib::ustring str ) {
         logFileStream.close();
         logFileStream.open( "log.txt" );
     }
-    logFileStream << str << std::endl;
+    logFileStream << str << " ["
+                  << std::put_time( std::localtime( &t ),
+                                    "%F %T" )
+                  << "]" << std::endl;
 
-    std::cout << str << "["
+    std::cout << str << " ["
               << std::put_time( std::localtime( &t ),
                                 "%F %T" )
               << "]" << std::endl;
