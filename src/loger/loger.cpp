@@ -1,6 +1,7 @@
 #include "loger.hpp"
 #include "glibmm/ustring.h"
 #include <fstream>
+#include <ios>
 #include <iostream>
 #include <ctime>
 #include <iomanip>
@@ -19,10 +20,13 @@ void Loger::log( const Glib::ustring str ) {
         logFileStream.close();
         logFileStream.open( "log.txt" );
     }
+    logFileStream.seekp( 0, std::ios_base::end );
     logFileStream << str << " ["
                   << std::put_time( std::localtime( &t ),
                                     "%F %T" )
                   << "]" << std::endl;
+
+    logFileStream.close();
 
     std::cout << str << " ["
               << std::put_time( std::localtime( &t ),
