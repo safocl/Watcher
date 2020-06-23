@@ -2,21 +2,27 @@
 #include <glibmm/ustring.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
-#include <vector>
+#include <list>
 #include <glibmm/refptr.h>
+#include <utility>
 #include "logentity.hpp"
 
 namespace core::ui {
 
-using LogEntityArr = std::vector< LogEntity * >;
-
 class WFrLog final : public Gtk::Frame {
+    using EntityNode =
+    std::pair< LogEntity *, Gtk::Button * >;
+    using EntityNodeArr = std::list< EntityNode >;
+
     const Glib::ustring Label { "Logger" };
     Gtk::Button         btnAdd;
     Gtk::Grid           grid;
-    LogEntityArr        logEntityArr;
+    EntityNodeArr       entityNodeArr;
 
-    void onBtnClicked();
+    static constexpr int logEntityWidth    = 3;
+    static constexpr int btnCloseEntityPos = 4;
+    void                 onBtnClicked();
+    static EntityNode    makeNode();
 
 public:
     WFrLog();
