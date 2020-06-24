@@ -19,10 +19,9 @@ class WFrLog final : public Gtk::Frame {
     Gtk::Grid           grid;
     EntityNodeArr       entityNodeArr;
 
-    static constexpr int logEntityWidth    = 3;
-    static constexpr int btnCloseEntityPos = 4;
-    void                 onBtnClicked();
-    static EntityNode    makeNode();
+    void onBtnClicked();
+    void onCloseClicked( EntityNodeArr::iterator );
+    static EntityNode makeNode();
 
 public:
     WFrLog();

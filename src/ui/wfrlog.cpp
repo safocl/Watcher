@@ -18,33 +18,34 @@ btnAdd( " +++ " ), grid(), entityNodeArr() {
     set_margin_right( 3 );
 
     entityNodeArr.push_back( makeNode() );
+    auto enodeIt = std::prev( entityNodeArr.end() );
 
-    grid.attach( *entityNodeArr.back().first,
-                 1,
-                 1,
-                 logEntityWidth,
-                 1 );
-    grid.attach_next_to( *entityNodeArr.back().second,
-                         *entityNodeArr.back().first,
+    grid.attach( *enodeIt->first, 1, 1 );
+    grid.attach_next_to( *enodeIt->second,
+                         *enodeIt->first,
                          Gtk::POS_RIGHT,
                          1,
                          1 );
-    grid.attach( btnAdd, 3, 2, 2, 1 );
+    grid.attach( btnAdd, 1, 2, 2, 1 );
 
-    btnAdd.set_halign(Gtk::ALIGN_END);
+    btnAdd.set_halign( Gtk::ALIGN_CENTER );
     //btnAdd.set_margin_bottom( 15 );
     //btnAdd.set_margin_right( 15 );
     //btnAdd.set_margin_left( 15 );
 
-    entityNodeArr.back().second->set_margin_bottom( 15 );
-    entityNodeArr.back().second->set_margin_right( 15 );
-    entityNodeArr.back().second->set_margin_left( 15 );
+    enodeIt->second->set_margin_bottom( 15 );
+    enodeIt->second->set_margin_right( 15 );
+    enodeIt->second->set_margin_left( 15 );
 
     add( grid );
     show_all();
 
     btnAdd.signal_clicked().connect(
     sigc::mem_fun( *this, &WFrLog::onBtnClicked ) );
+
+    enodeIt->second->signal_clicked().connect( sigc::bind(
+    sigc::mem_fun( *this, &WFrLog::onCloseClicked ),
+    enodeIt ) );
 }
 WFrLog::~WFrLog() {}
 Glib::ustring WFrLog::getName() const { return Label; }
@@ -54,24 +55,27 @@ void WFrLog::onBtnClicked() {
 
     entityNodeArr.push_back( makeNode() );
 
-    grid.attach_next_to(
-    *entityNodeArr.back().first,
-    *std::prev( std::prev( entityNodeArr.end() ) )->first,
-    Gtk::POS_BOTTOM,
-    logEntityWidth,
-    1 );
+    auto enodeIt = std::prev( entityNodeArr.end() );
 
-    grid.attach_next_to( *entityNodeArr.back().second,
-                         *entityNodeArr.back().first,
+    grid.attach_next_to( *enodeIt->first,
+                         *std::prev( enodeIt )->first,
+                         Gtk::POS_BOTTOM );
+
+    grid.attach_next_to( *enodeIt->second,
+                         *enodeIt->first,
                          Gtk::POS_RIGHT,
                          1,
                          1 );
 
-    entityNodeArr.back().second->set_margin_bottom( 15 );
-    entityNodeArr.back().second->set_margin_right( 15 );
-    entityNodeArr.back().second->set_margin_left( 15 );
+    enodeIt->second->set_margin_bottom( 15 );
+    enodeIt->second->set_margin_right( 15 );
+    enodeIt->second->set_margin_left( 15 );
 
     grid.show_all_children();
+
+    enodeIt->second->signal_clicked().connect( sigc::bind(
+    sigc::mem_fun( *this, &WFrLog::onCloseClicked ),
+    enodeIt ) );
 }
 
 WFrLog::EntityNode WFrLog::makeNode() {
@@ -80,4 +84,16 @@ WFrLog::EntityNode WFrLog::makeNode() {
     Gtk::make_managed< Gtk::Button >( "X" ) );
 }
 
+void WFrLog::onCloseClicked(
+EntityNodeArr::iterator enodeIt ) {
+    if ( entityNodeArr.size() > 1 ) {
+        grid.remove( *enodeIt->first );
+        grid.remove( *enodeIt->second );
+
+        delete enodeIt->first;
+        delete enodeIt->second;
+
+        entityNodeArr.erase( enodeIt );
+    }
+}
 }   // namespace core::ui
