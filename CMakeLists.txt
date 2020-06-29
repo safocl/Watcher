@@ -1,5 +1,10 @@
 cmake_minimum_required( VERSION 3.12 )
 
+#include(ExternalProject)
+#ExternalProject_Add(nlohmann_json
+#    GIT_REPOSITORY git@github.com:nlohmann/json.git
+#    GIT_TAG 3.8.0
+#    PREFIX ./3rd-party/nlohmann_json)
 
 
 
