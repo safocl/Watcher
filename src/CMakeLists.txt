@@ -8,12 +8,15 @@ include_directories(
 
 file( GLOB_RECURSE objFiles ./ *.o)
 add_executable( ${PROJECT_NAME} main.cpp ${objFiles})
-set(wlibs timer loger aclock mainWindow)
+set(wlibs timer loger aclock mainWindow configure)
 set(fwlibs ${GTKMM_LIBRARIES} ${wlibs})
 
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} Threads::Threads)
 
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 
 
 add_dependencies(${PROJECT_NAME} ${wlibs})
@@ -23,3 +26,4 @@ add_subdirectory( timer )
 add_subdirectory( loger )
 add_subdirectory( aclock )
 add_subdirectory( ui )
+add_subdirectory( configure )

@@ -1,9 +1,11 @@
 #pragma once
 
 #include "glibmm/ustring.h"
-#include <string>
+#include <filesystem>
 
-class Loger {
-public:
-    void log( const Glib::ustring str );
+struct Loger {
+    std::filesystem::path pathToLogFile;
+
+    Loger();
+    void log( const Glib::ustring message );
 };
