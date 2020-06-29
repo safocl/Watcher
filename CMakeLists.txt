@@ -1,11 +1,5 @@
 cmake_minimum_required( VERSION 3.12 )
 
-#include(ExternalProject)
-#ExternalProject_Add(nlohmann_json
-#    GIT_REPOSITORY git@github.com:nlohmann/json.git
-#    GIT_TAG 3.8.0
-#    PREFIX ./3rd-party/nlohmann_json)
-
 
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
@@ -23,6 +17,8 @@ pkg_search_module( GTKMM REQUIRED gtkmm-3.0 )
 
 #message("root: ${GTKMM_INCLUDE_DIRS}")
 
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory( 3rd-party/nlohmann_json )
 add_subdirectory( src )
 
 #file( GLOB_RECURSE objFiles src/ *.o)
