@@ -21,6 +21,8 @@ private:
                                  lastChangeConfig;
     static std::filesystem::path pathToConfig;
 
+    static void fillDefaultParams();
+
 public:
     static void loadFromConfigFile();
     static void

@@ -1,10 +1,11 @@
 #include "configure.hpp"
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <istream>
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -13,14 +14,12 @@
 namespace core::configure {
 
 std::filesystem::path Configure::pathToConfig {
-    "/home/safff/.config/watcher/config.json"
+
 };
 
 Configure::Parametres Configure::params {};
-Configure::Parametres Configure::defaultParams {
-    { "pathToLogFile",
-      "/home/safff/.config/watcher/log.txt" }
-};
+
+Configure::Parametres Configure::defaultParams {};
 
 std::chrono::system_clock::time_point
 Configure::lastLoadConfig {};
@@ -28,7 +27,37 @@ Configure::lastLoadConfig {};
 std::chrono::system_clock::time_point
 Configure::lastChangeConfig {};
 
+void Configure::fillDefaultParams() {
+    std::string strConfPath {};
+    std::string strSysConfDir {};
+
+#ifdef __linux__
+    if ( std::getenv( "XDG_CONFIG_HOME" ) != nullptr )
+        strSysConfDir = std::getenv( "XDG_CONFIG_HOME" );
+
+    if ( strSysConfDir != "" )
+        strConfPath =
+        strSysConfDir + "/watcher/config.json";
+    else
+        strConfPath =
+        std::string( std::getenv( "HOME" ) ) +
+        "/.config/watcher/config.json";
+#elif _WIN32
+    std::string strSysConfDir( std::getenv( "APPDATA" ) );
+    strConfPath =
+    strSysConfDir + "/watcher/config.json";
+#endif
+
+    pathToConfig = strConfPath;
+
+    defaultParams[ "pathToLogFile" ] =
+    pathToConfig.parent_path().generic_string() +
+    "/log.txt";
+}
+
 void Configure::loadFromConfigFile() {
+    fillDefaultParams();
+
     if ( !std::filesystem::exists( pathToConfig ) ) {
         std::filesystem::create_directories(
         pathToConfig.parent_path() );
@@ -44,16 +73,21 @@ void Configure::loadFromConfigFile() {
     } else {
         std::ifstream  configFile { pathToConfig };
         nlohmann::json tmpJConfig;
-                       operator>>( configFile, tmpJConfig );
+
+        operator>>( configFile, tmpJConfig );
 
         if ( tmpJConfig.at( "pathToLogFile" ) != "" &&
-             std::filesystem::path {
-             tmpJConfig.at( "pathToLogFile" ) }
-             .has_filename() )
+             std::filesystem::is_regular_file(std::filesystem::path {
+             tmpJConfig.at( "pathToLogFile" ) } ))
             params = tmpJConfig;
         else {
-            throw std::runtime_error(
-            "Not valid pathToLogFile in config file" );
+            params[ "pathToLogFile" ] =
+            defaultParams.at( "pathToLogFile" );
+            std::cout
+            << "Not valid pathToLogFile in config file"
+            << std::endl
+            << "load default pathToLogFile"
+            << std::endl;
         }
 
         configFile.close();
