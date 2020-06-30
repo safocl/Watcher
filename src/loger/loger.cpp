@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <chrono>
 #include <stdexcept>
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 
 Loger::Loger() :
 pathToLogFile( core::configure::Configure::getParams().at(

@@ -5,5 +5,5 @@ file( GLOB cpps
         *.cpp )
 
 add_library( loger OBJECT ${cpps} )
-target_link_directories(loger PRIVATE nlohmann_json::nlohmann_json)
-target_include_directories(loger PRIVATE nlohmann_json::nlohmann_json) 
+
+target_link_libraries(loger PRIVATE nlohmann_json::nlohmann_json)

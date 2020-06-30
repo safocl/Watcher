@@ -3,7 +3,7 @@
 #include <chrono>
 #include <filesystem>
 #include <map>
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 #include <string>
 
 namespace core::configure {

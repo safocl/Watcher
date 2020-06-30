@@ -6,7 +6,7 @@ link_directories(
 #message("src: " ${GTKMM_LIBRARIES})
 
 include_directories(
-    ${GTKMM_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
+    ${GTKMM_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 
 
 file( GLOB_RECURSE objFiles ./ *.o)
@@ -16,11 +16,11 @@ set(wlibs timer loger aclock mainWindow configure)
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-#target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 add_dependencies(${PROJECT_NAME} ${wlibs})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${wlibs})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GTKMM_LIBRARY_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 add_subdirectory( timer )
 add_subdirectory( loger )
