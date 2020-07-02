@@ -12,8 +12,8 @@ namespace core::ui {
 ClockEntity::ClockEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-sw(), dispatcher_(), aclock_(), swBlock( false ) {
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
+dispatcher_(), aclock_(), swBlock( false ) {
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -49,8 +49,8 @@ sw(), dispatcher_(), aclock_(), swBlock( false ) {
     sw.property_active().signal_changed().connect(
     sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );
 
-    dispatcher_.connect( sigc::mem_fun(
-    *this, &ClockEntity::onDispatcherEmit ) );
+    dispatcher_.connect(
+    sigc::mem_fun( *this, &ClockEntity::onDispatcherEmit ) );
 }
 ClockEntity::~ClockEntity() {}
 
@@ -71,9 +71,7 @@ void ClockEntity::onSwChanged() {
     }
 }
 
-void ClockEntity::returnSensElements() {
-    dispatcher_.emit();
-}
+void ClockEntity::returnSensElements() { dispatcher_.emit(); }
 
 void ClockEntity::onDispatcherEmit() {
     spHours.set_sensitive();

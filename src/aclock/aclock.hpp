@@ -10,7 +10,7 @@ class ClockEntity;
 }
 
 class Aclock {
-    std::atomic_bool offFlag_ { false };
+    std::atomic_bool                       offFlag_ { false };
     static const std::chrono::milliseconds tick_;
 
 public:

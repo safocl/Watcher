@@ -13,20 +13,17 @@ public:
     using Parametres = nlohmann::json;
 
 private:
-    static Parametres params;
-    static Parametres defaultParams;
-    static std::chrono::system_clock::time_point
-    lastLoadConfig;
-    static std::chrono::system_clock::time_point
-                                 lastChangeConfig;
-    static std::filesystem::path pathToConfig;
+    static Parametres                            params;
+    static Parametres                            defaultParams;
+    static std::chrono::system_clock::time_point lastLoadConfig;
+    static std::chrono::system_clock::time_point lastChangeConfig;
+    static std::filesystem::path                 pathToConfig;
 
     static void fillDefaultParams();
 
 public:
-    static void loadFromConfigFile();
-    static void
-                      saveToConfigFile( const Parametres & params );
+    static void       loadFromConfigFile();
+    static void       saveToConfigFile( const Parametres & params );
     static Parametres getParams();
 };
 

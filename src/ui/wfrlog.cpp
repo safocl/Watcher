@@ -8,8 +8,7 @@
 
 namespace core::ui {
 
-WFrLog::WFrLog() :
-btnAdd( " +++ " ), grid(), entityNodeArr() {
+WFrLog::WFrLog() : btnAdd( " +++ " ), grid(), entityNodeArr() {
     set_label( Label );
 
     set_margin_bottom( 3 );
@@ -21,11 +20,8 @@ btnAdd( " +++ " ), grid(), entityNodeArr() {
     auto enodeIt = std::prev( entityNodeArr.end() );
 
     grid.attach( *enodeIt->first, 1, 1 );
-    grid.attach_next_to( *enodeIt->second,
-                         *enodeIt->first,
-                         Gtk::POS_RIGHT,
-                         1,
-                         1 );
+    grid.attach_next_to(
+    *enodeIt->second, *enodeIt->first, Gtk::POS_RIGHT, 1, 1 );
     grid.attach( btnAdd, 1, 2, 2, 1 );
 
     btnAdd.set_halign( Gtk::ALIGN_CENTER );
@@ -44,8 +40,7 @@ btnAdd( " +++ " ), grid(), entityNodeArr() {
     sigc::mem_fun( *this, &WFrLog::onBtnClicked ) );
 
     enodeIt->second->signal_clicked().connect( sigc::bind(
-    sigc::mem_fun( *this, &WFrLog::onCloseClicked ),
-    enodeIt ) );
+    sigc::mem_fun( *this, &WFrLog::onCloseClicked ), enodeIt ) );
 }
 WFrLog::~WFrLog() {}
 Glib::ustring WFrLog::getName() const { return Label; }
@@ -57,15 +52,11 @@ void WFrLog::onBtnClicked() {
 
     auto enodeIt = std::prev( entityNodeArr.end() );
 
-    grid.attach_next_to( *enodeIt->first,
-                         *std::prev( enodeIt )->first,
-                         Gtk::POS_BOTTOM );
+    grid.attach_next_to(
+    *enodeIt->first, *std::prev( enodeIt )->first, Gtk::POS_BOTTOM );
 
-    grid.attach_next_to( *enodeIt->second,
-                         *enodeIt->first,
-                         Gtk::POS_RIGHT,
-                         1,
-                         1 );
+    grid.attach_next_to(
+    *enodeIt->second, *enodeIt->first, Gtk::POS_RIGHT, 1, 1 );
 
     enodeIt->second->set_margin_bottom( 15 );
     enodeIt->second->set_margin_right( 15 );
@@ -74,18 +65,15 @@ void WFrLog::onBtnClicked() {
     grid.show_all_children();
 
     enodeIt->second->signal_clicked().connect( sigc::bind(
-    sigc::mem_fun( *this, &WFrLog::onCloseClicked ),
-    enodeIt ) );
+    sigc::mem_fun( *this, &WFrLog::onCloseClicked ), enodeIt ) );
 }
 
 WFrLog::EntityNode WFrLog::makeNode() {
-    return std::make_pair(
-    Gtk::make_managed< LogEntity >(),
-    Gtk::make_managed< Gtk::Button >( "X" ) );
+    return std::make_pair( Gtk::make_managed< LogEntity >(),
+                           Gtk::make_managed< Gtk::Button >( "X" ) );
 }
 
-void WFrLog::onCloseClicked(
-EntityNodeArr::iterator enodeIt ) {
+void WFrLog::onCloseClicked( EntityNodeArr::iterator enodeIt ) {
     if ( entityNodeArr.size() > 1 ) {
         grid.remove( *enodeIt->first );
         grid.remove( *enodeIt->second );

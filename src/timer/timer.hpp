@@ -21,8 +21,7 @@ class Timer {
 public:
     Timer();
     ~Timer();
-    void
-         start( const std::chrono::seconds & timerDuration,
+    void start( const std::chrono::seconds & timerDuration,
                 core::ui::TimerEntity & );
     void stop();
 

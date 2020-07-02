@@ -18,8 +18,8 @@ TimerEntity::TimerEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-delimiterString( " : " ), strStart( "Start" ),
-strStop( "Stop" ), btn( strStart ), timerPtr() {
+delimiterString( " : " ), strStart( "Start" ), strStop( "Stop" ),
+btn( strStart ), timerPtr() {
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -52,11 +52,11 @@ strStop( "Stop" ), btn( strStart ), timerPtr() {
     //delimiter.set_hexpand();
     show_all_children();
 
-    btn.signal_clicked().connect( sigc::mem_fun(
-    *this, &TimerEntity::onButtonClicked ) );
+    btn.signal_clicked().connect(
+    sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );
 
-    dispatcher_.connect( sigc::mem_fun(
-    *this, &TimerEntity::onDispatcherEmit ) );
+    dispatcher_.connect(
+    sigc::mem_fun( *this, &TimerEntity::onDispatcherEmit ) );
 }
 TimerEntity::~TimerEntity() {}
 
@@ -65,9 +65,8 @@ void TimerEntity::onButtonClicked() {
         int secValue  = spSeconds.get_value_as_int();
         int minValue  = spMinutes.get_value_as_int() * 60;
         int hourValue = spHours.get_value_as_int() * 3600;
-        std::chrono::seconds fullValueSec {
-            secValue + minValue + hourValue
-        };
+        std::chrono::seconds fullValueSec { secValue + minValue +
+                                            hourValue };
 
         //
         //        std::function<void(core::ui::TimerEntity &obj, std::recursive_mutex &mutex_)> func =

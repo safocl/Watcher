@@ -3,8 +3,7 @@
 
 namespace core::ui {
 
-LogEntity::LogEntity() :
-entry {}, btn { btnLabel }, loger {} {
+LogEntity::LogEntity() : entry {}, btn { btnLabel }, loger {} {
     entry.set_placeholder_text( "Write text" );
 
     entry.set_hexpand();
@@ -26,8 +25,6 @@ entry {}, btn { btnLabel }, loger {} {
 }
 LogEntity::~LogEntity() {}
 
-void LogEntity::onButtonClicked() {
-    loger.log( entry.get_text() );
-}
+void LogEntity::onButtonClicked() { loger.log( entry.get_text() ); }
 
 }   // namespace core::ui

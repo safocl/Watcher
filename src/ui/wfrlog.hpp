@@ -10,8 +10,7 @@
 namespace core::ui {
 
 class WFrLog final : public Gtk::Frame {
-    using EntityNode =
-    std::pair< LogEntity *, Gtk::Button * >;
+    using EntityNode    = std::pair< LogEntity *, Gtk::Button * >;
     using EntityNodeArr = std::list< EntityNode >;
 
     const Glib::ustring Label { "Logger" };
@@ -19,8 +18,8 @@ class WFrLog final : public Gtk::Frame {
     Gtk::Grid           grid;
     EntityNodeArr       entityNodeArr;
 
-    void onBtnClicked();
-    void onCloseClicked( EntityNodeArr::iterator );
+    void              onBtnClicked();
+    void              onCloseClicked( EntityNodeArr::iterator );
     static EntityNode makeNode();
 
 public:

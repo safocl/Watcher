@@ -21,38 +21,25 @@ Configure::Parametres Configure::params {};
 
 Configure::Parametres Configure::defaultParams {};
 
-std::chrono::system_clock::time_point
-Configure::lastLoadConfig {};
+std::chrono::system_clock::time_point Configure::lastLoadConfig {};
 
-std::chrono::system_clock::time_point
-Configure::lastChangeConfig {};
+std::chrono::system_clock::time_point Configure::lastChangeConfig {};
 
 void Configure::fillDefaultParams() {
-    std::string strConfPath {};
-    std::string strSysConfDir {};
-
 #ifdef __linux__
     if ( std::getenv( "XDG_CONFIG_HOME" ) != nullptr )
-        strSysConfDir = std::getenv( "XDG_CONFIG_HOME" );
-
-    if ( strSysConfDir != "" )
-        strConfPath =
-        strSysConfDir + "/watcher/config.json";
+        pathToConfig = std::getenv( "XDG_CONFIG_HOME" );
     else
-        strConfPath =
-        std::string( std::getenv( "HOME" ) ) +
-        "/.config/watcher/config.json";
+        pathToConfig =
+        std::string( std::getenv( "HOME" ) ) + "/.config";
 #elif _WIN32
-    std::string strSysConfDir( std::getenv( "APPDATA" ) );
-    strConfPath =
-    strSysConfDir + "/watcher/config.json";
+    pathToConfig = std::getenv( "APPDATA" );
 #endif
 
-    pathToConfig = strConfPath;
+    pathToConfig /= "/watcher/config.json";
 
     defaultParams[ "pathToLogFile" ] =
-    pathToConfig.parent_path().generic_string() +
-    "/log.txt";
+    pathToConfig.parent_path().generic_string() + "/log.txt";
 }
 
 void Configure::loadFromConfigFile() {
@@ -65,8 +52,7 @@ void Configure::loadFromConfigFile() {
         params.clear();
 
         std::ofstream configFile { pathToConfig };
-        configFile << std::setw( 4 ) << defaultParams
-                   << std::endl;
+        configFile << std::setw( 4 ) << defaultParams << std::endl;
         configFile.close();
 
         params = defaultParams;
@@ -77,17 +63,15 @@ void Configure::loadFromConfigFile() {
         operator>>( configFile, tmpJConfig );
 
         if ( tmpJConfig.at( "pathToLogFile" ) != "" &&
-             std::filesystem::is_regular_file(std::filesystem::path {
-             tmpJConfig.at( "pathToLogFile" ) } ))
+             std::filesystem::is_regular_file( std::filesystem::path {
+             tmpJConfig.at( "pathToLogFile" ) } ) )
             params = tmpJConfig;
         else {
             params[ "pathToLogFile" ] =
             defaultParams.at( "pathToLogFile" );
-            std::cout
-            << "Not valid pathToLogFile in config file"
-            << std::endl
-            << "load default pathToLogFile"
-            << std::endl;
+            std::cout << "Not valid pathToLogFile in config file"
+                      << std::endl
+                      << "load default pathToLogFile" << std::endl;
         }
 
         configFile.close();
@@ -96,8 +80,6 @@ void Configure::loadFromConfigFile() {
     lastLoadConfig = std::chrono::system_clock::now();
 }
 
-Configure::Parametres Configure::getParams() {
-    return params;
-}
+Configure::Parametres Configure::getParams() { return params; }
 
 }   // namespace core::configure

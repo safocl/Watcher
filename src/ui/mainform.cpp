@@ -18,8 +18,8 @@ nb(), btnClose( "Quit" ), grid(), app( app ) {
 
     show_all();
 
-    btnClose.signal_clicked().connect( sigc::mem_fun(
-    *this, &MainWindow::onBtnCloseClicked ) );
+    btnClose.signal_clicked().connect(
+    sigc::mem_fun( *this, &MainWindow::onBtnCloseClicked ) );
 }
 
 void MainWindow::onBtnCloseClicked() { app->quit(); }
