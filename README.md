@@ -9,7 +9,9 @@ on GNU/Linux:
 after cloning this repository, you should do "git submodule update --init".
 
 $ mkdir build && cd buid
+
 $ cmake ..
+
 $ make -jN  # N -- number threads of you processor
 
 
