@@ -1,4 +1,4 @@
-#include "loger.hpp"
+#include "logger.hpp"
 #include "configure/configure.hpp"
 #include <glibmm/ustring.h>
 #include <filesystem>

@@ -2,7 +2,7 @@
 #include <glibmm/ustring.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
-#include "loger/loger.hpp"
+#include "logger/logger.hpp"
 
 namespace core::ui {
 
@@ -11,7 +11,7 @@ class LogEntity final : public Gtk::Grid {
     const Glib::ustring btnLabel { "Log in" };
     Gtk::Button         btn;
 
-    Loger loger;
+    Loger logger;
 
     void onButtonClicked();
 
