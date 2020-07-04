@@ -3,9 +3,9 @@
 #include <glibmm/ustring.h>
 #include <filesystem>
 
-struct Loger {
+struct Logger {
     std::filesystem::path pathToLogFile;
 
-    Loger();
+    Logger();
     void log( const Glib::ustring message );
 };

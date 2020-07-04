@@ -11,7 +11,7 @@ class LogEntity final : public Gtk::Grid {
     const Glib::ustring btnLabel { "Log in" };
     Gtk::Button         btn;
 
-    Loger logger;
+    Logger logger;
 
     void onButtonClicked();
 

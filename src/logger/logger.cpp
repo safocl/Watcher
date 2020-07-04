@@ -11,14 +11,14 @@
 #include <stdexcept>
 #include "nlohmann/json.hpp"
 
-Loger::Loger() :
+Logger::Logger() :
 pathToLogFile(
 core::configure::Configure::getParams().at( "pathToLogFile" ) ) {
     if ( !( pathToLogFile.is_absolute() &&
             pathToLogFile.has_filename() ) )
         throw std::runtime_error( "Path do not have file" );
 }
-void Loger::log( const Glib::ustring str ) {
+void Logger::log( const Glib::ustring str ) {
     auto t = std::chrono::system_clock::to_time_t(
     std::chrono::system_clock::now() );
 
