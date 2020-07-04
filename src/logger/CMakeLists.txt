@@ -4,6 +4,6 @@ set( CMAKE_CXX_STANDARD 17 )
 file( GLOB cpps 
         *.cpp )
 
-add_library( loger OBJECT ${cpps} )
+add_library( logger OBJECT ${cpps} )
 
-target_link_libraries(loger PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(logger PRIVATE nlohmann_json::nlohmann_json)

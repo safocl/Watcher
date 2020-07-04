@@ -11,7 +11,7 @@ include_directories(
 
 file( GLOB_RECURSE objFiles ./ *.o)
 add_executable( ${PROJECT_NAME} main.cpp ${objFiles})
-set(wlibs timer loger aclock mainWindow configure)
+set(wlibs timer logger aclock mainWindow configure)
 
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
@@ -23,7 +23,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${wlibs})
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 add_subdirectory( timer )
-add_subdirectory( loger )
+add_subdirectory( logger )
 add_subdirectory( aclock )
 add_subdirectory( ui )
 add_subdirectory( configure )
