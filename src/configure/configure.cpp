@@ -36,7 +36,7 @@ void Configure::fillDefaultParams() {
     pathToConfig = std::getenv( "APPDATA" );
 #endif
 
-    pathToConfig /= "/watcher/config.json";
+    pathToConfig /= "watcher/config.json";
 
     defaultParams[ "pathToLogFile" ] =
     pathToConfig.parent_path().generic_string() + "/log.txt";
