@@ -1,9 +1,9 @@
 # Watcher is the alarm clock + timer + logger
 
-##Dependies:
+### Dependies:
 gtkmm3 -- to make and linkage (headers and libs).
 
-##Build
+### Build
 on GNU/Linux:
 
 after cloning this repository, you should do `git submodule update --init`.
