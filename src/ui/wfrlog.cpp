@@ -18,10 +18,11 @@ WFrLog::WFrLog() : btnAdd( " +++ " ), grid(), entityNodeArr() {
 
     entityNodeArr.push_back( makeNode() );
     auto enodeIt = std::prev( entityNodeArr.end() );
+    auto [logEntity, closeBtn]= *enodeIt;
 
-    grid.attach( *enodeIt->first, 1, 1 );
+    grid.attach( *logEntity, 1, 1 );
     grid.attach_next_to(
-    *enodeIt->second, *enodeIt->first, Gtk::POS_RIGHT, 1, 1 );
+    *closeBtn, *logEntity, Gtk::POS_RIGHT, 1, 1 );
     grid.attach( btnAdd, 1, 2, 2, 1 );
 
     btnAdd.set_halign( Gtk::ALIGN_CENTER );
@@ -29,9 +30,9 @@ WFrLog::WFrLog() : btnAdd( " +++ " ), grid(), entityNodeArr() {
     //btnAdd.set_margin_right( 15 );
     //btnAdd.set_margin_left( 15 );
 
-    enodeIt->second->set_margin_bottom( 15 );
-    enodeIt->second->set_margin_right( 15 );
-    enodeIt->second->set_margin_left( 15 );
+    closeBtn->set_margin_bottom( 15 );
+    closeBtn->set_margin_right( 15 );
+    closeBtn->set_margin_left( 15 );
 
     add( grid );
     show_all();
@@ -39,10 +40,10 @@ WFrLog::WFrLog() : btnAdd( " +++ " ), grid(), entityNodeArr() {
     btnAdd.signal_clicked().connect(
     sigc::mem_fun( *this, &WFrLog::onBtnClicked ) );
 
-    enodeIt->second->signal_clicked().connect( sigc::bind(
+    closeBtn->signal_clicked().connect( sigc::bind(
     sigc::mem_fun( *this, &WFrLog::onCloseClicked ), enodeIt ) );
 }
-WFrLog::~WFrLog() {}
+WFrLog::~WFrLog() = default;
 Glib::ustring WFrLog::getName() const { return Label; }
 
 void WFrLog::onBtnClicked() {
@@ -51,20 +52,21 @@ void WFrLog::onBtnClicked() {
     entityNodeArr.push_back( makeNode() );
 
     auto enodeIt = std::prev( entityNodeArr.end() );
+    auto [logEntity, closeBtn]= *enodeIt;
 
     grid.attach_next_to(
-    *enodeIt->first, *std::prev( enodeIt )->first, Gtk::POS_BOTTOM );
+    *logEntity, *std::prev( enodeIt )->first, Gtk::POS_BOTTOM );
 
     grid.attach_next_to(
-    *enodeIt->second, *enodeIt->first, Gtk::POS_RIGHT, 1, 1 );
+    *closeBtn, *logEntity, Gtk::POS_RIGHT, 1, 1 );
 
-    enodeIt->second->set_margin_bottom( 15 );
-    enodeIt->second->set_margin_right( 15 );
-    enodeIt->second->set_margin_left( 15 );
+    closeBtn->set_margin_bottom( 15 );
+    closeBtn->set_margin_right( 15 );
+    closeBtn->set_margin_left( 15 );
 
     grid.show_all_children();
 
-    enodeIt->second->signal_clicked().connect( sigc::bind(
+    closeBtn->signal_clicked().connect( sigc::bind(
     sigc::mem_fun( *this, &WFrLog::onCloseClicked ), enodeIt ) );
 }
 

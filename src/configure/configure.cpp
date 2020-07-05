@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <istream>
 #include "nlohmann/json.hpp"
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -13,9 +14,7 @@
 
 namespace core::configure {
 
-std::filesystem::path Configure::pathToConfig {
-
-};
+std::filesystem::path Configure::pathToConfig {};
 
 Configure::Parametres Configure::params {};
 
@@ -42,37 +41,42 @@ void Configure::fillDefaultParams() {
     pathToConfig.parent_path().generic_string() + "/log.txt";
 }
 
+void Configure::fillParams( const Configure::Parametres & params_ ) {
+    if ( !params_[ "pathToLogFile" ].empty() &&
+         params_[ "pathToLogFile" ].is_string() &&
+         params_[ "pathToLogFile" ] != "" &&
+         std::filesystem::is_regular_file(
+         std::filesystem::path { params_[ "pathToLogFile" ] } ) )
+        params[ "pathToLogFile" ] = params_.at( "pathToLogFile" );
+    else {
+        std::cout << "Not valid pathToLogFile in config file"
+                  << std::endl
+                  << "load default pathToLogFile" << std::endl;
+    }
+}
+
 void Configure::loadFromConfigFile() {
     fillDefaultParams();
+
+    params.clear();
+    params = defaultParams;
 
     if ( !std::filesystem::exists( pathToConfig ) ) {
         std::filesystem::create_directories(
         pathToConfig.parent_path() );
 
-        params.clear();
-
         std::ofstream configFile { pathToConfig };
         configFile << std::setw( 4 ) << defaultParams << std::endl;
         configFile.close();
 
-        params = defaultParams;
+        lastChangeConfig = std::chrono::system_clock::now();
     } else {
-        std::ifstream  configFile { pathToConfig };
-        nlohmann::json tmpJConfig;
+        std::ifstream configFile { pathToConfig };
+        auto tmpJConfig = std::make_unique< nlohmann::json >();
 
-        operator>>( configFile, tmpJConfig );
+        operator>>( configFile, *tmpJConfig );
 
-        if ( tmpJConfig.at( "pathToLogFile" ) != "" &&
-             std::filesystem::is_regular_file( std::filesystem::path {
-             tmpJConfig.at( "pathToLogFile" ) } ) )
-            params = tmpJConfig;
-        else {
-            params[ "pathToLogFile" ] =
-            defaultParams.at( "pathToLogFile" );
-            std::cout << "Not valid pathToLogFile in config file"
-                      << std::endl
-                      << "load default pathToLogFile" << std::endl;
-        }
+        fillParams( *tmpJConfig );
 
         configFile.close();
     }
@@ -82,4 +86,11 @@ void Configure::loadFromConfigFile() {
 
 Configure::Parametres Configure::getParams() { return params; }
 
+void Configure::saveToConfigFile( const Parametres & params_ ) {
+    std::ofstream configFile { pathToConfig };
+    configFile << std::setw( 4 ) << params_ << std::endl;
+    configFile.close();
+
+    lastChangeConfig = std::chrono::system_clock::now();
+}
 }   // namespace core::configure

@@ -19,6 +19,7 @@ private:
     static std::chrono::system_clock::time_point lastChangeConfig;
     static std::filesystem::path                 pathToConfig;
 
+    static void fillParams( const Parametres & params );
     static void fillDefaultParams();
 
 public:
