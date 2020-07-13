@@ -6,6 +6,7 @@ link_directories(dllsDir)
 
 
 include_directories(
+${mingwDir}/include
 ${mingwDir}/include/gtkmm-3.0 
 ${mingwDir}/lib/gtkmm-3.0/include 
 ${mingwDir}/include/atkmm-1.6 
