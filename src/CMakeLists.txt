@@ -9,8 +9,8 @@ include_directories(
     ${GTKMM_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 
 
-file( GLOB_RECURSE objFiles ./ *.o)
-add_executable( ${PROJECT_NAME} main.cpp ${objFiles})
+#file( GLOB_RECURSE objFiles ./ *.o)
+add_executable( ${PROJECT_NAME} main.cpp )
 set(wlibs timer logger aclock mainWindow configure)
 
 find_package(Threads)
@@ -28,3 +28,4 @@ add_subdirectory( aclock )
 add_subdirectory( ui )
 add_subdirectory( configure )
 
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)

@@ -1,0 +1,14 @@
+prefix=/usr/x86_64-w64-mingw32
+exec_prefix=/usr/x86_64-w64-mingw32
+libdir=/usr/x86_64-w64-mingw32/lib
+includedir=/usr/x86_64-w64-mingw32/include
+
+Name: FreeType 2
+URL: https://freetype.org
+Description: A free, high-quality, and portable font engine.
+Version: 23.1.17
+Requires:
+Requires.private: bzip2
+Libs: -L${libdir} -lfreetype
+Libs.private: 
+Cflags: -I${includedir}/freetype2

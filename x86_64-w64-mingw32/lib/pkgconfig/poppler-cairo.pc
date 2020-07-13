@@ -1,0 +1,8 @@
+prefix=/usr/x86_64-w64-mingw32
+libdir=/usr/x86_64-w64-mingw32/lib
+includedir=/usr/x86_64-w64-mingw32/include
+
+Name: poppler-cairo
+Description: Cairo backend for Poppler PDF rendering library
+Version: 0.90.0
+Requires: poppler = 0.90.0 cairo >= 1.10.0

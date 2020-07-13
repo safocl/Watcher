@@ -1,0 +1,11 @@
+prefix=/usr/x86_64-w64-mingw32
+exec_prefix=${prefix}
+libdir=/usr/x86_64-w64-mingw32/lib
+includedir=/usr/x86_64-w64-mingw32/include
+
+Name: expat
+Version: 2.2.7
+Description: expat XML parser
+URL: http://www.libexpat.org
+Libs: -L${libdir} -lexpat
+Cflags: -I${includedir}

@@ -1,0 +1,11 @@
+prefix=/usr/x86_64-w64-mingw32
+exec_prefix=${prefix}
+libdir=/usr/x86_64-w64-mingw32/lib
+includedir=/usr/x86_64-w64-mingw32/include
+
+Name: libthai
+Description: Thai support library
+Version: 0.1.28
+Requires.private: datrie-0.2
+Libs: -L${libdir} -lthai
+Cflags: -I${includedir}

@@ -1,0 +1,10 @@
+prefix=/usr/x86_64-w64-mingw32
+exec_prefix=${prefix}
+libdir=/usr/x86_64-w64-mingw32/lib
+includedir=/usr/x86_64-w64-mingw32/include
+
+Name: datrie
+Description: Double-array trie library
+Version: 0.2.12
+Libs: -L${libdir} -ldatrie
+Cflags: -I${includedir}

@@ -1,0 +1,16 @@
+prefix=/usr/x86_64-w64-mingw32
+exec_prefix=${prefix}
+libdir=/usr/x86_64-w64-mingw32/lib
+includedir=/usr/x86_64-w64-mingw32/include
+
+epoxy_has_glx=0
+epoxy_has_egl=0
+epoxy_has_wgl=1
+
+Name: epoxy
+Description: epoxy GL dispatch Library
+Version: 1.5.4
+Cflags: -I${includedir}
+Libs: -L${libdir} -lepoxy
+Libs.private: 
+Requires.private: 
