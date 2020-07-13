@@ -6,7 +6,8 @@ project( Watcher LANGUAGES CXX )
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-Wall -Wextra -pedantic -Werror -g)
+add_compile_options(-Wall -Wextra -Werror -g)
+#add_compile_options(-Wall -Wextra -pedantic -Werror -g)
 
 message("Build system is ${CMAKE_SYSTEM_NAME}")
 
