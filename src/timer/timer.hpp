@@ -19,8 +19,6 @@ class Timer {
     std::atomic_bool closeThreadFlag { false };
 
 public:
-    Timer();
-    ~Timer();
     void start( const std::chrono::seconds & timerDuration,
                 core::ui::TimerEntity & );
     void stop();

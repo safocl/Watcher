@@ -6,9 +6,6 @@
 #include <mutex>
 #include <thread>
 
-Timer::Timer() {}
-Timer::~Timer() {}
-
 void Timer::start( const std::chrono::seconds & timerDuration,
                    core::ui::TimerEntity &      obj ) {
     closeThreadFlag = false;

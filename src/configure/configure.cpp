@@ -9,6 +9,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <iostream>
 
@@ -42,11 +43,14 @@ void Configure::fillDefaultParams() {
 }
 
 void Configure::fillParams( const Configure::Parametres & params_ ) {
+    std::string_view strPathToLogFile {
+        params_[ "pathToLogFile" ].get< std::string >()
+    };
+    std::filesystem::path pathToLogFileTmp { strPathToLogFile };
     if ( !params_[ "pathToLogFile" ].empty() &&
          params_[ "pathToLogFile" ].is_string() &&
          params_[ "pathToLogFile" ] != "" &&
-         std::filesystem::is_regular_file(
-         std::filesystem::path { params_[ "pathToLogFile" ] } ) )
+         std::filesystem::is_regular_file( pathToLogFileTmp ) )
         params[ "pathToLogFile" ] = params_.at( "pathToLogFile" );
     else {
         std::cout << "Not valid pathToLogFile in config file"

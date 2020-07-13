@@ -9,11 +9,12 @@
 #include <iomanip>
 #include <chrono>
 #include <stdexcept>
+#include <string_view>
 #include "nlohmann/json.hpp"
 
 Logger::Logger() :
 pathToLogFile(
-core::configure::Configure::getParams().at( "pathToLogFile" ) ) {
+core::configure::Configure::getParams().at( "pathToLogFile" ).get<std::string_view>() ) {
     if ( !( pathToLogFile.is_absolute() &&
             pathToLogFile.has_filename() ) )
         throw std::runtime_error( "Path do not have file" );

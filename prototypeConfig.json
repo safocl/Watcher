@@ -1,0 +1,15 @@
+{
+
+    "pathToLogFile": "",
+    "logEntity": [ 
+        { "text": "" }
+    ],
+    "timerEntity": [
+        { "hour": 0, "min": 0, "sec": 0 }
+    ],
+    "aclockEntity": [
+        { "hour": 0, "min": 0, "sec": 0 }
+    ]
+
+
+}
