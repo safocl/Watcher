@@ -43,6 +43,15 @@ ${mingwDir}/include/gdkmm-3.0
 ${mingwDir}/lib/gdkmm-3.0/include)
 
 set(GTKMM_LIBRARIES
+gdi32
+imm32
+shell32
+ole32
+winmm
+dwmapi
+setupapi
+cfgmgr32
+intl
 gtkmm-3.0 
 atkmm-1.6 
 gdkmm-3.0 
