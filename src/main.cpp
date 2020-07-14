@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <cstdlib>
+#include "gtkmm/settings.h"
 #include "gtkmm/object.h"
 #include <gtkmm/application.h>
 #include <gtkmm/window.h>

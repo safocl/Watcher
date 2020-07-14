@@ -11,6 +11,8 @@ add_compile_options(-Wall -Wextra -Werror -g)
 
 message("Build system is ${CMAKE_SYSTEM_NAME}")
 
+set(CMAKE_INSTALL_PREFIX "" )
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig)
     pkg_search_module( GTKMM REQUIRED gtkmm-3.0 )

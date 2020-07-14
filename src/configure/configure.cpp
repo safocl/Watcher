@@ -44,7 +44,7 @@ void Configure::fillDefaultParams() {
 
 void Configure::fillParams( const Configure::Parametres & params_ ) {
     std::string_view strPathToLogFile {
-        params_[ "pathToLogFile" ].get< std::string >()
+        params_[ "pathToLogFile" ].get< std::string_view >()
     };
     std::filesystem::path pathToLogFileTmp { strPathToLogFile };
     if ( !params_[ "pathToLogFile" ].empty() &&

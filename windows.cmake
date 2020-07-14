@@ -2,11 +2,12 @@
 set(mingwDir "${CMAKE_SOURCE_DIR}/x86_64-w64-mingw32")
 set(dllsDir "${mingwDir}/bin")
 message("set dlls dir to ${dllsDir}")
-link_directories(dllsDir)
+link_directories(${dllsDir})
 
 
 include_directories(
 ${mingwDir}/include
+${mingwDir}/include/c++/10.1.0
 ${mingwDir}/include/gtkmm-3.0 
 ${mingwDir}/lib/gtkmm-3.0/include 
 ${mingwDir}/include/atkmm-1.6 
@@ -64,9 +65,10 @@ gdk_pixbuf-2.0
 gobject-2.0 
 glib-2.0 )
 
-set(CMAKE_INSTALL_PREFIX "" )
 
 file(GLOB dllFiles
     ${dllsDir}/* )
 
 install(FILES ${dllFiles} DESTINATION bin)
+
+install(DIRECTORY ${mingwDir}/share/icons/Adwaita DESTINATION bin)
