@@ -1,12 +1,11 @@
 #include <iostream>
-#include <chrono>
-#include <cstdlib>
-#include "gtkmm/settings.h"
-#include "gtkmm/object.h"
 #include <gtkmm/application.h>
-#include <gtkmm/window.h>
 #include "ui/mainform.hpp"
 #include "configure/configure.hpp"
+#include <memory>
+#include <stdexcept>
+#include "sdlplayer/sdlplayer.hpp"
+
 
 int main( int argc, char * argv[] ) {
     core::configure::Configure::loadFromConfigFile();

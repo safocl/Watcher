@@ -11,22 +11,31 @@ include_directories(
 
 #file( GLOB_RECURSE objFiles ./ *.o)
 add_executable( ${PROJECT_NAME} main.cpp )
-set(wlibs timer logger aclock mainWindow configure)
 
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
+#find_package(SDL2)
+#target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 
-add_dependencies(${PROJECT_NAME} ${wlibs})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
+
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${wlibs})
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE timer)
+target_link_libraries(${PROJECT_NAME} PRIVATE logger)
+target_link_libraries(${PROJECT_NAME} PRIVATE aclock)
+target_link_libraries(${PROJECT_NAME} PRIVATE mainWindow)
+target_link_libraries(${PROJECT_NAME} PRIVATE configure)
+#target_link_libraries(${PROJECT_NAME} PRIVATE opusdecoder)
 
 add_subdirectory( timer )
 add_subdirectory( logger )
 add_subdirectory( aclock )
 add_subdirectory( ui )
 add_subdirectory( configure )
+#add_subdirectory( opusdecoder )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     install(TARGETS ${PROJECT_NAME} DESTINATION ./)

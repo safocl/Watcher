@@ -16,6 +16,7 @@ set(CMAKE_INSTALL_PREFIX "" )
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig)
     pkg_search_module( GTKMM REQUIRED gtkmm-3.0 )
+    pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
