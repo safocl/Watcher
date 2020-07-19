@@ -15,8 +15,8 @@ add_executable( ${PROJECT_NAME} main.cpp )
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-#find_package(SDL2)
-#target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
+find_package(SDL2)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
 
@@ -28,14 +28,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 target_link_libraries(${PROJECT_NAME} PRIVATE aclock)
 target_link_libraries(${PROJECT_NAME} PRIVATE mainWindow)
 target_link_libraries(${PROJECT_NAME} PRIVATE configure)
-#target_link_libraries(${PROJECT_NAME} PRIVATE opusdecoder)
+target_link_libraries(${PROJECT_NAME} PRIVATE opusdecoder)
 
 add_subdirectory( timer )
 add_subdirectory( logger )
 add_subdirectory( aclock )
 add_subdirectory( ui )
 add_subdirectory( configure )
-#add_subdirectory( opusdecoder )
+add_subdirectory( opusdecoder )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     install(TARGETS ${PROJECT_NAME} DESTINATION ./)
