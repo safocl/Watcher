@@ -64,6 +64,7 @@ WOpusDecoder::decode( std::filesystem::path fileName ) {
 
     } while ( numReadSamles > 0 );
 
+    op_free(opusFile);
     if ( numReadSamles < 0 )
         throw OpusException( numReadSamles );
 
