@@ -4,7 +4,6 @@
 #include "configure/configure.hpp"
 #include <memory>
 #include <stdexcept>
-#include "sdlplayer/sdlplayer.hpp"
 
 
 int main( int argc, char * argv[] ) {
