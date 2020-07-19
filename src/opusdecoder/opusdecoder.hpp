@@ -1,4 +1,6 @@
+#include <cstdint>
 #include <exception>
+#include <filesystem>
 #include <istream>
 #include <memory>
 #include <opus/opus_defines.h>
@@ -53,7 +55,8 @@ public:
 
     WOpusDecoder();
     ~WOpusDecoder();
-    [[nodiscard]] std::vector< opus_int16 >  decode( std::string_view fileName );
+    [[nodiscard]] std::vector< opus_int16 >
+    decode( std::filesystem::path fileName );
 };
 
 }   // namespace core::opusdecoder
