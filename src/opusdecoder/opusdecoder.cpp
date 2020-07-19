@@ -1,9 +1,13 @@
+#include <cstdint>
+#include <filesystem>
+#include <iostream>
 #include <opus/opusfile.h>
 #include "opusdecoder.hpp"
 #include <cstddef>
 #include <memory>
 #include <opus/opus.h>
 #include <opus/opus_types.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -36,23 +40,27 @@ WOpusDecoder::WOpusDecoder()  = default;
 WOpusDecoder::~WOpusDecoder() = default;
 
 std::vector< opus_int16 >
-WOpusDecoder::decode( std::string_view fileName ) {
+WOpusDecoder::decode( std::filesystem::path fileName ) {
+    if ( !std::filesystem::exists( fileName ) )
+        throw std::runtime_error( "file not exist" );
+
     int  err { 0 };
-    auto opusFile = op_open_file( fileName.data(), &err );
+    auto opusFile = op_open_file( fileName.c_str(), &err );
 
     if ( err < 0 )
         throw OpusException( err );
 
-    std::vector< opus_int16 > outBuffer {};
-    outBuffer.reserve( bufferSize );
-    int numReadSamles { 1 };
+    std::array< opus_int16, bufferSize > outBuffer {};
+    int                                  numReadSamles { 1 };
 
     do {
         numReadSamles =
         op_read( opusFile, outBuffer.data(), bufferSize, nullptr );
 
-        outWave.insert(
-        outWave.end(), outBuffer.begin(), outBuffer.end() );
+        std::cout << numReadSamles << std::endl;
+        auto endDataIt = outBuffer.begin();
+        endDataIt += numReadSamles;
+        outWave.insert( outWave.end(), outBuffer.begin(), endDataIt );
 
     } while ( numReadSamles > 0 );
 
