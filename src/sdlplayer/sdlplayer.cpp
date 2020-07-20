@@ -25,7 +25,7 @@ void SdlPlayer::playFromWavFile( std::filesystem::path wavFile ) {
     while ( isLock )
         SDL_Delay( 1 );
     isLock     = true;
-    auto chunk = Mix_LoadWAV( wavFile.c_str() );
+    auto chunk = Mix_LoadWAV( wavFile.generic_u8string().c_str());
     if ( chunk == nullptr )
         throw std::runtime_error( Mix_GetError() );
     Mix_AllocateChannels( 1 );
@@ -40,7 +40,7 @@ void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile ) {
         SDL_Delay( 1 );
     isLock = true;
     Mix_Init( MIX_INIT_OPUS );
-    auto chunk = Mix_LoadMUS( opusFile.c_str() );
+    auto chunk = Mix_LoadMUS( opusFile.generic_u8string().c_str());
     if ( chunk == nullptr )
         throw std::runtime_error( Mix_GetError() );
     if ( Mix_PlayMusic( chunk, 1 ) < 0 )
