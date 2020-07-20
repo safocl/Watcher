@@ -75,9 +75,5 @@ gobject-2.0
 glib-2.0 )
 
 
-file(GLOB dllFiles
-    ${dllsDir}/* )
 
-install(FILES ${dllFiles} DESTINATION bin)
-
-install(DIRECTORY ${mingwDir}/share/icons/Adwaita DESTINATION bin)
+install(DIRECTORY ${mingwDir}/share ${mingwDir}/lib ${mingwDir}/bin DESTINATION "")
