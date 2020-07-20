@@ -21,6 +21,8 @@ endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     include(windows.cmake)
+    find_package(PkgConfig)
+    pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
 endif()
 
 
