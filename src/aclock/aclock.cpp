@@ -8,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include "ui/clockentity.hpp"
+#include "sdlplayer/sdlplayer.hpp"
 
 void Aclock::on( const int               hour,
                  const int               minute,
@@ -43,6 +44,10 @@ void Aclock::on( const int               hour,
 
             std::cout << "Alarm clock the ringing into: "
                       << timeOutput << std::endl;
+            auto player =
+            std::make_unique< core::sdlplayer::SdlPlayer >();
+            player->playFromOpusFile(
+            std::filesystem::path { "alarm.opus" } );
         },
         std::ref( obj ),
         std::ref( offFlag_ )
