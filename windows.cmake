@@ -7,6 +7,7 @@ link_directories(${dllsDir})
 
 include_directories(
 ${mingwDir}/include
+${mingwDir}/include/SDL2
 ${mingwDir}/include/c++/10.1.0
 ${mingwDir}/include/gtkmm-3.0 
 ${mingwDir}/lib/gtkmm-3.0/include 
