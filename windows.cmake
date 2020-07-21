@@ -1,6 +1,6 @@
 
 set(mingwDir "${CMAKE_SOURCE_DIR}/x86_64-w64-mingw32")
-set(dllsDir "${mingwDir}/bin")
+set(dllsDir "${mingwDir}/lib")
 link_directories(${dllsDir})
 
 include_directories(
