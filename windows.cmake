@@ -43,6 +43,7 @@ ${mingwDir}/include/gtk-3.0/unix-print
 ${mingwDir}/include/gdkmm-3.0 
 ${mingwDir}/lib/gdkmm-3.0/include)
 
+set(GTKMM_LIBRARIES SDL2 SDL2_mixer)
 set(GTKMM_LIBRARIES
 gdi32
 imm32
