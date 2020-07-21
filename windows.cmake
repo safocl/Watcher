@@ -76,4 +76,4 @@ glib-2.0 )
 
 
 
-install(DIRECTORY ${mingwDir}/share ${mingwDir}/lib ${mingwDir}/bin DESTINATION "")
+install(DIRECTORY ${mingwDir}/share ${mingwDir}/lib ${mingwDir}/bin DESTINATION "Watcher")
