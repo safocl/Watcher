@@ -1,9 +1,7 @@
 
 set(mingwDir "${CMAKE_SOURCE_DIR}/x86_64-w64-mingw32")
 set(dllsDir "${mingwDir}/bin")
-message("set dlls dir to ${dllsDir}")
 link_directories(${dllsDir})
-
 
 include_directories(
 ${mingwDir}/include
@@ -53,28 +51,28 @@ winmm
 dwmapi
 setupapi
 cfgmgr32
-intl
-gtkmm-3.0 
-atkmm-1.6 
-gdkmm-3.0 
-giomm-2.4 
-pangomm-1.4 
-glibmm-2.4 
-gtk-3 
-gdk-3 
-z 
-pangocairo-1.0 
-pango-1.0 
-harfbuzz 
-atk-1.0 
-cairo-gobject 
-gio-2.0 
-cairomm-1.0 
-cairo 
-sigc-2.0 
-gdk_pixbuf-2.0 
-gobject-2.0 
-glib-2.0 )
+          intl.dll.a
+     gtkmm-3.0.dll.a 
+     atkmm-1.6.dll.a 
+     gdkmm-3.0.dll.a 
+     giomm-2.4.dll.a 
+   pangomm-1.4.dll.a 
+    glibmm-2.4.dll.a 
+         gtk-3.dll.a 
+         gdk-3.dll.a 
+             z.dll.a 
+pangocairo-1.0.dll.a 
+     pango-1.0.dll.a 
+      harfbuzz.dll.a 
+       atk-1.0.dll.a 
+ cairo-gobject.dll.a 
+       gio-2.0.dll.a 
+   cairomm-1.0.dll.a 
+         cairo.dll.a 
+      sigc-2.0.dll.a 
+gdk_pixbuf-2.0.dll.a 
+   gobject-2.0.dll.a 
+      glib-2.0.dll.a )
 
 
 install(DIRECTORY ${mingwDir}/share ${mingwDir}/lib ${mingwDir}/bin DESTINATION "Watcher")
