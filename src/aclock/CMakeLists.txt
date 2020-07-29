@@ -5,3 +5,4 @@ file( GLOB cpps
         *.cpp )
 
 add_library( aclock OBJECT ${cpps} )
+target_link_libraries(aclock PUBLIC configure)

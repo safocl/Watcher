@@ -1,4 +1,5 @@
 #include "sdlplayer.hpp"
+#include <SDL2/SDL_mixer.h>
 
 namespace core::sdlplayer {
 
@@ -28,7 +29,6 @@ void SdlPlayer::playFromWavFile( std::filesystem::path wavFile ) {
     auto chunk = Mix_LoadWAV( wavFile.generic_u8string().c_str());
     if ( chunk == nullptr )
         throw std::runtime_error( Mix_GetError() );
-    Mix_AllocateChannels( 1 );
     if ( Mix_PlayChannel( -1, chunk, 0 ) < 0 )
         throw std::runtime_error( Mix_GetError() );
     SDL_Delay( 5000 );
@@ -43,6 +43,7 @@ void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile ) {
     auto chunk = Mix_LoadMUS( opusFile.generic_u8string().c_str());
     if ( chunk == nullptr )
         throw std::runtime_error( Mix_GetError() );
+    Mix_VolumeMusic(MIX_MAX_VOLUME/3);
     if ( Mix_PlayMusic( chunk, 1 ) < 0 )
         throw std::runtime_error( Mix_GetError() );
     SDL_Delay( 5000 );

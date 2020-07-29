@@ -12,11 +12,11 @@
 #include <string_view>
 #include "nlohmann/json.hpp"
 
-Logger::Logger() :
-pathToLogFile(
-core::configure::Configure::getParams().at( "pathToLogFile" ).get<std::string_view>() ) {
-    if ( !( pathToLogFile.is_absolute() &&
-            pathToLogFile.has_filename() ) )
+Logger::Logger() : pathToLogFile() {
+    auto conf = core::configure::Configure::init();
+    pathToLogFile =
+    conf->getParams().at( "pathToLogFile" ).get< std::string_view >();
+    if ( !pathToLogFile.has_filename() )
         throw std::runtime_error( "Path do not have file" );
 }
 void Logger::log( const Glib::ustring str ) {

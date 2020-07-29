@@ -1,19 +1,21 @@
 #include "clockentity.hpp"
+#include "configure/configure.hpp"
 #include "glibmm/dispatcher.h"
 #include "gtkmm/enums.h"
 #include "gtkmm/label.h"
 #include "gtkmm/object.h"
+#include "gtkmm/orientable.h"
 #include "sigc++/functors/mem_fun.h"
 #include "timer/timer.hpp"
 #include <chrono>
+#include <filesystem>
+#include <iostream>
+#include <string>
+#include <gtkmm/cssprovider.h>
 
 namespace core::ui {
 
-ClockEntity::ClockEntity() :
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
-dispatcher_(), aclock_(), swBlock( false ) {
+void    ClockEntity::init(){
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -26,13 +28,58 @@ dispatcher_(), aclock_(), swBlock( false ) {
     spSeconds.set_numeric();
     spSeconds.set_wrap();
 
+    //gtk_orientable_set_orientation(reinterpret_cast<GtkOrientable*>(spHours.gobj()), GTK_ORIENTATION_VERTICAL);
+    reinterpret_cast< Gtk::Orientable * >( &spHours )
+    ->set_orientation( Gtk::ORIENTATION_VERTICAL );
+    reinterpret_cast< Gtk::Orientable * >( &spMinutes )
+    ->set_orientation( Gtk::ORIENTATION_VERTICAL );
+    reinterpret_cast< Gtk::Orientable * >( &spSeconds )
+    ->set_orientation( Gtk::ORIENTATION_VERTICAL );
+
     Gtk::Label * delimiter1 =
     Gtk::make_managed< Gtk::Label >( delimiterString );
     Gtk::Label * delimiter2 =
     Gtk::make_managed< Gtk::Label >( delimiterString );
 
-    sw.set_margin_left( 15 );
-    sw.set_margin_right( 15 );
+    auto                  conf = core::configure::Configure::init();
+    std::filesystem::path cssPath {
+        conf->getParams().at( "pathToTheme" ).get< std::string >()
+    };
+    if ( std::filesystem::exists( cssPath ) ) {
+        auto cssProvider = Gtk::CssProvider::create();
+        cssProvider->load_from_path( cssPath.generic_string() );
+        auto swContext = sw.get_style_context();
+        swContext->add_provider( cssProvider,
+                                 GTK_STYLE_PROVIDER_PRIORITY_USER );
+        auto hourContext    = spHours.get_style_context();
+        auto minutesContext = spMinutes.get_style_context();
+        auto secondsContext = spSeconds.get_style_context();
+
+        hourContext->add_provider( cssProvider,
+                                   GTK_STYLE_PROVIDER_PRIORITY_USER );
+        minutesContext->add_provider(
+        cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
+        secondsContext->add_provider(
+        cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
+    } else
+        std::cout << "css file not found" << std::endl;
+
+    sw.set_valign( Gtk::ALIGN_CENTER );
+    sw.set_halign( Gtk::ALIGN_CENTER );
+
+    spHours.set_valign( Gtk::ALIGN_CENTER );
+    spHours.set_halign( Gtk::ALIGN_CENTER );
+
+    spMinutes.set_valign( Gtk::ALIGN_CENTER );
+    spMinutes.set_halign( Gtk::ALIGN_CENTER );
+
+    spSeconds.set_valign( Gtk::ALIGN_CENTER );
+    spSeconds.set_halign( Gtk::ALIGN_CENTER );
+
+    //    sw.set_margin_top( 5 );
+    //    sw.set_margin_bottom( 5 );
+    //    sw.set_margin_left( 15 );
+    //    sw.set_margin_right( 15 );
 
     spHours.set_margin_left( 15 );
 
@@ -51,7 +98,30 @@ dispatcher_(), aclock_(), swBlock( false ) {
 
     dispatcher_.connect(
     sigc::mem_fun( *this, &ClockEntity::onDispatcherEmit ) );
+
 }
+
+ClockEntity::ClockEntity() :
+spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
+spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
+dispatcher_(), aclock_(), swBlock( false ) {
+    init();
+}
+
+ClockEntity::ClockEntity(int h, int m, int s) :
+spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
+spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
+dispatcher_(), aclock_(), swBlock( false ) {
+
+    spHours.set_value(h);
+    spMinutes.set_value(m);
+    spSeconds.set_value(s);
+
+    init();
+}
+
 ClockEntity::~ClockEntity() {}
 
 void ClockEntity::onSwChanged() {

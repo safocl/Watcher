@@ -1,13 +1,18 @@
+#include <filesystem>
 #include <iostream>
 #include <gtkmm/application.h>
 #include "ui/mainform.hpp"
 #include "configure/configure.hpp"
 #include <memory>
 #include <stdexcept>
+#include <streambuf>
 
-
+namespace fs = std::filesystem;
 int main( int argc, char * argv[] ) {
-    core::configure::Configure::loadFromConfigFile();
+    auto conf =
+    core::configure::Configure::init( argv[ 0 ]  );
+    conf->loadFromConfigFile();
+
     Glib::RefPtr< Gtk::Application > app =
     Gtk::Application::create( argc, argv, "org.safocl.watcher" );
 

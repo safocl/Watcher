@@ -1,0 +1,40 @@
+switch {
+  font-size: 0;
+  color: transparent;
+  outline-offset: -4px;
+  margin: 7px;
+  border: 1px solid shade(#aaaaaa, 0.5);
+  border-radius: 16px;
+  background-color: shade(#aaaaaa, 0.9); }
+  switch:checked {
+    border-color: #4ED464;
+    background-color: #4ED464; }
+    switch:checked:backdrop {
+      border-color: mix(shade(#FBFBFB, 0.7), #4ED464, 0.8);
+      background-color: mix(shade(#FBFBFB, 0.7), #4ED464, 0.8); }
+  switch:disabled {
+    border-color: mix(#000000, #FFFFFF, 0.95);
+    background-color: mix(#000000, #FFFFFF, 0.95); }
+    switch:disabled:backdrop {
+      border-color: mix(#000000, #FFFFFF, 0.98);
+      background-color: mix(#000000, #FFFFFF, 0.98); }
+  switch:backdrop {
+    border-color: shade(#FBFBFB, 0.9);
+    background-color: shade(#FBFBFB, 0.9); }
+  switch slider {
+    min-width: 20px;
+    min-height: 20px;
+    margin: 0;
+    border: none;
+    border-radius: 100%;
+    color: #000000;
+    box-shadow: 0 2px 2px 1px alpha(black, 0.09);
+    background-color: shade(#FFFFFF, 1.4); }
+  switch:disabled slider {
+    background-color: shade(mix(#000000, #FFFFFF, 0.95), 1.05); }
+  switch:disabled:backdrop slider {
+    background-color: shade(#FCFCFC, 0.975); }
+  switch:backdrop slider {
+    background-color: mix(#FBFBFB, #FFFFFF, 0.2); }
+
+

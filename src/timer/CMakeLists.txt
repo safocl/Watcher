@@ -5,3 +5,4 @@ file( GLOB cpps
         *.cpp )
 
 add_library( timer OBJECT ${cpps} )
+target_link_libraries(timer PUBLIC configure)

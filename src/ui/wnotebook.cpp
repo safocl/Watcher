@@ -7,7 +7,7 @@
 
 namespace core::ui {
 
-WNotebook::WNotebook() : frAcl(), frTm(), frLog() {
+WNotebook::WNotebook() : frAcl("Alarm clock"), frTm("Timer"), frLog("Logger") {
     prepend_page( frAcl, frAcl.getName() );
     prepend_page( frTm, frTm.getName() );
     prepend_page( frLog, frLog.getName() );

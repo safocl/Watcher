@@ -13,13 +13,7 @@
 
 namespace core::ui {
 
-TimerEntity::TimerEntity() :
-//    mutex_(),
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-delimiterString( " : " ), strStart( "Start" ), strStop( "Stop" ),
-btn( strStart ), timerPtr() {
+void TimerEntity::init(){
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -57,7 +51,33 @@ btn( strStart ), timerPtr() {
 
     dispatcher_.connect(
     sigc::mem_fun( *this, &TimerEntity::onDispatcherEmit ) );
+
 }
+
+TimerEntity::TimerEntity() :
+//    mutex_(),
+spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
+spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
+delimiterString( " : " ), strStart( "Start" ), strStop( "Stop" ),
+btn( strStart ), timerPtr() {
+    init();
+}
+
+TimerEntity::TimerEntity(int h, int m, int s) :
+//    mutex_(),
+spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
+spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
+delimiterString( " : " ), strStart( "Start" ), strStop( "Stop" ),
+btn( strStart ), timerPtr() {
+    spHours.set_value(h);
+    spMinutes.set_value(m);
+    spSeconds.set_value(s);
+
+    init();
+}
+
 TimerEntity::~TimerEntity() {}
 
 void TimerEntity::onButtonClicked() {

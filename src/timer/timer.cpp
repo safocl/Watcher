@@ -1,8 +1,10 @@
 #include "timer.hpp"
+#include "configure/configure.hpp"
 #include "ui/timerentity.hpp"
 #include <SDL2/SDL_timer.h>
 #include <atomic>
 #include <chrono>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -35,8 +37,18 @@ void Timer::start( const std::chrono::seconds & timerDuration,
             std::put_time( std::localtime( &t ), "%F %T" );
             std::cout << "Timer stoped at: " << timeOutput
                       << std::endl;
-            auto player = std::make_unique<core::sdlplayer::SdlPlayer>();
-            player->playFromOpusFile(std::filesystem::path {"alarm.opus"});
+            if ( !closeThreadFlag_ ) {
+                auto player =
+                std::make_unique< core::sdlplayer::SdlPlayer >();
+                auto conf = core::configure::Configure::init();
+                std::filesystem::path pathToSound {
+                    conf->getArgv0()
+                    .parent_path()
+                    .generic_u8string() +
+                    "/../share/alarm.opus"
+                };
+                player->playFromOpusFile( pathToSound );
+            }
         },
         doneSleepTimePoint,
         std::cref( closeThreadFlag ),

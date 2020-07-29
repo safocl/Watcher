@@ -1,9 +1,10 @@
 #include "logentity.hpp"
 #include <functional>
+#include <string_view>
 
 namespace core::ui {
 
-LogEntity::LogEntity() : entry {}, btn { btnLabel }, logger {} {
+void LogEntity::init() {
     entry.set_placeholder_text( "Write text" );
 
     entry.set_hexpand();
@@ -23,6 +24,16 @@ LogEntity::LogEntity() : entry {}, btn { btnLabel }, logger {} {
     btn.signal_clicked().connect(
     sigc::mem_fun( *this, &LogEntity::onButtonClicked ) );
 }
+
+LogEntity::LogEntity() : entry {}, btn { btnLabel }, logger {} {
+    init();
+}
+LogEntity::LogEntity( std::string_view s ) :
+entry {}, btn { btnLabel }, logger {} {
+    entry.set_text( s.data() );
+    init();
+}
+
 LogEntity::~LogEntity() {}
 
 void LogEntity::onButtonClicked() { logger.log( entry.get_text() ); }

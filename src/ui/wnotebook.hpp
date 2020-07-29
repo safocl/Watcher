@@ -1,14 +1,15 @@
 #include <gtkmm/notebook.h>
-#include "wfraclock.hpp"
-#include "wfrtm.hpp"
-#include "wfrlog.hpp"
+#include "wfr.hpp"
+#include "clockentity.hpp"
+#include "timerentity.hpp"
+#include "logentity.hpp"
 
 namespace core::ui {
 
 class WNotebook final : public Gtk::Notebook {
-    WFrAclock frAcl;
-    WFrTm     frTm;
-    WFrLog    frLog;
+    Wfr<ClockEntity> frAcl;
+    Wfr<TimerEntity>    frTm;
+    Wfr<LogEntity>    frLog;
 
 public:
     WNotebook();

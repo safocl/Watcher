@@ -1,3 +1,5 @@
+#pragma once
+
 #include "timer/timer.hpp"
 #include <thread>
 #include <vector>
@@ -23,11 +25,13 @@ class TimerEntity final : public Gtk::Grid {
 
     std::unique_ptr< Timer > timerPtr;
 
+    void init();
     void onButtonClicked();
     void onDispatcherEmit();
 
 public:
     TimerEntity();
+    TimerEntity(int hours, int minutes, int seconds);
     ~TimerEntity();
     void returnSens();
 };

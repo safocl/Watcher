@@ -1,3 +1,5 @@
+#pragma once
+
 #include "glibmm/dispatcher.h"
 #include "aclock/aclock.hpp"
 #include <atomic>
@@ -17,11 +19,13 @@ class ClockEntity final : public Gtk::Grid {
     Aclock           aclock_;
     std::atomic_bool swBlock;
 
+    void init();
     void onSwChanged();
     void onDispatcherEmit();
 
 public:
     ClockEntity();
+    ClockEntity(int hours, int minutes, int seconds);
     ~ClockEntity();
     void returnSensElements();
 };

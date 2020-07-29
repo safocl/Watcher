@@ -7,6 +7,7 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+#include "configure/configure.hpp"
 #include "ui/clockentity.hpp"
 #include "sdlplayer/sdlplayer.hpp"
 
@@ -35,19 +36,26 @@ void Aclock::on( const int               hour,
                 std::this_thread::sleep_for( Aclock::tick_ );
             }
 
-            obj.returnSensElements();
+            if ( !offFlag_ ) {
+                obj.returnSensElements();
 
-            auto t2 = std::chrono::system_clock::to_time_t(
-            std::chrono::high_resolution_clock::now() );
-            auto timeOutput =
-            std::put_time( std::localtime( &t2 ), "%F %T" );
+                auto t2 = std::chrono::system_clock::to_time_t(
+                std::chrono::high_resolution_clock::now() );
+                auto timeOutput =
+                std::put_time( std::localtime( &t2 ), "%F %T" );
 
-            std::cout << "Alarm clock the ringing into: "
-                      << timeOutput << std::endl;
-            auto player =
-            std::make_unique< core::sdlplayer::SdlPlayer >();
-            player->playFromOpusFile(
-            std::filesystem::path { "alarm.opus" } );
+                std::cout
+                << "Alarm clock the ringing into: " << timeOutput
+                << std::endl;
+                auto player =
+                std::make_unique< core::sdlplayer::SdlPlayer >();
+                auto conf = core::configure::Configure::init();
+                auto pathToSound { conf->getArgv0()
+                                   .parent_path()
+                                   .generic_u8string() +
+                                   "/../share/alarm.opus" };
+                player->playFromOpusFile( pathToSound );
+            }
         },
         std::ref( obj ),
         std::ref( offFlag_ )
