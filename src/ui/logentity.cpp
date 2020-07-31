@@ -1,5 +1,6 @@
 #include "logentity.hpp"
 #include <functional>
+#include <iostream>
 #include <string_view>
 
 namespace core::ui {
@@ -37,5 +38,9 @@ entry {}, btn { btnLabel }, logger {} {
 LogEntity::~LogEntity() {}
 
 void LogEntity::onButtonClicked() { logger.log( entry.get_text() ); }
+
+LogEntity::LoggerNJEntity LogEntity::getValues() const {
+    return LoggerNJEntity { entry.get_text().c_str() };
+}
 
 }   // namespace core::ui

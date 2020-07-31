@@ -1,24 +1,30 @@
 #pragma once
 
+#include <array>
 #include <chrono>
 #include <filesystem>
+#include <iostream>
 #include <map>
 #include "nlohmann/json.hpp"
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 namespace core::configure {
 
 class Configure final {
-    public:
-        using Parametres = nlohmann::json;
-    using LoggerNodeJson = std::vector<std::string_view>;
-    using AclockNodeJson = std::vector<std::tuple<int, int, int>>;
-    using TimerNodeJson = std::vector<std::tuple<int, int, int>>;
+public:
+    using Parametres     = nlohmann::json;
+    using LoggerNJEntity = std::string;
+    using LoggerNodeJson = std::vector< LoggerNJEntity >;
+    using AclockNJEntity = std::array< int, 3 >;
+    using AclockNodeJson = std::vector< AclockNJEntity >;
+    using TimerNJEntity  = std::array< int, 3 >;
+    using TimerNodeJson  = std::vector< TimerNJEntity >;
 
-
+private:
     struct ConfImpl {
     private:
         Parametres                            params;
@@ -32,10 +38,15 @@ class Configure final {
         void fillDefaultParams();
 
     public:
-        void       loadFromConfigFile();
-        void       saveToConfigFile( const Parametres & params );
-        Parametres getParams() const;
+        void                  loadFromConfigFile();
+        void                  saveToConfigFile();
+        Parametres            getParams() const;
         std::filesystem::path getArgv0() const;
+
+        template < class JEntity >
+        void import( JEntity el, std::string_view jEntityName ) {
+            params[ jEntityName.data() ] = el;
+        }
 
         ConfImpl( std::filesystem::path argv0 );
     };
@@ -45,9 +56,8 @@ private:
 
 public:
     static std::shared_ptr< ConfImpl >
-    init( std::filesystem::path argv0 );
-    static std::shared_ptr< ConfImpl >
-    init(  );
+                                       init( std::filesystem::path argv0 );
+    static std::shared_ptr< ConfImpl > init();
 };
 
 }   // namespace core::configure

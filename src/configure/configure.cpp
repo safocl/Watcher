@@ -49,6 +49,7 @@ std::shared_ptr< Configure::ConfImpl >
 Configure::init( std::filesystem::path argv0 ) {
     if ( !confImpl ) {
         confImpl = std::make_shared< ConfImpl >( argv0 );
+        confImpl->loadFromConfigFile();
         return confImpl;
     } else
         return confImpl;
@@ -64,12 +65,12 @@ void Configure::ConfImpl::fillDefaultParams() {
     defaultParams[ "pathToTheme" ] =
     pathToConfig.parent_path().generic_string() + "/theme.css";
 
-    LoggerNodeJson lnj{{""}};
-    defaultParams["logEntity"] = lnj;
-    AclockNodeJson anj{{9,9,9}};
-    defaultParams["aclockEntity"] = anj;
-    TimerNodeJson tnj{{8,8,8}};
-    defaultParams["timerEntity"] = tnj;
+    LoggerNodeJson lnj { { "uppu" } };
+    defaultParams[ "logEntity" ] = lnj;
+    AclockNodeJson anj { { 9, 10, 12 } };
+    defaultParams[ "aclockEntity" ] = anj;
+    TimerNodeJson tnj { { 8, 8, 8 } };
+    defaultParams[ "timerEntity" ] = tnj;
 }
 
 void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
@@ -90,9 +91,7 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
                       << "load default pathToLogFile" << std::endl;
         }
     } catch ( const std::exception & err ) {
-        std::cout << "Not valid pathToLogFile in config file"
-                  << std::endl
-                  << "load default pathToLogFile" << std::endl;
+        std::cout << err.what() << std::endl;
     }
 
     try {
@@ -109,10 +108,26 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
         }
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
-        std::cout << "Not valid pathToTheme in config file"
-                  << std::endl
-                  << "load default pathToTheme" << std::endl;
     }
+
+    try {
+        params[ "aclockEntity" ] = params_.at( "aclockEntity" );
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
+
+    try {
+        params[ "timerEntity" ] = params_.at( "timerEntity" );
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
+
+    try {
+        params[ "logEntity" ] = params_.at( "logEntity" );
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
+
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
@@ -142,15 +157,13 @@ void Configure::ConfImpl::loadFromConfigFile() {
     lastLoadConfig = std::chrono::system_clock::now();
 }
 
-Configure::Parametres
-Configure::ConfImpl::getParams() const {
+Configure::Parametres Configure::ConfImpl::getParams() const {
     return params;
 }
 
-void Configure::ConfImpl::saveToConfigFile(
-const Parametres & params_ ) {
+void Configure::ConfImpl::saveToConfigFile() {
     std::ofstream configFile { pathToConfig };
-    configFile << std::setw( 4 ) << params_ << std::endl;
+    configFile << std::setw( 4 ) << params << std::endl;
     configFile.close();
 
     lastChangeConfig = std::chrono::system_clock::now();

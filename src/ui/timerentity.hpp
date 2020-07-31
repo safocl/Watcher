@@ -1,5 +1,6 @@
 #pragma once
 
+#include "configure/configure.hpp"
 #include "timer/timer.hpp"
 #include <thread>
 #include <vector>
@@ -15,6 +16,7 @@
 namespace core::ui {
 
 class TimerEntity final : public Gtk::Grid {
+    using TimerNJEntity = configure::Configure::TimerNJEntity;
     //    std::recursive_mutex mutex_;
     Gtk::SpinButton  spHours, spMinutes, spSeconds;
     Glib::ustring    delimiterString;
@@ -34,6 +36,7 @@ public:
     TimerEntity(int hours, int minutes, int seconds);
     ~TimerEntity();
     void returnSens();
+    TimerNJEntity getValues() const;
 };
 
 }   // namespace core::ui

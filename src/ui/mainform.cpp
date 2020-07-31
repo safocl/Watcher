@@ -1,4 +1,5 @@
 #include "mainform.hpp"
+#include "configure/configure.hpp"
 #include "gtkmm/application.h"
 #include "gtkmm/enums.h"
 #include "gtkmm/grid.h"
@@ -22,7 +23,12 @@ nb(), btnClose( "Quit" ), grid(), app( app ) {
     sigc::mem_fun( *this, &MainWindow::onBtnCloseClicked ) );
 }
 
-void MainWindow::onBtnCloseClicked() { app->quit(); }
+void MainWindow::onBtnCloseClicked() {
+    nb.saveLayout();
+    auto conf = configure::Configure::init();
+    conf->saveToConfigFile();
+    app->quit();
+}
 
 MainWindow::~MainWindow() {}
 }   // namespace core::mForm

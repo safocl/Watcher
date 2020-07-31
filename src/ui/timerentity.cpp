@@ -13,7 +13,7 @@
 
 namespace core::ui {
 
-void TimerEntity::init(){
+void TimerEntity::init() {
     spHours.set_width_chars( 2 );
     spHours.set_numeric();
     spHours.set_wrap();
@@ -51,7 +51,6 @@ void TimerEntity::init(){
 
     dispatcher_.connect(
     sigc::mem_fun( *this, &TimerEntity::onDispatcherEmit ) );
-
 }
 
 TimerEntity::TimerEntity() :
@@ -64,16 +63,16 @@ btn( strStart ), timerPtr() {
     init();
 }
 
-TimerEntity::TimerEntity(int h, int m, int s) :
+TimerEntity::TimerEntity( int h, int m, int s ) :
 //    mutex_(),
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 delimiterString( " : " ), strStart( "Start" ), strStop( "Stop" ),
 btn( strStart ), timerPtr() {
-    spHours.set_value(h);
-    spMinutes.set_value(m);
-    spSeconds.set_value(s);
+    spHours.set_value( h );
+    spMinutes.set_value( m );
+    spSeconds.set_value( s );
 
     init();
 }
@@ -124,6 +123,12 @@ void TimerEntity::onDispatcherEmit() {
     spMinutes.set_sensitive();
     spSeconds.set_sensitive();
     btn.set_label( strStart );
+}
+
+TimerEntity::TimerNJEntity TimerEntity::getValues() const {
+    return TimerNJEntity { spHours.get_value_as_int(),
+                           spMinutes.get_value_as_int(),
+                           spSeconds.get_value_as_int() };
 }
 
 }   // namespace core::ui

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "configure/configure.hpp"
 #include "glibmm/dispatcher.h"
 #include "aclock/aclock.hpp"
 #include <atomic>
@@ -12,6 +13,8 @@
 namespace core::ui {
 
 class ClockEntity final : public Gtk::Grid {
+public:
+    using AclockNJEntity = configure::Configure::AclockNJEntity;
     Gtk::SpinButton  spHours, spMinutes, spSeconds;
     Gtk::Switch      sw;
     Glib::ustring    delimiterString { " : " };
@@ -25,9 +28,10 @@ class ClockEntity final : public Gtk::Grid {
 
 public:
     ClockEntity();
-    ClockEntity(int hours, int minutes, int seconds);
+    ClockEntity( int hours, int minutes, int seconds );
     ~ClockEntity();
     void returnSensElements();
+    AclockNJEntity getValues() const;
 };
 
 }   // namespace core::ui

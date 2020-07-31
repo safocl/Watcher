@@ -7,13 +7,14 @@
 namespace core::ui {
 
 class WNotebook final : public Gtk::Notebook {
-    Wfr<ClockEntity> frAcl;
-    Wfr<TimerEntity>    frTm;
-    Wfr<LogEntity>    frLog;
+    Wfr< ClockEntity > frAcl;
+    Wfr< TimerEntity > frTm;
+    Wfr< LogEntity >   frLog;
 
 public:
     WNotebook();
     ~WNotebook();
+    void saveLayout() const;
 };
 
 }   // namespace core::ui
