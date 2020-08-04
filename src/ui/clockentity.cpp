@@ -5,6 +5,8 @@
 #include "gtkmm/label.h"
 #include "gtkmm/object.h"
 #include "gtkmm/orientable.h"
+#include "gtkmm/progressbar.h"
+#include "gtkmm/volumebutton.h"
 #include "sigc++/functors/mem_fun.h"
 #include "timer/timer.hpp"
 #include <chrono>
@@ -27,14 +29,6 @@ void ClockEntity::init() {
     spSeconds.set_width_chars( 2 );
     spSeconds.set_numeric();
     spSeconds.set_wrap();
-
-    //gtk_orientable_set_orientation(reinterpret_cast<GtkOrientable*>(spHours.gobj()), GTK_ORIENTATION_VERTICAL);
-    reinterpret_cast< Gtk::Orientable * >( &spHours )
-    ->set_orientation( Gtk::ORIENTATION_VERTICAL );
-    reinterpret_cast< Gtk::Orientable * >( &spMinutes )
-    ->set_orientation( Gtk::ORIENTATION_VERTICAL );
-    reinterpret_cast< Gtk::Orientable * >( &spSeconds )
-    ->set_orientation( Gtk::ORIENTATION_VERTICAL );
 
     Gtk::Label * delimiter1 =
     Gtk::make_managed< Gtk::Label >( delimiterString );
@@ -64,9 +58,6 @@ void ClockEntity::init() {
     } else
         std::cout << "css file not found" << std::endl;
 
-    sw.set_valign( Gtk::ALIGN_CENTER );
-    sw.set_halign( Gtk::ALIGN_CENTER );
-
     spHours.set_valign( Gtk::ALIGN_CENTER );
     spHours.set_halign( Gtk::ALIGN_CENTER );
 
@@ -76,21 +67,37 @@ void ClockEntity::init() {
     spSeconds.set_valign( Gtk::ALIGN_CENTER );
     spSeconds.set_halign( Gtk::ALIGN_CENTER );
 
-    //    sw.set_margin_top( 5 );
-    //    sw.set_margin_bottom( 5 );
-    //    sw.set_margin_left( 15 );
-    //    sw.set_margin_right( 15 );
+    sw.set_halign( Gtk::ALIGN_CENTER );
+    sw.set_valign( Gtk::ALIGN_CENTER );
 
-    spHours.set_margin_left( 15 );
+    //progressBar.set_halign( Gtk::ALIGN_CENTER );
+    progressBar.set_valign( Gtk::ALIGN_CENTER );
+    progressBar.set_margin_left(1);
+    progressBar.set_margin_right(1);
 
-    attach( spHours, 1, 1 );
-    attach( *delimiter1, 2, 1, 1, 1 );
-    attach( spMinutes, 3, 1 );
-    attach( *delimiter2, 4, 1, 1, 1 );
-    attach( spSeconds, 5, 1 );
-    attach( sw, 7, 1 );
-    //set_column_homogeneous(true);
-    //delimiter.set_hexpand();
+    volume.set_halign( Gtk::ALIGN_CENTER );
+    volume.set_valign( Gtk::ALIGN_CENTER );
+
+    set_border_width(3);
+    set_margin_top(10);
+    set_column_spacing(10);
+    set_row_spacing(3);
+
+    volume.set_adjustment(
+    Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
+    volume.set_value( 100 );
+
+    int attachCount = 0;
+    attach( spHours, ++attachCount, 1 );
+    attach( *delimiter1, ++attachCount, 1, 1, 1 );
+    attach( spMinutes, ++attachCount, 1 );
+    attach( *delimiter2, ++attachCount, 1, 1, 1 );
+    attach( spSeconds, ++attachCount, 1 );
+    attach( sw, ++attachCount, 1 );
+    attach( volume, ++attachCount, 1 );
+    attach_next_to(
+    progressBar, spHours, Gtk::POS_BOTTOM, attachCount );
+
     show_all_children();
 
     sw.property_active().signal_changed().connect(
@@ -98,13 +105,17 @@ void ClockEntity::init() {
 
     dispatcher_.connect(
     sigc::mem_fun( *this, &ClockEntity::onDispatcherEmit ) );
+
+    progressBarDispetcher.connect(
+    sigc::mem_fun( *this, &ClockEntity::onProgressBarEmit ) );
 }
 
 ClockEntity::ClockEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
-dispatcher_(), aclock_(), swBlock( false ) {
+dispatcher_(), aclock_(), swBlock( false ), progressBar(), volume(),
+progressBarDispetcher(), progressBarPercent() {
     init();
 }
 
@@ -112,7 +123,8 @@ ClockEntity::ClockEntity( int h, int m, int s ) :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
-dispatcher_(), aclock_(), swBlock( false ) {
+dispatcher_(), aclock_(), swBlock( false ), progressBar(), volume(),
+progressBarDispetcher(), progressBarPercent() {
     spHours.set_value( h );
     spMinutes.set_value( m );
     spSeconds.set_value( s );
@@ -146,11 +158,30 @@ void ClockEntity::onDispatcherEmit() {
     spMinutes.set_sensitive();
     spSeconds.set_sensitive();
     sw.set_active( false );
+    progressBar.set_fraction(0);
 }
 
 ClockEntity::AclockNJEntity ClockEntity::getValues() const {
     return AclockNJEntity { spHours.get_value_as_int(),
                             spMinutes.get_value_as_int(),
                             spSeconds.get_value_as_int() };
+}
+
+double ClockEntity::getSoundVolume() const {
+    return volume.get_value();
+}
+
+void ClockEntity::setProgressBarPercent( double percent ) {
+    if ( percent < 0 )
+        progressBarPercent = 0;
+    else if ( percent > 1 )
+        progressBarPercent = 0;
+    else
+        progressBarPercent = percent;
+    progressBarDispetcher.emit();
+}
+
+void ClockEntity::onProgressBarEmit() {
+    progressBar.set_fraction( progressBarPercent );
 }
 }   // namespace core::ui

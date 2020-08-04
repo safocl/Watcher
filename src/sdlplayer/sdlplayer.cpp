@@ -22,11 +22,13 @@ SdlPlayer::~SdlPlayer() {
     SDL_Quit();
 }
 
-void SdlPlayer::playFromWavFile( std::filesystem::path wavFile ) {
+void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
+                                 double                volume ) {
     while ( isLock )
         SDL_Delay( 1 );
     isLock     = true;
-    auto chunk = Mix_LoadWAV( wavFile.generic_u8string().c_str());
+    auto chunk = Mix_LoadWAV( wavFile.generic_u8string().c_str() );
+    Mix_VolumeMusic( MIX_MAX_VOLUME * ( volume * 0.01 ) );
     if ( chunk == nullptr )
         throw std::runtime_error( Mix_GetError() );
     if ( Mix_PlayChannel( -1, chunk, 0 ) < 0 )
@@ -35,15 +37,16 @@ void SdlPlayer::playFromWavFile( std::filesystem::path wavFile ) {
     isLock = false;
 }
 
-void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile ) {
+void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
+                                  double                volume ) {
     while ( isLock )
         SDL_Delay( 1 );
     isLock = true;
     Mix_Init( MIX_INIT_OPUS );
-    auto chunk = Mix_LoadMUS( opusFile.generic_u8string().c_str());
+    auto chunk = Mix_LoadMUS( opusFile.generic_u8string().c_str() );
     if ( chunk == nullptr )
         throw std::runtime_error( Mix_GetError() );
-    Mix_VolumeMusic(MIX_MAX_VOLUME/3);
+    Mix_VolumeMusic( MIX_MAX_VOLUME * ( volume * 0.01 ) );
     if ( Mix_PlayMusic( chunk, 1 ) < 0 )
         throw std::runtime_error( Mix_GetError() );
     SDL_Delay( 5000 );
@@ -52,4 +55,4 @@ void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile ) {
     isLock = false;
 }
 
-}
+}   // namespace core::sdlplayer

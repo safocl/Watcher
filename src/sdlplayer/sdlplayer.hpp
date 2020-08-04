@@ -18,11 +18,10 @@ class SdlPlayer final {
 public:
     SdlPlayer();
     ~SdlPlayer();
-    void playFromOpusFile( std::filesystem::path wavFile );
-    void playFromWavFile( std::filesystem::path wavFile );
+    void playFromOpusFile( std::filesystem::path wavFile,
+                           double                volume );
+    void playFromWavFile( std::filesystem::path wavFile,
+                          double                volume );
 };
-
-
-
 
 }   // namespace core::sdlplayer

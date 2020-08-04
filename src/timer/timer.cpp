@@ -23,10 +23,22 @@ void Timer::start( const std::chrono::seconds & timerDuration,
             std::chrono::high_resolution_clock > doneSleepTimePoint_,
             const std::atomic_bool &             closeThreadFlag_,
             core::ui::TimerEntity &              obj ) {
+            const auto beginTimePoint =
+            std::chrono::high_resolution_clock::now();
+            const std::chrono::milliseconds fullDiffMs =
+            std::chrono::duration_cast< std::chrono::milliseconds >(
+            doneSleepTimePoint_ - beginTimePoint );
             while ( doneSleepTimePoint_ >=
                     std::chrono::high_resolution_clock::now() &&
                     closeThreadFlag_ == false ) {
                 std::this_thread::sleep_for( Timer::ticksTime );
+                const std::chrono::milliseconds lostMs =
+                std::chrono::duration_cast<
+                std::chrono::milliseconds >( doneSleepTimePoint_ -
+                                             std::chrono::high_resolution_clock::now() );
+                obj.setProgressBarPercent(
+                static_cast< double >( lostMs.count() ) /
+                static_cast< double >(fullDiffMs.count() ));
             }
 
             obj.returnSens();
@@ -47,7 +59,8 @@ void Timer::start( const std::chrono::seconds & timerDuration,
                     .generic_u8string() +
                     "/../share/alarm.opus"
                 };
-                player->playFromOpusFile( pathToSound );
+                player->playFromOpusFile( pathToSound,
+                                          obj.getSoundVolume() );
             }
         },
         doneSleepTimePoint,
