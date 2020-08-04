@@ -26,3 +26,10 @@ $ make DESTDIR=./ install
 ```
 
 the run file will been in the build/bin directoriy
+
+
+## Screenshots:
+![N|Solid](https://i.imgur.com/7WBBTGd.png)
+![N|Solid](https://i.imgur.com/3r9vGhS.png)
+![N|Solid](https://i.imgur.com/pdykep1.png)
+![N|Solid](https://i.imgur.com/GpxHrQ9.png)
