@@ -78,8 +78,6 @@ void ClockEntity::init() {
     volume.set_halign( Gtk::ALIGN_CENTER );
     volume.set_valign( Gtk::ALIGN_CENTER );
 
-    set_border_width(3);
-    set_margin_top(10);
     set_column_spacing(10);
     set_row_spacing(3);
 

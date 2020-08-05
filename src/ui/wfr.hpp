@@ -46,9 +46,9 @@ public:
     Wfr( std::string_view label );
     ~Wfr();
 
-    Glib::ustring getName() const;
+    Glib::ustring                    getName() const;
     template < class NJtype > NJtype acumulateParams() const;
-    void saveLayoutToConfig() const;
+    void                             saveLayoutToConfig() const;
 };
 
 template < class EntityType >
@@ -61,10 +61,9 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
 
     set_label( Label );
 
-    set_margin_bottom( 3 );
-    set_margin_top( 3 );
-    set_margin_left( 3 );
-    set_margin_right( 3 );
+    grid.set_border_width( 3 );
+    grid.set_column_spacing( 15 );
+    grid.set_row_spacing( 20);
 
     fillNodeArr();
 
@@ -94,8 +93,6 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
                          2,
                          1 );
 
-    grid.set_column_spacing( 5 );
-    grid.set_row_spacing( 5 );
     btnAdd.set_halign( Gtk::ALIGN_CENTER );
 
     add( grid );
@@ -175,6 +172,9 @@ void Wfr< EntityType >::onAddBtnClicked() {
     entityNodeArr.push_back( makeNode() );
     auto enodeIt              = std::prev( entityNodeArr.end() );
     auto [ entity, closeBtn ] = *enodeIt;
+
+    closeBtn->set_halign( Gtk::ALIGN_CENTER );
+    closeBtn->set_valign( Gtk::ALIGN_CENTER );
 
     grid.attach_next_to(
     *entity, *std::prev( enodeIt )->first, Gtk::POS_BOTTOM );
