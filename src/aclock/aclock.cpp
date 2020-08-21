@@ -68,7 +68,7 @@ void Aclock::on( const int               hour,
             std::chrono::high_resolution_clock::now() );
             auto timeOutput =
             std::put_time( std::localtime( &t2 ), "%F %T" );
-
+            std::cout.imbue( std::locale( "en_US.utf8" ) );
             std::cout << "Alarm clock the ringing into: "
                       << timeOutput << std::endl;
             if ( !offFlag_ ) {

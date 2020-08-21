@@ -34,6 +34,7 @@ void Logger::log( const Glib::ustring str ) {
         logFileStream.open( pathToLogFile.generic_string() );
     }
     logFileStream.seekp( 0, std::ios_base::end );
+    logFileStream.imbue(std::locale("en_US.utf-8"));
     logFileStream << str << " ["
                   << std::put_time( std::localtime( &t ), "%F %T" )
                   << "]" << std::endl;

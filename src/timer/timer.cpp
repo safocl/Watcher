@@ -34,11 +34,12 @@ void Timer::start( const std::chrono::seconds & timerDuration,
                 std::this_thread::sleep_for( Timer::ticksTime );
                 const std::chrono::milliseconds lostMs =
                 std::chrono::duration_cast<
-                std::chrono::milliseconds >( doneSleepTimePoint_ -
-                                             std::chrono::high_resolution_clock::now() );
+                std::chrono::milliseconds >(
+                doneSleepTimePoint_ -
+                std::chrono::high_resolution_clock::now() );
                 obj.setProgressBarPercent(
                 static_cast< double >( lostMs.count() ) /
-                static_cast< double >(fullDiffMs.count() ));
+                static_cast< double >( fullDiffMs.count() ) );
             }
 
             obj.returnSens();
@@ -47,6 +48,7 @@ void Timer::start( const std::chrono::seconds & timerDuration,
             std::chrono::high_resolution_clock::now() );
             auto timeOutput =
             std::put_time( std::localtime( &t ), "%F %T" );
+            std::cout.imbue( std::locale( "en_US.utf8" ) );
             std::cout << "Timer stoped at: " << timeOutput
                       << std::endl;
             if ( !closeThreadFlag_ ) {
