@@ -15,14 +15,38 @@
 namespace core::configure {
 
 class Configure final {
+    struct EntityTime final {
+        int hour { 0 };
+        int min { 0 };
+        int sec { 0 };
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE( EntityTime, hour, min, sec );
+    };
+
 public:
-    using Parametres     = nlohmann::json;
     using LoggerNJEntity = std::string;
     using LoggerNodeJson = std::vector< LoggerNJEntity >;
-    using AclockNJEntity = std::array< int, 3 >;
+    using AclockNJEntity = EntityTime;
     using AclockNodeJson = std::vector< AclockNJEntity >;
-    using TimerNJEntity  = std::array< int, 3 >;
+    using TimerNJEntity  = EntityTime;
     using TimerNodeJson  = std::vector< TimerNJEntity >;
+
+private:
+    struct ParametresImpl final {
+        std::string    pathToLogFile;
+        std::string    pathToTheme;
+        LoggerNodeJson loggerNodeJson;
+        AclockNodeJson aclockNodeJson;
+        TimerNodeJson  timerNodeJson;
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE( ParametresImpl,
+                                        pathToLogFile,
+                                        pathToTheme,
+                                        loggerNodeJson,
+                                        aclockNodeJson,
+                                        timerNodeJson )
+    };
+
+public:
+    using Parametres = ParametresImpl;
 
 private:
     struct ConfImpl {
@@ -45,7 +69,9 @@ private:
 
         template < class JEntity >
         void import( JEntity el, std::string_view jEntityName ) {
-            params[ jEntityName.data() ] = el;
+            nlohmann::json tmpParams;
+            tmpParams[ jEntityName.data() ] = el;
+            params = tmpParams.get<Parametres>();
         }
 
         ConfImpl( std::filesystem::path argv0 );

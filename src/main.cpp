@@ -11,7 +11,6 @@ namespace fs = std::filesystem;
 int main( int argc, char * argv[] ) {
     auto conf =
     core::configure::Configure::init( argv[ 0 ]  );
-    conf->loadFromConfigFile();
 
     Glib::RefPtr< Gtk::Application > app =
     Gtk::Application::create( argc, argv, "org.safocl.watcher" );

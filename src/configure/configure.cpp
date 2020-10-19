@@ -111,24 +111,28 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
         }
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
+        std::cout << "pathToTheme" << std::endl << std::endl;
     }
 
     try {
-        params[ "aclockEntity" ] = params_.at( "aclockEntity" );
+        params[ "aclockEntity" ] = params_.at( "aclockEntity" ).get<AclockNJEntity>();
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
+        std::cout << "aclockEntity" << std::endl << std::endl;
     }
 
     try {
         params[ "timerEntity" ] = params_.at( "timerEntity" );
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
+        std::cout << "timerEntity" << std::endl << std::endl;
     }
 
     try {
         params[ "logEntity" ] = params_.at( "logEntity" );
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
+        std::cout << "logEntity" << std::endl << std::endl;
     }
 }
 
