@@ -59,7 +59,7 @@ std::shared_ptr< Configure::ConfImpl > Configure::init() {
     return confImpl;
 }
 
-Configure::Parametres Configure::ConfImpl::fillDefaultParams() {
+Configure::Parametres Configure::ConfImpl::fillDefaultParams() const {
     Parametres defaultParams;
     defaultParams[ "pathToLogFile" ] =
     pathToConfig.parent_path().generic_string() + "/log.txt";

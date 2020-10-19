@@ -35,7 +35,7 @@ private:
         std::filesystem::path                 argv0;
 
         void fillParams( const Parametres & params );
-        Parametres  fillDefaultParams[[nodiscard]]();
+        [[nodiscard]] Parametres fillDefaultParams() const;
 
     public:
         void                  loadFromConfigFile();

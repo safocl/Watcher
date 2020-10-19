@@ -24,14 +24,14 @@ void Logger::log( const Glib::ustring str ) {
     std::chrono::system_clock::now() );
 
     std::fstream logFileStream;
-    logFileStream.open( pathToLogFile.generic_string() );
+    logFileStream.open( pathToLogFile.string() );
 
     if ( !logFileStream.is_open() ) {
         logFileStream.clear();
-        logFileStream.open( pathToLogFile.generic_string(),
+        logFileStream.open( pathToLogFile.string(),
                             std::ios::out );
         logFileStream.close();
-        logFileStream.open( pathToLogFile.generic_string() );
+        logFileStream.open( pathToLogFile.string() );
     }
     logFileStream.seekp( 0, std::ios_base::end );
     logFileStream.imbue(std::locale("en_US.utf8"));
