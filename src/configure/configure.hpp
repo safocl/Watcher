@@ -15,38 +15,14 @@
 namespace core::configure {
 
 class Configure final {
-    struct EntityTime final {
-        int hour { 0 };
-        int min { 0 };
-        int sec { 0 };
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE( EntityTime, hour, min, sec );
-    };
-
 public:
+    using Parametres     = nlohmann::json;
     using LoggerNJEntity = std::string;
     using LoggerNodeJson = std::vector< LoggerNJEntity >;
-    using AclockNJEntity = EntityTime;
+    using AclockNJEntity = std::array< int, 3 >;
     using AclockNodeJson = std::vector< AclockNJEntity >;
-    using TimerNJEntity  = EntityTime;
+    using TimerNJEntity  = std::array< int, 3 >;
     using TimerNodeJson  = std::vector< TimerNJEntity >;
-
-private:
-    struct ParametresImpl final {
-        std::string    pathToLogFile;
-        std::string    pathToTheme;
-        LoggerNodeJson loggerNodeJson;
-        AclockNodeJson aclockNodeJson;
-        TimerNodeJson  timerNodeJson;
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE( ParametresImpl,
-                                        pathToLogFile,
-                                        pathToTheme,
-                                        loggerNodeJson,
-                                        aclockNodeJson,
-                                        timerNodeJson )
-    };
-
-public:
-    using Parametres = ParametresImpl;
 
 private:
     struct ConfImpl {
@@ -59,7 +35,7 @@ private:
         std::filesystem::path                 argv0;
 
         void fillParams( const Parametres & params );
-        [[nodiscard]] Parametres fillDefaultParams() const;
+        void fillDefaultParams();
 
     public:
         void                  loadFromConfigFile();
@@ -69,9 +45,7 @@ private:
 
         template < class JEntity >
         void import( JEntity el, std::string_view jEntityName ) {
-            nlohmann::json tmpParams;
-            tmpParams[ jEntityName.data() ] = el;
-            params = tmpParams.get<Parametres>();
+            params[ jEntityName.data() ] = el;
         }
 
         ConfImpl( std::filesystem::path argv0 );

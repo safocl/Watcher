@@ -40,10 +40,10 @@ static std::filesystem::path matchSysConfPath() {
 }
 
 Configure::ConfImpl::ConfImpl( std::filesystem::path argv0 ) :
-params {}, defaultParams { fillDefaultParams() }, lastLoadConfig {},
-lastChangeConfig {}, pathToConfig { matchSysConfPath() }, argv0 {
-    argv0
-} {}
+params {}, defaultParams {}, lastLoadConfig {}, lastChangeConfig {},
+pathToConfig { matchSysConfPath() }, argv0 { argv0 } {
+    fillDefaultParams();
+}
 
 std::shared_ptr< Configure::ConfImpl >
 Configure::init( std::filesystem::path argv0 ) {
@@ -59,8 +59,7 @@ std::shared_ptr< Configure::ConfImpl > Configure::init() {
     return confImpl;
 }
 
-Configure::Parametres Configure::ConfImpl::fillDefaultParams() const {
-    Parametres defaultParams;
+void Configure::ConfImpl::fillDefaultParams() {
     defaultParams[ "pathToLogFile" ] =
     pathToConfig.parent_path().generic_string() + "/log.txt";
     defaultParams[ "pathToTheme" ] =
@@ -72,8 +71,6 @@ Configure::Parametres Configure::ConfImpl::fillDefaultParams() const {
     defaultParams[ "aclockEntity" ] = anj;
     TimerNodeJson tnj { { 8, 8, 8 } };
     defaultParams[ "timerEntity" ] = tnj;
-
-    return defaultParams;
 }
 
 void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
@@ -111,29 +108,26 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
         }
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
-        std::cout << "pathToTheme" << std::endl << std::endl;
     }
 
     try {
-        params[ "aclockEntity" ] = params_.at( "aclockEntity" ).get<AclockNJEntity>();
+        params[ "aclockEntity" ] = params_.at( "aclockEntity" );
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
-        std::cout << "aclockEntity" << std::endl << std::endl;
     }
 
     try {
         params[ "timerEntity" ] = params_.at( "timerEntity" );
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
-        std::cout << "timerEntity" << std::endl << std::endl;
     }
 
     try {
         params[ "logEntity" ] = params_.at( "logEntity" );
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
-        std::cout << "logEntity" << std::endl << std::endl;
     }
+
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
