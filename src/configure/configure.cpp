@@ -40,10 +40,10 @@ static std::filesystem::path matchSysConfPath() {
 }
 
 Configure::ConfImpl::ConfImpl( std::filesystem::path argv0 ) :
-params {}, defaultParams {}, lastLoadConfig {}, lastChangeConfig {},
-pathToConfig { matchSysConfPath() }, argv0 { argv0 } {
-    fillDefaultParams();
-}
+params {}, defaultParams { fillDefaultParams() }, lastLoadConfig {},
+lastChangeConfig {}, pathToConfig { matchSysConfPath() }, argv0 {
+    argv0
+} {}
 
 std::shared_ptr< Configure::ConfImpl >
 Configure::init( std::filesystem::path argv0 ) {
@@ -59,7 +59,8 @@ std::shared_ptr< Configure::ConfImpl > Configure::init() {
     return confImpl;
 }
 
-void Configure::ConfImpl::fillDefaultParams() {
+Configure::Parametres Configure::ConfImpl::fillDefaultParams() {
+    Parametres defaultParams;
     defaultParams[ "pathToLogFile" ] =
     pathToConfig.parent_path().generic_string() + "/log.txt";
     defaultParams[ "pathToTheme" ] =
@@ -71,6 +72,8 @@ void Configure::ConfImpl::fillDefaultParams() {
     defaultParams[ "aclockEntity" ] = anj;
     TimerNodeJson tnj { { 8, 8, 8 } };
     defaultParams[ "timerEntity" ] = tnj;
+
+    return defaultParams;
 }
 
 void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
@@ -127,7 +130,6 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
     } catch ( const std::exception & err ) {
         std::cout << err.what() << std::endl;
     }
-
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {

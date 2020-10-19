@@ -3,8 +3,15 @@ cmake_minimum_required( VERSION 3.12 )
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 set(CMAKE_CXX_STANDARD 17)
-#add_compile_options(-Wall -Wextra -Werror -g)
-add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror -g)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror -g)
+endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    add_compile_options(-Wall -Wextra -g)
+endif()
+
+
 project( Watcher LANGUAGES CXX )
 
 
