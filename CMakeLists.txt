@@ -7,6 +7,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 project( Watcher LANGUAGES CXX )
 
+message("\n")
+message("OS: ${CMAKE_SYSTEM_NAME}")
+message("\n")
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror -g)
 endif()
