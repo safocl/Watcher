@@ -12,8 +12,8 @@ after cloning this repository, you should do `git submodule update --init`.
 
 ```bash
 $ mkdir build && cd build
-$ cmake ..
-$ make -jN  # N -- number threads of you processor
+$ cmake -DCMAKE_BUILD_TYPE=Release ..
+$ make -jN DESTDIR=./ install # N -- number threads of you processor
 ```
 
 on Windows using minGW-w64 (needs installed mingw-w64):
@@ -22,8 +22,8 @@ after cloning this repository, you should do `git submodule update --init`.
 
 ```bash
 $ mkdir build && cd build
-$ cmake ..
-$ make DESTDIR=./ install
+$ cmake -DCMAKE_BUILD_TYPE=Release ..
+$ make -jN DESTDIR=./ install # N -- number threads of you processor
 ```
 
 the run file will been in the build/bin directoriy
