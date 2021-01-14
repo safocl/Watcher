@@ -2,6 +2,7 @@
 
 ### Dependies:
 gtkmm3 -- to make and linkage (headers and libs).
+sdl2_mixer -- to make and linkage (headers and libs).
 this project use [nlohmann/json](https://github.com/nlohmann/json/tree/eb7376bb131a4b19a5fc6aacfd046fd298cd0119) for JSON parse.
 
 ### Build

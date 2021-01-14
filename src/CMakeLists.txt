@@ -40,7 +40,7 @@ add_subdirectory( sdlplayer )
 #add_subdirectory( opusdecoder )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     install(TARGETS ${PROJECT_NAME} DESTINATION Watcher/bin )
 endif()

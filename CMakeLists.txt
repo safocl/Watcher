@@ -22,7 +22,7 @@ endif()
 
 message("Build system is ${CMAKE_SYSTEM_NAME}")
 
-set(CMAKE_INSTALL_PREFIX "" )
+#set(CMAKE_INSTALL_PREFIX "" )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig)
@@ -39,9 +39,11 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory( 3rd-party/nlohmann_json )
 add_subdirectory( src )
 
+message("CMAKE prefix is ${CMAKE_INSTALL_PREFIX}")
+
 set(resPath ${CMAKE_SOURCE_DIR}/resources)
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    install(FILES ${resPath}/style.css ${resPath}/alarm.opus DESTINATION share)
+    install(FILES ${resPath}/style.css ${resPath}/alarm.opus DESTINATION ${CMAKE_INSTALL_DATAROOTDIR})
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     install(FILES ${resPath}/style.css ${resPath}/alarm.opus DESTINATION Watcher/share)
 endif()
