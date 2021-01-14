@@ -1,0 +1,2 @@
+[ ] Finish working with the locale
+[ ] serialize/deserialize json in config class
