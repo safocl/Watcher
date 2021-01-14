@@ -76,9 +76,9 @@ void Aclock::on( const int               hour,
                 std::make_unique< core::sdlplayer::SdlPlayer >();
                 auto conf = core::configure::Configure::init();
                 auto pathToSound { conf->getArgv0()
-                                   .parent_path().parent_path()
+                                   .parent_path()
                                    .generic_u8string() +
-                                   "share/alarm.opus" };
+                                   "/../share/alarm.opus" };
                 player->playFromOpusFile( pathToSound,
                                           obj.getSoundVolume() );
             }

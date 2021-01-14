@@ -58,10 +58,10 @@ void Timer::start( const std::chrono::seconds & timerDuration,
                 std::filesystem::path pathToSound {
                     conf->getArgv0()
                     .parent_path()
-                    .parent_path()
-                    .generic_u8string() +
-                    "share/alarm.opus"
+                    .generic_string() +
+                    "/../share/alarm.opus"
                 };
+
                 player->playFromOpusFile( pathToSound,
                                           obj.getSoundVolume() );
             }
