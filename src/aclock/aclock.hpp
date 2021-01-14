@@ -9,7 +9,7 @@ namespace core::ui {
 class ClockEntity;
 }
 
-class Aclock {
+class Aclock final {
     std::atomic_bool                       offFlag_ { false };
     static const std::chrono::milliseconds tick_;
 

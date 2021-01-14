@@ -15,7 +15,7 @@ namespace core::ui {
 class TimerEntity;
 }
 
-class Timer {
+class Timer final {
     std::atomic_bool closeThreadFlag { false };
 
 public:

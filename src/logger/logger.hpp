@@ -3,7 +3,7 @@
 #include <glibmm/ustring.h>
 #include <filesystem>
 
-struct Logger {
+struct Logger final {
     std::filesystem::path pathToLogFile;
 
     Logger();

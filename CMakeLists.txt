@@ -12,10 +12,10 @@ message("OS: ${CMAKE_SYSTEM_NAME}")
 message("\n")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror -g)
+    add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror)
 endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    add_compile_options(-Wall -Wextra -g)
+    add_compile_options(-Wall -Wextra)
 endif()
 
 
