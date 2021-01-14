@@ -9,8 +9,7 @@
 
 namespace fs = std::filesystem;
 int main( int argc, char * argv[] ) {
-    auto conf =
-    core::configure::Configure::init( argv[ 0 ]  );
+    auto conf = core::configure::Configure::init( fs::absolute( argv[ 0 ] ) );
     conf->loadFromConfigFile();
 
     Glib::RefPtr< Gtk::Application > app =
