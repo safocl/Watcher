@@ -12,7 +12,7 @@ after cloning this repository, you should do `git submodule update --init`.
 
 ```bash
 $ mkdir build && cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release ..
+$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ..
 $ make -jN DESTDIR=./ install # N -- number threads of you processor
 ```
 
