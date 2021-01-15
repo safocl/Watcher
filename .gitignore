@@ -1,3 +1,4 @@
+x86_64-w64-mingw32
 .cache
 Watcher
 cmake_install.cmake
