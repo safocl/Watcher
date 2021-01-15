@@ -6,10 +6,12 @@
 #include <memory>
 #include <stdexcept>
 #include <streambuf>
+#include <unistd.h>
+#include <SDL2/SDL_filesystem.h>
 
-namespace fs = std::filesystem;
+//namespace fs = std::filesystem;
 int main( int argc, char * argv[] ) {
-    auto conf = core::configure::Configure::init( fs::absolute( argv[ 0 ] ) );
+    auto conf = core::configure::Configure::init( SDL_GetBasePath() );
     conf->loadFromConfigFile();
 
     Glib::RefPtr< Gtk::Application > app =

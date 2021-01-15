@@ -15,8 +15,8 @@ add_executable( ${PROJECT_NAME} main.cpp )
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-#find_package(SDL2)
-#target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
+find_package(SDL2)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 
 #target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
 
