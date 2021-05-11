@@ -1,5 +1,6 @@
 #include "logentity.hpp"
-#include "gtkmm/enums.h"
+
+#include <gtkmm/enums.h>
 #include <functional>
 #include <iostream>
 #include <string_view>
@@ -10,11 +11,11 @@ void LogEntity::init() {
     entry.set_placeholder_text( "Write text" );
 
     entry.set_hexpand();
-    entry.set_valign( Gtk::ALIGN_CENTER );
+    entry.set_valign( Gtk::Align::CENTER );
     //entry.set_halign(Gtk::ALIGN_CENTER);
 
-    btn.set_valign( Gtk::ALIGN_CENTER );
-    btn.set_halign( Gtk::ALIGN_CENTER );
+    btn.set_valign( Gtk::Align::CENTER );
+    btn.set_halign( Gtk::Align::CENTER );
 
     set_column_spacing( 10 );
     set_row_spacing( 3 );
@@ -22,7 +23,7 @@ void LogEntity::init() {
     attach( entry, 1, 1 );
     attach( btn, 2, 1 );
 
-    show_all();
+    //show_all();
 
     btn.signal_clicked().connect(
     sigc::mem_fun( *this, &LogEntity::onButtonClicked ) );

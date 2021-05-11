@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 project( Watcher LANGUAGES CXX )
 
-message("\n")
-message("OS: ${CMAKE_SYSTEM_NAME}")
-message("\n")
+#message("\n")
+#message("OS: ${CMAKE_SYSTEM_NAME}")
+#message("\n")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror)
@@ -26,7 +26,7 @@ message("Build system is ${CMAKE_SYSTEM_NAME}")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig)
-    pkg_search_module( GTKMM REQUIRED gtkmm-3.0 )
+    pkg_search_module( GTKMM REQUIRED gtkmm-4.0 )
     pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
 endif()
 

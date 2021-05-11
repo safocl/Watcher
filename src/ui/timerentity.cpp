@@ -1,8 +1,9 @@
 #include "timerentity.hpp"
-#include "gtkmm/adjustment.h"
-#include "gtkmm/progressbar.h"
-#include "gtkmm/volumebutton.h"
 #include "timer/timer.hpp"
+
+#include <gtkmm/adjustment.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/volumebutton.h>
 #include <atomic>
 #include <functional>
 #include <mutex>
@@ -39,29 +40,29 @@ void TimerEntity::init() {
     Gtk::Label * delimiter2 =
     Gtk::make_managed< Gtk::Label >( delimiterString );
 
-    btn.set_valign( Gtk::ALIGN_CENTER );
-    btn.set_halign( Gtk::ALIGN_CENTER );
+    btn.set_valign( Gtk::Align::CENTER );
+    btn.set_halign( Gtk::Align::CENTER );
     btn.set_size_request(70);
 
-    spHours.set_valign( Gtk::ALIGN_CENTER );
-    spHours.set_halign( Gtk::ALIGN_CENTER );
+    spHours.set_valign( Gtk::Align::CENTER );
+    spHours.set_halign( Gtk::Align::CENTER );
 
-    spMinutes.set_valign( Gtk::ALIGN_CENTER );
-    spMinutes.set_halign( Gtk::ALIGN_CENTER );
+    spMinutes.set_valign( Gtk::Align::CENTER );
+    spMinutes.set_halign( Gtk::Align::CENTER );
 
-    spSeconds.set_valign( Gtk::ALIGN_CENTER );
-    spSeconds.set_halign( Gtk::ALIGN_CENTER );
+    spSeconds.set_valign( Gtk::Align::CENTER );
+    spSeconds.set_halign( Gtk::Align::CENTER );
 
-    volume.set_halign( Gtk::ALIGN_CENTER );
-    volume.set_valign( Gtk::ALIGN_CENTER );
+    volume.set_halign( Gtk::Align::CENTER );
+    volume.set_valign( Gtk::Align::CENTER );
 
-    //progressBar.set_halign( Gtk::ALIGN_CENTER );
-    progressBar.set_valign( Gtk::ALIGN_CENTER );
-    progressBar.set_margin_left( 1 );
-    progressBar.set_margin_right( 1 );
+    //progressBar.set_halign( Gtk::Align::CENTER );
+    progressBar.set_valign( Gtk::Align::CENTER );
+    progressBar.set_margin_end(1);
+    progressBar.set_margin_start( 1 );
 
-    volume.set_halign( Gtk::ALIGN_CENTER );
-    volume.set_valign( Gtk::ALIGN_CENTER );
+    volume.set_halign( Gtk::Align::CENTER );
+    volume.set_valign( Gtk::Align::CENTER );
 
     set_column_spacing( 10 );
     set_row_spacing( 3 );
@@ -73,11 +74,11 @@ void TimerEntity::init() {
     attach( *delimiter2, ++attachColumns, 1, 1, 1 );
     attach( spSeconds, ++attachColumns, 1 );
     attach( btn, ++attachColumns, 1 );
-    attach_next_to( volume, btn, Gtk::POS_RIGHT );
+    attach_next_to( volume, btn, Gtk::PositionType::RIGHT );
     attach_next_to(
-    progressBar, spHours, Gtk::POS_BOTTOM, ++attachColumns );
+    progressBar, spHours, Gtk::PositionType::BOTTOM, ++attachColumns );
 
-    show_all_children();
+//    show_all_children();
 
     btn.signal_clicked().connect(
     sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );

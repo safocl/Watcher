@@ -10,14 +10,15 @@ namespace core::mForm {
 MainWindow::MainWindow( Gtk::Application * app ) :
 nb(), btnClose( "Quit" ), grid(), app( app ) {
     btnClose.set_vexpand( false );
-    btnClose.set_halign( Gtk::ALIGN_CENTER );
+    btnClose.set_halign( Gtk::Align::CENTER );
 
     grid.attach( nb, 1, 1 );
     grid.attach( btnClose, 1, 2 );
 
-    add( grid );
+//    add( grid );
+    set_child(grid);
 
-    show_all();
+    //show_all();
 
     btnClose.signal_clicked().connect(
     sigc::mem_fun( *this, &MainWindow::onBtnCloseClicked ) );

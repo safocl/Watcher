@@ -1,14 +1,15 @@
 #include "clockentity.hpp"
 #include "configure/configure.hpp"
-#include "glibmm/dispatcher.h"
-#include "gtkmm/enums.h"
-#include "gtkmm/label.h"
-#include "gtkmm/object.h"
-#include "gtkmm/orientable.h"
-#include "gtkmm/progressbar.h"
-#include "gtkmm/volumebutton.h"
-#include "sigc++/functors/mem_fun.h"
 #include "timer/timer.hpp"
+
+#include <glibmm/dispatcher.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/label.h>
+#include <gtkmm/object.h>
+#include <gtkmm/orientable.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/volumebutton.h>
+#include <sigc++/functors/mem_fun.h>
 #include <chrono>
 #include <filesystem>
 #include <iostream>
@@ -58,25 +59,25 @@ void ClockEntity::init() {
     } else
         std::cout << "css file not found" << std::endl;
 
-    spHours.set_valign( Gtk::ALIGN_CENTER );
-    spHours.set_halign( Gtk::ALIGN_CENTER );
+    spHours.set_valign( Gtk::Align::CENTER );
+    spHours.set_halign( Gtk::Align::CENTER );
 
-    spMinutes.set_valign( Gtk::ALIGN_CENTER );
-    spMinutes.set_halign( Gtk::ALIGN_CENTER );
+    spMinutes.set_valign( Gtk::Align::CENTER );
+    spMinutes.set_halign( Gtk::Align::CENTER );
 
-    spSeconds.set_valign( Gtk::ALIGN_CENTER );
-    spSeconds.set_halign( Gtk::ALIGN_CENTER );
+    spSeconds.set_valign( Gtk::Align::CENTER );
+    spSeconds.set_halign( Gtk::Align::CENTER );
 
-    sw.set_halign( Gtk::ALIGN_CENTER );
-    sw.set_valign( Gtk::ALIGN_CENTER );
+    sw.set_halign( Gtk::Align::CENTER );
+    sw.set_valign( Gtk::Align::CENTER );
 
-    //progressBar.set_halign( Gtk::ALIGN_CENTER );
-    progressBar.set_valign( Gtk::ALIGN_CENTER );
-    progressBar.set_margin_left(1);
-    progressBar.set_margin_right(1);
+    //progressBar.set_halign( Gtk::Align::CENTER );
+    progressBar.set_valign( Gtk::Align::CENTER );
+    progressBar.set_margin_end(1);
+    progressBar.set_margin_start(1);
 
-    volume.set_halign( Gtk::ALIGN_CENTER );
-    volume.set_valign( Gtk::ALIGN_CENTER );
+    volume.set_halign( Gtk::Align::CENTER );
+    volume.set_valign( Gtk::Align::CENTER );
 
     set_column_spacing(10);
     set_row_spacing(3);
@@ -94,9 +95,9 @@ void ClockEntity::init() {
     attach( sw, ++attachCount, 1 );
     attach( volume, ++attachCount, 1 );
     attach_next_to(
-    progressBar, spHours, Gtk::POS_BOTTOM, attachCount );
+    progressBar, spHours, Gtk::PositionType::BOTTOM, attachCount );
 
-    show_all_children();
+//    show_all_children();
 
     sw.property_active().signal_changed().connect(
     sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );

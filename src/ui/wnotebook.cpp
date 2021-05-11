@@ -1,9 +1,10 @@
 #include "wnotebook.hpp"
-#include "glibmm/ustring.h"
-#include "gtkmm/adjustment.h"
-#include "gtkmm/frame.h"
-#include <cassert>
 #include "timer/timer.hpp"
+
+#include <glibmm/ustring.h>
+#include <gtkmm/adjustment.h>
+#include <gtkmm/frame.h>
+#include <cassert>
 
 namespace core::ui {
 

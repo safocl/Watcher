@@ -18,46 +18,41 @@
 
 namespace core::configure {
 
-std::shared_ptr< Configure::ConfImpl > Configure::confImpl {
-    nullptr
-};
+std::shared_ptr< Configure::ConfImpl > Configure::confImpl { nullptr };
 
-static std::filesystem::path matchSysConfPath() {
+static std::filesystem::path defineSysConfPath() {
     std::filesystem::path pathToConfig {};
 #ifdef __linux__
     if ( std::getenv( "XDG_CONFIG_HOME" ) != nullptr )
-        pathToConfig =
-        std::string { std::getenv( "XDG_CONFIG_HOME" ) };
+        pathToConfig = std::string { std::getenv( "XDG_CONFIG_HOME" ) };
     else
-        pathToConfig =
-        std::string( std::getenv( "HOME" ) ) + "/.config";
+        pathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
 #elif _WIN32
     pathToConfig = std::string { std::getenv( "APPDATA" ) };
 #endif
 
-    pathToConfig /= "watcher/config.json";
+    if ( pathToConfig.empty() )
+        throw std::runtime_error( "The config path is undefined." );
+    else
+        pathToConfig /= "watcher/config.json";
     return pathToConfig;
 }
 
 Configure::ConfImpl::ConfImpl( std::filesystem::path argv0 ) :
 params {}, defaultParams {}, lastLoadConfig {}, lastChangeConfig {},
-pathToConfig { matchSysConfPath() }, argv0 { argv0 } {
+pathToConfig { defineSysConfPath() }, argv0 { argv0 } {
     fillDefaultParams();
 }
 
-std::shared_ptr< Configure::ConfImpl >
-Configure::init( std::filesystem::path argv0 ) {
+std::shared_ptr< Configure::ConfImpl > Configure::init( std::filesystem::path argv0 ) {
     if ( !confImpl ) {
         confImpl = std::make_shared< ConfImpl >( argv0 );
         confImpl->loadFromConfigFile();
-        return confImpl;
-    } else
-        return confImpl;
-}
-
-std::shared_ptr< Configure::ConfImpl > Configure::init() {
+    }
     return confImpl;
 }
+
+std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
 
 void Configure::ConfImpl::fillDefaultParams() {
     defaultParams[ "pathToLogFile" ] =
@@ -78,56 +73,40 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
     std::filesystem::path tmpPath {};
 
     try {
-        strTmpParam =
-        params_.at( "pathToLogFile" ).get< std::string >();
-        tmpPath = strTmpParam;
-        if ( params_[ "pathToLogFile" ].is_string() &&
-             params_[ "pathToLogFile" ] != "" &&
+        strTmpParam = params_.at( "pathToLogFile" ).get< std::string >();
+        tmpPath     = strTmpParam;
+        if ( params_[ "pathToLogFile" ].is_string() && params_[ "pathToLogFile" ] != "" &&
              std::filesystem::is_regular_file( tmpPath ) )
             params[ "pathToLogFile" ] = params_.at( "pathToLogFile" );
         else {
-            std::cout << "Not valid pathToLogFile in config file"
-                      << std::endl
+            std::cout << "Not valid pathToLogFile in config file" << std::endl
                       << "load default pathToLogFile" << std::endl;
         }
-    } catch ( const std::exception & err ) {
-        std::cout << err.what() << std::endl;
-    }
+    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        strTmpParam =
-        params_.at( "pathToTheme" ).get< std::string >();
-        tmpPath = strTmpParam;
+        strTmpParam = params_.at( "pathToTheme" ).get< std::string >();
+        tmpPath     = strTmpParam;
         if ( std::filesystem::exists( tmpPath ) &&
              std::filesystem::is_regular_file( tmpPath ) )
             params[ "pathToTheme" ] = params_.at( "pathToTheme" );
         else {
-            std::cout << "Not valid pathToTheme in config file"
-                      << std::endl
+            std::cout << "Not valid pathToTheme in config file" << std::endl
                       << "load default pathToTheme" << std::endl;
         }
-    } catch ( const std::exception & err ) {
-        std::cout << err.what() << std::endl;
-    }
+    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
         params[ "aclockEntity" ] = params_.at( "aclockEntity" );
-    } catch ( const std::exception & err ) {
-        std::cout << err.what() << std::endl;
-    }
+    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
         params[ "timerEntity" ] = params_.at( "timerEntity" );
-    } catch ( const std::exception & err ) {
-        std::cout << err.what() << std::endl;
-    }
+    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
         params[ "logEntity" ] = params_.at( "logEntity" );
-    } catch ( const std::exception & err ) {
-        std::cout << err.what() << std::endl;
-    }
-
+    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
@@ -135,8 +114,7 @@ void Configure::ConfImpl::loadFromConfigFile() {
     params = defaultParams;
 
     if ( !std::filesystem::exists( pathToConfig ) ) {
-        std::filesystem::create_directories(
-        pathToConfig.parent_path() );
+        std::filesystem::create_directories( pathToConfig.parent_path() );
 
         std::ofstream configFile { pathToConfig };
         configFile << std::setw( 4 ) << defaultParams << std::endl;
@@ -145,7 +123,7 @@ void Configure::ConfImpl::loadFromConfigFile() {
         lastChangeConfig = std::chrono::system_clock::now();
     } else {
         std::ifstream configFile { pathToConfig };
-        auto tmpJConfig = std::make_unique< nlohmann::json >();
+        auto          tmpJConfig = std::make_unique< nlohmann::json >();
 
         operator>>( configFile, *tmpJConfig );
 
@@ -157,9 +135,7 @@ void Configure::ConfImpl::loadFromConfigFile() {
     lastLoadConfig = std::chrono::system_clock::now();
 }
 
-Configure::Parametres Configure::ConfImpl::getParams() const {
-    return params;
-}
+Configure::Parametres Configure::ConfImpl::getParams() const { return params; }
 
 void Configure::ConfImpl::saveToConfigFile() {
     std::ofstream configFile { pathToConfig };
@@ -169,8 +145,6 @@ void Configure::ConfImpl::saveToConfigFile() {
     lastChangeConfig = std::chrono::system_clock::now();
 }
 
-std::filesystem::path Configure::ConfImpl::getArgv0() const {
-    return argv0;
-}
+std::filesystem::path Configure::ConfImpl::getArgv0() const { return argv0; }
 
 }   // namespace core::configure

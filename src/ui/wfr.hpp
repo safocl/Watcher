@@ -1,6 +1,10 @@
 #pragma once
 
 #include "configure/configure.hpp"
+#include "logentity.hpp"
+#include "timerentity.hpp"
+#include "clockentity.hpp"
+
 #include <gtkmm/frame.h>
 #include <glibmm/ustring.h>
 #include <gtkmm/spinbutton.h>
@@ -13,10 +17,7 @@
 #include <gtkmm/button.h>
 #include <gtkmm/widget.h>
 #include <type_traits>
-#include "gtkmm/enums.h"
-#include "logentity.hpp"
-#include "timerentity.hpp"
-#include "clockentity.hpp"
+#include <gtkmm/enums.h>
 
 namespace core::ui {
 
@@ -61,7 +62,7 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
 
     set_label( Label );
 
-    grid.set_border_width( 3 );
+    //grid.set_border_width( 3 );
     grid.set_column_spacing( 15 );
     grid.set_row_spacing( 20);
 
@@ -77,26 +78,26 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
         else
             grid.attach_next_to( *clockEntity,
                                  *std::prev( enode )->first,
-                                 Gtk::POS_BOTTOM,
+                                 Gtk::PositionType::BOTTOM,
                                  1,
                                  1 );
         grid.attach_next_to(
-        *closeBtn, *clockEntity, Gtk::POS_RIGHT, 1, 1 );
-        closeBtn->set_halign( Gtk::ALIGN_CENTER );
-        closeBtn->set_valign( Gtk::ALIGN_CENTER );
+        *closeBtn, *clockEntity, Gtk::PositionType::RIGHT, 1, 1 );
+        closeBtn->set_halign( Gtk::Align::CENTER );
+        closeBtn->set_valign( Gtk::Align::CENTER );
         closeBtn->signal_clicked().connect( sigc::bind(
         sigc::mem_fun( *this, &Wfr::onCloseClicked ), enode ) );
     }
     grid.attach_next_to( btnAdd,
                          *std::prev( entityNodeArr.end() )->first,
-                         Gtk::POS_BOTTOM,
+                         Gtk::PositionType::BOTTOM,
                          2,
                          1 );
 
-    btnAdd.set_halign( Gtk::ALIGN_CENTER );
+    btnAdd.set_halign( Gtk::Align::CENTER );
 
-    add( grid );
-    show_all_children();
+    set_child( grid );
+    //show_all_children();
 
     btnAdd.signal_clicked().connect(
     sigc::mem_fun( *this, &Wfr::onAddBtnClicked ) );
@@ -168,20 +169,20 @@ Wfr< EntityType >::makeNode( std::string_view entry ) {
 
 template < class EntityType >
 void Wfr< EntityType >::onAddBtnClicked() {
-    grid.insert_next_to( btnAdd, Gtk::POS_TOP );
+    grid.insert_next_to( btnAdd, Gtk::PositionType::TOP );
     entityNodeArr.push_back( makeNode() );
     auto enodeIt              = std::prev( entityNodeArr.end() );
     auto [ entity, closeBtn ] = *enodeIt;
 
-    closeBtn->set_halign( Gtk::ALIGN_CENTER );
-    closeBtn->set_valign( Gtk::ALIGN_CENTER );
+    closeBtn->set_halign( Gtk::Align::CENTER );
+    closeBtn->set_valign( Gtk::Align::CENTER );
 
     grid.attach_next_to(
-    *entity, *std::prev( enodeIt )->first, Gtk::POS_BOTTOM );
+    *entity, *std::prev( enodeIt )->first, Gtk::PositionType::BOTTOM );
 
-    grid.attach_next_to( *closeBtn, *entity, Gtk::POS_RIGHT, 1, 1 );
+    grid.attach_next_to( *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
 
-    grid.show_all_children();
+    //grid.show_all_children();
 
     closeBtn->signal_clicked().connect( sigc::bind(
     sigc::mem_fun( *this, &Wfr::onCloseClicked ), enodeIt ) );

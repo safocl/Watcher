@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <gtkmm/application.h>
@@ -10,17 +11,19 @@
 #include <SDL2/SDL_filesystem.h>
 
 //namespace fs = std::filesystem;
-int main( int argc, char * argv[] ) {
+int main( [[maybe_unused]] int argc, [[maybe_unused]] char * argv[] ) {
     auto conf = core::configure::Configure::init( SDL_GetBasePath() );
     conf->loadFromConfigFile();
 
     Glib::RefPtr< Gtk::Application > app =
-    Gtk::Application::create( argc, argv, "org.safocl.watcher" );
+    Gtk::Application::create( "org.safocl.watcher" );
 
     core::mForm::MainWindow window { app.get() };
     window.set_default_size( 400, 400 );
 
-    window.show_all();
+    //window.show();
+    app->run();
+    app->add_window( window );
 
-    return app->run( window );
+    return EXIT_SUCCESS;
 }
