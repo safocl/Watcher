@@ -1,7 +1,6 @@
 #pragma once
 
 #include "configure/configure.hpp"
-#include "gtkmm/object.h"
 #include "logentity.hpp"
 #include "timerentity.hpp"
 #include "clockentity.hpp"
@@ -13,6 +12,7 @@
 #include <gtkmm/grid.h>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <ostream>
 #include <string_view>
 #include <gtkmm/button.h>
@@ -25,7 +25,8 @@ namespace core::ui {
 
 template < class EntityType > class Wfr final : public Gtk::Frame {
 public:
-    using EntityNode     = std::pair< Gtk::Widget *, Gtk::Button * >;
+    using EntityNode =
+    std::pair< std::shared_ptr< Gtk::Widget >, std::shared_ptr< Gtk::Button > >;
     using EntityNodeArr  = std::list< EntityNode >;
     using AclockNodeJson = core::configure::Configure::AclockNodeJson;
     using TimerNodeJson  = core::configure::Configure::TimerNodeJson;
@@ -105,7 +106,7 @@ template < class NJtype >
 NJtype Wfr< EntityType >::acumulateParams() const {
     NJtype jsonNode {};
     for ( auto && enode : entityNodeArr ) {
-        auto node = static_cast< EntityType * >( enode.first );
+        auto node = static_cast< EntityType * >( enode.first.get() );
         jsonNode.push_back( node->getValues() );
     }
 
@@ -126,8 +127,8 @@ template < class EntityType > void Wfr< EntityType >::saveLayoutToConfig() const
 
 template < class EntityType >
 typename Wfr< EntityType >::EntityNode Wfr< EntityType >::makeNode() {
-    return std::make_pair( Gtk::make_managed< EntityType >(),
-                           Gtk::make_managed< Gtk::Button >( "X" ) );
+    return std::make_pair( std::make_shared< EntityType >(),
+                           std::make_shared< Gtk::Button >( "X" ) );
 }
 
 template < class EntityType >
@@ -136,8 +137,8 @@ Wfr< EntityType >::makeNode( int hours, int minutes, int seconds ) {
     static_assert( std::is_same< EntityType, ClockEntity >::value ||
                    std::is_same< EntityType, TimerEntity >::value,
                    "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return std::make_pair( Gtk::make_managed< EntityType >( hours, minutes, seconds ),
-                           Gtk::make_managed< Gtk::Button >( "X" ) );
+    return std::make_pair( std::make_shared< EntityType >( hours, minutes, seconds ),
+                           std::make_shared< Gtk::Button >( "X" ) );
 }
 
 template < class EntityType >
@@ -145,8 +146,8 @@ typename Wfr< EntityType >::EntityNode
 Wfr< EntityType >::makeNode( std::string_view entry ) {
     static_assert( std::is_same< EntityType, LogEntity >::value,
                    "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return std::make_pair( Gtk::make_managed< EntityType >( entry.data() ),
-                           Gtk::make_managed< Gtk::Button >( "X" ) );
+    return std::make_pair( std::make_shared< EntityType >( entry.data() ),
+                           std::make_shared< Gtk::Button >( "X" ) );
 }
 
 template < class EntityType > void Wfr< EntityType >::onAddBtnClicked() {
@@ -170,22 +171,12 @@ template < class EntityType > void Wfr< EntityType >::onAddBtnClicked() {
 template < class EntityType >
 void Wfr< EntityType >::onCloseClicked( EntityNodeArr::iterator enodeIt ) {
     if ( entityNodeArr.size() > 1 ) {
-        auto [entity, closeBtn] = *enodeIt;
+        auto [ entity, closeBtn ] = *enodeIt;
         grid.remove( *entity );
         grid.remove( *closeBtn );
 
-        delete static_cast< EntityType * >( entity );
-
-        delete closeBtn;
-
         entityNodeArr.erase( enodeIt );
     }
-
-    //entityNodeArr.push_back(makeNode());
-    //EntityType * ptr = static_cast<EntityType*>(std::prev(entityNodeArr.end())->first);
-    //std::cout << "Node adress : " <<  ptr << std::endl;
-    //delete ptr;
-
 }
 
 template < class EntityType > void Wfr< EntityType >::fillNodeArr() {

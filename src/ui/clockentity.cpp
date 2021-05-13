@@ -120,7 +120,7 @@ swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarP
     init();
 }
 
-ClockEntity::~ClockEntity() {}
+ClockEntity::~ClockEntity() {/* std::cout << "ClockEntity destruct" << std::endl;*/ }
 
 void ClockEntity::onSwChanged() {
     if ( sw.get_active() ) {
