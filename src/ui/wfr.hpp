@@ -24,9 +24,13 @@
 namespace core::ui {
 
 template < class EntityType > class Wfr final : public Gtk::Frame {
+    struct Enode final {
+        std::shared_ptr< Gtk::Widget > entityWidget;
+        std::shared_ptr< Gtk::Button > closeBtn;
+    };
+
 public:
-    using EntityNode =
-    std::pair< std::shared_ptr< Gtk::Widget >, std::shared_ptr< Gtk::Button > >;
+    using EntityNode     = Enode;
     using EntityNodeArr  = std::list< EntityNode >;
     using AclockNodeJson = core::configure::Configure::AclockNodeJson;
     using TimerNodeJson  = core::configure::Configure::TimerNodeJson;
@@ -43,7 +47,7 @@ private:
     static EntityNode makeNode( int hours, int minutes, int seconds );
     static EntityNode makeNode( std::string_view entry );
     void              onAddBtnClicked();
-    void              onCloseClicked( EntityNodeArr::iterator enodeIt );
+    void              onCloseClicked( typename EntityNodeArr::iterator enodeIt );
     void              fillNodeArr();
 
 public:
@@ -76,16 +80,22 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
         if ( enode == entityNodeArr.begin() )
             grid.attach( *clockEntity, 1, 1 );
         else
-            grid.attach_next_to(
-            *clockEntity, *std::prev( enode )->first, Gtk::PositionType::BOTTOM, 1, 1 );
+            grid.attach_next_to( *clockEntity,
+                                 *std::prev( enode )->entityWidget,
+                                 Gtk::PositionType::BOTTOM,
+                                 1,
+                                 1 );
         grid.attach_next_to( *closeBtn, *clockEntity, Gtk::PositionType::RIGHT, 1, 1 );
         closeBtn->set_halign( Gtk::Align::CENTER );
         closeBtn->set_valign( Gtk::Align::CENTER );
         closeBtn->signal_clicked().connect(
         sigc::bind( sigc::mem_fun( *this, &Wfr::onCloseClicked ), enode ) );
     }
-    grid.attach_next_to(
-    btnAdd, *std::prev( entityNodeArr.end() )->first, Gtk::PositionType::BOTTOM, 2, 1 );
+    grid.attach_next_to( btnAdd,
+                         *std::prev( entityNodeArr.end() )->entityWidget,
+                         Gtk::PositionType::BOTTOM,
+                         2,
+                         1 );
 
     btnAdd.set_halign( Gtk::Align::CENTER );
 
@@ -106,7 +116,7 @@ template < class NJtype >
 NJtype Wfr< EntityType >::acumulateParams() const {
     NJtype jsonNode {};
     for ( auto && enode : entityNodeArr ) {
-        auto node = static_cast< EntityType * >( enode.first.get() );
+        auto node = static_cast< EntityType * >( enode.entityWidget.get() );
         jsonNode.push_back( node->getValues() );
     }
 
@@ -127,8 +137,8 @@ template < class EntityType > void Wfr< EntityType >::saveLayoutToConfig() const
 
 template < class EntityType >
 typename Wfr< EntityType >::EntityNode Wfr< EntityType >::makeNode() {
-    return std::make_pair( std::make_shared< EntityType >(),
-                           std::make_shared< Gtk::Button >( "X" ) );
+    return EntityNode { .entityWidget = std::make_shared< EntityType >(),
+                        .closeBtn     = std::make_shared< Gtk::Button >( "X" ) };
 }
 
 template < class EntityType >
@@ -137,8 +147,9 @@ Wfr< EntityType >::makeNode( int hours, int minutes, int seconds ) {
     static_assert( std::is_same< EntityType, ClockEntity >::value ||
                    std::is_same< EntityType, TimerEntity >::value,
                    "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return std::make_pair( std::make_shared< EntityType >( hours, minutes, seconds ),
-                           std::make_shared< Gtk::Button >( "X" ) );
+    return EntityNode { .entityWidget =
+                        std::make_shared< EntityType >( hours, minutes, seconds ),
+                        .closeBtn = std::make_shared< Gtk::Button >( "X" ) };
 }
 
 template < class EntityType >
@@ -146,8 +157,8 @@ typename Wfr< EntityType >::EntityNode
 Wfr< EntityType >::makeNode( std::string_view entry ) {
     static_assert( std::is_same< EntityType, LogEntity >::value,
                    "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return std::make_pair( std::make_shared< EntityType >( entry.data() ),
-                           std::make_shared< Gtk::Button >( "X" ) );
+    return EntityNode{.entityWidget = std::make_shared< EntityType >( entry.data() ),
+                      .closeBtn     = std::make_shared< Gtk::Button >( "X" ) };
 }
 
 template < class EntityType > void Wfr< EntityType >::onAddBtnClicked() {
@@ -160,7 +171,7 @@ template < class EntityType > void Wfr< EntityType >::onAddBtnClicked() {
     closeBtn->set_valign( Gtk::Align::CENTER );
 
     grid.attach_next_to(
-    *entity, *std::prev( enodeIt )->first, Gtk::PositionType::BOTTOM );
+    *entity, *std::prev( enodeIt )->entityWidget, Gtk::PositionType::BOTTOM );
 
     grid.attach_next_to( *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
 
@@ -169,7 +180,7 @@ template < class EntityType > void Wfr< EntityType >::onAddBtnClicked() {
 }
 
 template < class EntityType >
-void Wfr< EntityType >::onCloseClicked( EntityNodeArr::iterator enodeIt ) {
+void Wfr< EntityType >::onCloseClicked( typename EntityNodeArr::iterator enodeIt ) {
     if ( entityNodeArr.size() > 1 ) {
         auto [ entity, closeBtn ] = *enodeIt;
         grid.remove( *entity );

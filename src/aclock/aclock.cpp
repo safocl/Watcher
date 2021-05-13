@@ -77,7 +77,7 @@ void Aclock::on( const int               hour,
                 auto conf = core::configure::Configure::init();
                 auto pathToSound { conf->getArgv0()
                                    .parent_path()
-                                   .generic_u8string() +
+                                   .generic_string() +
                                    "/../share/alarm.opus" };
                 player->playFromOpusFile( pathToSound,
                                           obj.getSoundVolume() );
