@@ -1,9 +1,10 @@
 #include "mainform.hpp"
 #include "configure/configure.hpp"
-#include "gtkmm/application.h"
-#include "gtkmm/enums.h"
-#include "gtkmm/grid.h"
-#include "sigc++/functors/mem_fun.h"
+
+#include <gtkmm/application.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/grid.h>
+#include <sigc++/functors/mem_fun.h>
 
 namespace core::mForm {
 
@@ -15,10 +16,7 @@ nb(), btnClose( "Quit" ), grid(), app( app ) {
     grid.attach( nb, 1, 1 );
     grid.attach( btnClose, 1, 2 );
 
-//    add( grid );
     set_child(grid);
-
-    //show_all();
 
     btnClose.signal_clicked().connect(
     sigc::mem_fun( *this, &MainWindow::onBtnCloseClicked ) );

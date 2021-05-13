@@ -31,10 +31,8 @@ void ClockEntity::init() {
     spSeconds.set_numeric();
     spSeconds.set_wrap();
 
-    Gtk::Label * delimiter1 =
-    Gtk::make_managed< Gtk::Label >( delimiterString );
-    Gtk::Label * delimiter2 =
-    Gtk::make_managed< Gtk::Label >( delimiterString );
+    Gtk::Label * delimiter1 = Gtk::make_managed< Gtk::Label >( delimiterString );
+    Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
 
     auto                  conf = core::configure::Configure::init();
     std::filesystem::path cssPath {
@@ -44,18 +42,14 @@ void ClockEntity::init() {
         auto cssProvider = Gtk::CssProvider::create();
         cssProvider->load_from_path( cssPath.generic_string() );
         auto swContext = sw.get_style_context();
-        swContext->add_provider( cssProvider,
-                                 GTK_STYLE_PROVIDER_PRIORITY_USER );
+        swContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
         auto hourContext    = spHours.get_style_context();
         auto minutesContext = spMinutes.get_style_context();
         auto secondsContext = spSeconds.get_style_context();
 
-        hourContext->add_provider( cssProvider,
-                                   GTK_STYLE_PROVIDER_PRIORITY_USER );
-        minutesContext->add_provider(
-        cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
-        secondsContext->add_provider(
-        cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
+        hourContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
+        minutesContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
+        secondsContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
     } else
         std::cout << "css file not found" << std::endl;
 
@@ -73,17 +67,16 @@ void ClockEntity::init() {
 
     //progressBar.set_halign( Gtk::Align::CENTER );
     progressBar.set_valign( Gtk::Align::CENTER );
-    progressBar.set_margin_end(1);
-    progressBar.set_margin_start(1);
+    progressBar.set_margin_end( 1 );
+    progressBar.set_margin_start( 1 );
 
     volume.set_halign( Gtk::Align::CENTER );
     volume.set_valign( Gtk::Align::CENTER );
 
-    set_column_spacing(10);
-    set_row_spacing(3);
+    set_column_spacing( 10 );
+    set_row_spacing( 3 );
 
-    volume.set_adjustment(
-    Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
+    volume.set_adjustment( Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
     volume.set_value( 100 );
 
     int attachCount = 0;
@@ -94,16 +87,14 @@ void ClockEntity::init() {
     attach( spSeconds, ++attachCount, 1 );
     attach( sw, ++attachCount, 1 );
     attach( volume, ++attachCount, 1 );
-    attach_next_to(
-    progressBar, spHours, Gtk::PositionType::BOTTOM, attachCount );
+    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM );
 
-//    show_all_children();
+    //    show_all_children();
 
     sw.property_active().signal_changed().connect(
     sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );
 
-    dispatcher_.connect(
-    sigc::mem_fun( *this, &ClockEntity::onDispatcherEmit ) );
+    dispatcher_.connect( sigc::mem_fun( *this, &ClockEntity::onDispatcherEmit ) );
 
     progressBarDispetcher.connect(
     sigc::mem_fun( *this, &ClockEntity::onProgressBarEmit ) );
@@ -112,18 +103,16 @@ void ClockEntity::init() {
 ClockEntity::ClockEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
-dispatcher_(), aclock_(), swBlock( false ), progressBar(), volume(),
-progressBarDispetcher(), progressBarPercent() {
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(), aclock_(),
+swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarPercent() {
     init();
 }
 
 ClockEntity::ClockEntity( int h, int m, int s ) :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(),
-dispatcher_(), aclock_(), swBlock( false ), progressBar(), volume(),
-progressBarDispetcher(), progressBarPercent() {
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(), aclock_(),
+swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarPercent() {
     spHours.set_value( h );
     spMinutes.set_value( m );
     spSeconds.set_value( s );
@@ -157,7 +146,7 @@ void ClockEntity::onDispatcherEmit() {
     spMinutes.set_sensitive();
     spSeconds.set_sensitive();
     sw.set_active( false );
-    progressBar.set_fraction(0);
+    progressBar.set_fraction( 0 );
 }
 
 ClockEntity::AclockNJEntity ClockEntity::getValues() const {
@@ -166,9 +155,7 @@ ClockEntity::AclockNJEntity ClockEntity::getValues() const {
                             spSeconds.get_value_as_int() };
 }
 
-double ClockEntity::getSoundVolume() const {
-    return volume.get_value();
-}
+double ClockEntity::getSoundVolume() const { return volume.get_value(); }
 
 void ClockEntity::setProgressBarPercent( double percent ) {
     if ( percent < 0 )
@@ -180,7 +167,5 @@ void ClockEntity::setProgressBarPercent( double percent ) {
     progressBarDispetcher.emit();
 }
 
-void ClockEntity::onProgressBarEmit() {
-    progressBar.set_fraction( progressBarPercent );
-}
+void ClockEntity::onProgressBarEmit() { progressBar.set_fraction( progressBarPercent ); }
 }   // namespace core::ui

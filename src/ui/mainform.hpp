@@ -1,10 +1,11 @@
 #pragma once
 
+#include "wnotebook.hpp"
+
 #include <gtkmm/window.h>
 #include <gtkmm/button.h>
-#include "gtkmm/application.h"
-#include "gtkmm/grid.h"
-#include "wnotebook.hpp"
+#include <gtkmm/application.h>
+#include <gtkmm/grid.h>
 
 namespace core::mForm {
 

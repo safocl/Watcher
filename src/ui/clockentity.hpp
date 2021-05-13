@@ -1,10 +1,11 @@
 #pragma once
 
 #include "configure/configure.hpp"
-#include "glibmm/dispatcher.h"
 #include "aclock/aclock.hpp"
-#include "gtkmm/progressbar.h"
-#include "gtkmm/volumebutton.h"
+
+#include <glibmm/dispatcher.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/volumebutton.h>
 #include <atomic>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/switch.h>
