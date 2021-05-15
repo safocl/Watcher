@@ -8,7 +8,8 @@
 namespace core::ui {
 
 void LogEntity::init() {
-    entry.set_placeholder_text( "Write text" );
+    if ( entry.get_text_length() == 0 )
+        entry.set_placeholder_text( "Write text" );
 
     entry.set_hexpand();
     entry.set_valign( Gtk::Align::CENTER );
@@ -22,15 +23,11 @@ void LogEntity::init() {
     attach( entry, 1, 1 );
     attach( btn, 2, 1 );
 
-    btn.signal_clicked().connect(
-    sigc::mem_fun( *this, &LogEntity::onButtonClicked ) );
+    btn.signal_clicked().connect( sigc::mem_fun( *this, &LogEntity::onButtonClicked ) );
 }
 
-LogEntity::LogEntity() : entry {}, btn { btnLabel }, logger {} {
-    init();
-}
-LogEntity::LogEntity( std::string_view s ) :
-entry {}, btn { btnLabel }, logger {} {
+LogEntity::LogEntity() : entry {}, btn { btnLabel }, logger {} { init(); }
+LogEntity::LogEntity( std::string_view s ) : entry {}, btn { btnLabel }, logger {} {
     entry.set_text( s.data() );
     init();
 }

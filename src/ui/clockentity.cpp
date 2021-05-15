@@ -64,11 +64,9 @@ void ClockEntity::init() {
 
     sw.set_halign( Gtk::Align::CENTER );
     sw.set_valign( Gtk::Align::CENTER );
+    sw.set_size_request( 70 );
 
-    //progressBar.set_halign( Gtk::Align::CENTER );
-    progressBar.set_valign( Gtk::Align::CENTER );
-    progressBar.set_margin_end( 1 );
-    progressBar.set_margin_start( 1 );
+    progressBar.set_margin( 1 );
 
     volume.set_halign( Gtk::Align::CENTER );
     volume.set_valign( Gtk::Align::CENTER );
@@ -87,7 +85,7 @@ void ClockEntity::init() {
     attach( spSeconds, ++attachCount, 1 );
     attach( sw, ++attachCount, 1 );
     attach( volume, ++attachCount, 1 );
-    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM );
+    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM, attachCount );
 
     //    show_all_children();
 
@@ -120,7 +118,8 @@ swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarP
     init();
 }
 
-ClockEntity::~ClockEntity() {/* std::cout << "ClockEntity destruct" << std::endl;*/ }
+ClockEntity::~ClockEntity() { /* std::cout << "ClockEntity destruct" << std::endl;*/
+}
 
 void ClockEntity::onSwChanged() {
     if ( sw.get_active() ) {

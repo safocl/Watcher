@@ -53,10 +53,7 @@ void TimerEntity::init() {
     volume.set_halign( Gtk::Align::CENTER );
     volume.set_valign( Gtk::Align::CENTER );
 
-    //progressBar.set_halign( Gtk::Align::CENTER );
-    progressBar.set_valign( Gtk::Align::CENTER );
-    progressBar.set_margin_end( 1 );
-    progressBar.set_margin_start( 1 );
+    progressBar.set_margin( 1 );
 
     volume.set_halign( Gtk::Align::CENTER );
     volume.set_valign( Gtk::Align::CENTER );
@@ -72,9 +69,8 @@ void TimerEntity::init() {
     attach( spSeconds, ++attachColumns, 1 );
     attach( btn, ++attachColumns, 1 );
     attach_next_to( volume, btn, Gtk::PositionType::RIGHT );
-    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM );
-
-    //    show_all_children();
+    ++attachColumns;
+    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM, attachColumns );
 
     btn.signal_clicked().connect( sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );
 
