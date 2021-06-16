@@ -7,5 +7,5 @@ struct Logger final {
     std::filesystem::path pathToLogFile;
 
     Logger();
-    void log( const Glib::ustring message );
+    void log( const std::string_view message );
 };
