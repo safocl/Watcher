@@ -11,9 +11,9 @@
 namespace core::ui {
 
 class LogEntity final : public Gtk::Grid {
-    using LoggerNJEntity = configure::Configure::LoggerNJEntity;
+    using LoggerNJEntity = configure::LoggerNJEntity;
     Gtk::Entry          entry;
-    const Glib::ustring btnLabel { "Log in" };
+    std::string_view    btnLabel { "Log in" };
     Gtk::Button         btn;
 
     Logger logger;

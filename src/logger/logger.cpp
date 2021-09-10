@@ -14,8 +14,7 @@
 
 Logger::Logger() : pathToLogFile() {
     auto conf = core::configure::Configure::init();
-    pathToLogFile =
-    conf->getParams().at( "pathToLogFile" ).get< std::string_view >();
+    pathToLogFile = conf->getParams().pathToLogFile;
     if ( !pathToLogFile.has_filename() )
         throw std::runtime_error( "Path do not have file" );
 }

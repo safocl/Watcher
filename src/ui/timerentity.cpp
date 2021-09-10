@@ -32,7 +32,7 @@ void TimerEntity::init() {
     spSeconds.set_wrap();
 
     volume.set_adjustment( Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
-    volume.set_value( 100 );
+    volume.set_value( 50 );
 
     Gtk::Label * delimiter1 = Gtk::make_managed< Gtk::Label >( delimiterString );
     Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
@@ -89,23 +89,24 @@ timerPtr(), progressBarDispetcher() {
     init();
 }
 
-TimerEntity::TimerEntity( int h, int m, int s ) :
+TimerEntity::TimerEntity( int h, int m, int s, double v ) :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
 spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), delimiterString( " : " ),
 strStart( "Start" ), strStop( "Stop" ), btn( strStart ), progressBar(), volume(),
 timerPtr(), progressBarDispetcher() {
+    init();
+
     spHours.set_value( h );
     spMinutes.set_value( m );
     spSeconds.set_value( s );
-
-    init();
+    volume.set_value( v );
 }
 
 TimerEntity::~TimerEntity() {}
 
 void TimerEntity::onButtonClicked() {
-    if ( btn.get_label() == strStart ) {
+    if ( btn.get_label().c_str() == strStart.c_str() ) {
         int                  secValue  = spSeconds.get_value_as_int();
         int                  minValue  = spMinutes.get_value_as_int() * 60;
         int                  hourValue = spHours.get_value_as_int() * 3600;
@@ -138,9 +139,12 @@ void TimerEntity::onDispatcherEmit() {
 }
 
 TimerEntity::TimerNJEntity TimerEntity::getValues() const {
-    return TimerNJEntity { spHours.get_value_as_int(),
-                           spMinutes.get_value_as_int(),
-                           spSeconds.get_value_as_int() };
+    return TimerNJEntity {
+        static_cast< std::uint8_t >( spHours.get_value_as_int() ),
+        static_cast< std::uint8_t >( spMinutes.get_value_as_int() ),
+        static_cast< std::uint8_t >( spSeconds.get_value_as_int() ),
+        getSoundVolume()
+    };
 }
 
 double TimerEntity::getSoundVolume() const { return volume.get_value(); }

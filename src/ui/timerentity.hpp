@@ -2,6 +2,7 @@
 
 #include "configure/configure.hpp"
 #include "timer/timer.hpp"
+
 #include <atomic>
 #include <thread>
 #include <vector>
@@ -17,8 +18,9 @@
 
 namespace core::ui {
 
+
 class TimerEntity final : public Gtk::Grid {
-    using TimerNJEntity = configure::Configure::TimerNJEntity;
+    using TimerNJEntity = configure::TimerNJEntity;
     Gtk::SpinButton  spHours, spMinutes, spSeconds;
     Glib::ustring    delimiterString;
     Glib::ustring    strStart;
@@ -39,7 +41,7 @@ class TimerEntity final : public Gtk::Grid {
 
 public:
     TimerEntity();
-    TimerEntity(int hours, int minutes, int seconds);
+    TimerEntity( int hours, int minutes, int seconds, double volume );
     ~TimerEntity();
     void returnSens();
     TimerNJEntity getValues() const;

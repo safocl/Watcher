@@ -26,15 +26,19 @@ void LogEntity::init() {
     btn.signal_clicked().connect( sigc::mem_fun( *this, &LogEntity::onButtonClicked ) );
 }
 
-LogEntity::LogEntity() : entry {}, btn { btnLabel }, logger {} { init(); }
-LogEntity::LogEntity( std::string_view s ) : entry {}, btn { btnLabel }, logger {} {
+LogEntity::LogEntity() : entry {}, btn { btnLabel.data() }, logger {} { init(); }
+
+LogEntity::LogEntity( std::string_view s ) :
+entry {}, btn { btnLabel.data() }, logger {} {
     entry.set_text( s.data() );
     init();
 }
 
 LogEntity::~LogEntity() {}
 
-void LogEntity::onButtonClicked() { logger.log( entry.get_text() ); }
+void LogEntity::onButtonClicked() {
+    logger.log( static_cast< std::string >( entry.get_text() ) );
+}
 
 LogEntity::LoggerNJEntity LogEntity::getValues() const {
     return LoggerNJEntity { entry.get_text().c_str() };

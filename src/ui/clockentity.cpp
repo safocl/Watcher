@@ -35,9 +35,7 @@ void ClockEntity::init() {
     Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
 
     auto                  conf = core::configure::Configure::init();
-    std::filesystem::path cssPath {
-        conf->getParams().at( "pathToTheme" ).get< std::string >()
-    };
+    std::filesystem::path cssPath { conf->getParams().pathToTheme };
     if ( std::filesystem::exists( cssPath ) ) {
         auto cssProvider = Gtk::CssProvider::create();
         cssProvider->load_from_path( cssPath.generic_string() );
@@ -75,7 +73,7 @@ void ClockEntity::init() {
     set_row_spacing( 3 );
 
     volume.set_adjustment( Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
-    volume.set_value( 100 );
+    volume.set_value( 50 );
 
     int attachCount = 0;
     attach( spHours, ++attachCount, 1 );
@@ -106,16 +104,18 @@ swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarP
     init();
 }
 
-ClockEntity::ClockEntity( int h, int m, int s ) :
+ClockEntity::ClockEntity( int h, int m, int s, double v ) :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(), aclock_(),
-swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarPercent() {
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(),
+aclock_(), swBlock( false ), progressBar(), volume(), progressBarDispetcher(),
+progressBarPercent() {
+    init();
+
     spHours.set_value( h );
     spMinutes.set_value( m );
     spSeconds.set_value( s );
-
-    init();
+    volume.set_value( v );
 }
 
 ClockEntity::~ClockEntity() { /* std::cout << "ClockEntity destruct" << std::endl;*/
@@ -149,9 +149,12 @@ void ClockEntity::onDispatcherEmit() {
 }
 
 ClockEntity::AclockNJEntity ClockEntity::getValues() const {
-    return AclockNJEntity { spHours.get_value_as_int(),
-                            spMinutes.get_value_as_int(),
-                            spSeconds.get_value_as_int() };
+    return AclockNJEntity {
+        static_cast< std::uint8_t >( spHours.get_value_as_int() ),
+        static_cast< std::uint8_t >( spMinutes.get_value_as_int() ),
+        static_cast< std::uint8_t >( spSeconds.get_value_as_int() ),
+        volume.get_value()
+    };
 }
 
 double ClockEntity::getSoundVolume() const { return volume.get_value(); }

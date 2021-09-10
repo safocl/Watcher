@@ -55,29 +55,24 @@ std::shared_ptr< Configure::ConfImpl > Configure::init( std::filesystem::path ar
 std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
 
 void Configure::ConfImpl::fillDefaultParams() {
-    defaultParams[ "pathToLogFile" ] =
+    defaultParams.pathToLogFile =
     pathToConfig.parent_path().generic_string() + "/log.txt";
-    defaultParams[ "pathToTheme" ] =
+    defaultParams.pathToTheme =
     pathToConfig.parent_path().generic_string() + "/theme.css";
 
     LoggerNodeJson lnj { { "uppu" } };
-    defaultParams[ "logEntity" ] = lnj;
-    AclockNodeJson anj { { 9, 10, 12 } };
-    defaultParams[ "aclockEntity" ] = anj;
-    TimerNodeJson tnj { { 8, 8, 8 } };
-    defaultParams[ "timerEntity" ] = tnj;
+    defaultParams.logs = lnj;
+    AclockNodeJson anj { { 9, 10, 12, 100 } };
+    defaultParams.aclocks = anj;
+    TimerNodeJson tnj { { 8, 8, 8, 100 } };
+    defaultParams.timers = tnj;
 }
 
 void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
-    std::string           strTmpParam {};
-    std::filesystem::path tmpPath {};
 
     try {
-        strTmpParam = params_.at( "pathToLogFile" ).get< std::string >();
-        tmpPath     = strTmpParam;
-        if ( params_[ "pathToLogFile" ].is_string() && params_[ "pathToLogFile" ] != "" &&
-             std::filesystem::is_regular_file( tmpPath ) )
-            params[ "pathToLogFile" ] = params_.at( "pathToLogFile" );
+        if ( std::filesystem::is_regular_file( params_.pathToLogFile ) )
+            params.pathToLogFile = params_.pathToLogFile;
         else {
             std::cout << "Not valid pathToLogFile in config file" << std::endl
                       << "load default pathToLogFile" << std::endl;
@@ -85,11 +80,8 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        strTmpParam = params_.at( "pathToTheme" ).get< std::string >();
-        tmpPath     = strTmpParam;
-        if ( std::filesystem::exists( tmpPath ) &&
-             std::filesystem::is_regular_file( tmpPath ) )
-            params[ "pathToTheme" ] = params_.at( "pathToTheme" );
+        if ( std::filesystem::is_regular_file( params_.pathToTheme ) )
+            params.pathToTheme = params_.pathToTheme;
         else {
             std::cout << "Not valid pathToTheme in config file" << std::endl
                       << "load default pathToTheme" << std::endl;
@@ -97,27 +89,28 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        params[ "aclockEntity" ] = params_.at( "aclockEntity" );
+        params.aclocks = params_.aclocks;
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        params[ "timerEntity" ] = params_.at( "timerEntity" );
+        params.timers = params_.timers;
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        params[ "logEntity" ] = params_.at( "logEntity" );
+        params.logs = params_.logs;
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
-    params.clear();
     params = defaultParams;
 
     if ( !std::filesystem::exists( pathToConfig ) ) {
         std::filesystem::create_directories( pathToConfig.parent_path() );
 
+        nlohmann::json defaultParamsJS = defaultParams;
+
         std::ofstream configFile { pathToConfig };
-        configFile << std::setw( 4 ) << defaultParams << std::endl;
+        configFile << std::setw( 4 ) << defaultParamsJS << std::endl;
         configFile.close();
 
         lastChangeConfig = std::chrono::system_clock::now();
@@ -127,7 +120,7 @@ void Configure::ConfImpl::loadFromConfigFile() {
 
         operator>>( configFile, *tmpJConfig );
 
-        fillParams( *tmpJConfig );
+        fillParams( tmpJConfig->get< Parametres >() );
 
         configFile.close();
     }
@@ -138,8 +131,9 @@ void Configure::ConfImpl::loadFromConfigFile() {
 Configure::Parametres Configure::ConfImpl::getParams() const { return params; }
 
 void Configure::ConfImpl::saveToConfigFile() {
+    nlohmann::json paramsJS = params;
     std::ofstream configFile { pathToConfig };
-    configFile << std::setw( 4 ) << params << std::endl;
+    configFile << std::setw( 4 ) << paramsJS << std::endl;
     configFile.close();
 
     lastChangeConfig = std::chrono::system_clock::now();

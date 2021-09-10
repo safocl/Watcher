@@ -32,19 +32,19 @@ template < class EntityType > class Wfr final : public Gtk::Frame {
 public:
     using EntityNode     = Enode;
     using EntityNodeArr  = std::list< EntityNode >;
-    using AclockNodeJson = core::configure::Configure::AclockNodeJson;
-    using TimerNodeJson  = core::configure::Configure::TimerNodeJson;
-    using LoggerNodeJson = core::configure::Configure::LoggerNodeJson;
+    using AclockNodeJson = core::configure::AclockNodeJson;
+    using TimerNodeJson  = core::configure::TimerNodeJson;
+    using LoggerNodeJson = core::configure::LoggerNodeJson;
     using Parametres     = core::configure::Configure::Parametres;
 
 private:
-    const Glib::ustring Label;
+    std::string_view    Label;
     Gtk::Button         btnAdd;
     Gtk::Grid           grid;
     EntityNodeArr       entityNodeArr;
 
     static EntityNode makeNode();
-    static EntityNode makeNode( int hours, int minutes, int seconds );
+    static EntityNode makeNode( int hours, int minutes, int seconds, double volume );
     static EntityNode makeNode( std::string_view entry );
     void              onAddBtnClicked();
     void              onCloseClicked( typename EntityNodeArr::iterator enodeIt );
@@ -54,20 +54,20 @@ public:
     Wfr( std::string_view label );
     ~Wfr();
 
-    Glib::ustring                    getName() const;
+    std::string                      getName() const;
     template < class NJtype > NJtype acumulateParams() const;
     void                             saveLayoutToConfig() const;
 };
 
 template < class EntityType >
 Wfr< EntityType >::Wfr( std::string_view label ) :
-Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
+Label( label ), btnAdd( " +++ " ), grid(), entityNodeArr() {
     static_assert( std::is_same< EntityType, ClockEntity >::value ||
                    std::is_same< EntityType, TimerEntity >::value ||
                    std::is_same< EntityType, LogEntity >::value,
                    "unacceptable use for this type" );
 
-    set_label( Label );
+    set_label( Label.data() );
 
     grid.set_column_spacing( 15 );
     grid.set_row_spacing( 20 );
@@ -75,22 +75,23 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
     fillNodeArr();
 
     for ( auto enode = entityNodeArr.begin(); enode != entityNodeArr.end(); ++enode ) {
-        auto [ clockEntity, closeBtn ] = *enode;
+        auto [ entity, closeBtn ] = *enode;
 
         if ( enode == entityNodeArr.begin() )
-            grid.attach( *clockEntity, 1, 1 );
+            grid.attach( *entity, 1, 1 );
         else
-            grid.attach_next_to( *clockEntity,
+            grid.attach_next_to( *entity,
                                  *std::prev( enode )->entityWidget,
                                  Gtk::PositionType::BOTTOM,
                                  1,
                                  1 );
-        grid.attach_next_to( *closeBtn, *clockEntity, Gtk::PositionType::RIGHT, 1, 1 );
+        grid.attach_next_to( *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
         closeBtn->set_halign( Gtk::Align::CENTER );
         closeBtn->set_valign( Gtk::Align::CENTER );
         closeBtn->signal_clicked().connect(
         sigc::bind( sigc::mem_fun( *this, &Wfr::onCloseClicked ), enode ) );
     }
+
     grid.attach_next_to( btnAdd,
                          *std::prev( entityNodeArr.end() )->entityWidget,
                          Gtk::PositionType::BOTTOM,
@@ -107,8 +108,8 @@ Label( label.data() ), btnAdd( " +++ " ), grid(), entityNodeArr() {
 
 template < class EntityType > Wfr< EntityType >::~Wfr() = default;
 
-template < class EntityType > Glib::ustring Wfr< EntityType >::getName() const {
-    return Label;
+template < class EntityType > std::string Wfr< EntityType >::getName() const {
+    return Label.data();
 }
 
 template < class EntityType >
@@ -125,14 +126,17 @@ NJtype Wfr< EntityType >::acumulateParams() const {
 
 template < class EntityType > void Wfr< EntityType >::saveLayoutToConfig() const {
     auto conf = core::configure::Configure::init();
-    if constexpr ( std::is_same< EntityType, ClockEntity >::value ) {
-        conf->import( acumulateParams< AclockNodeJson >(), "aclockEntity" );
-    } else if constexpr ( std::is_same< EntityType, TimerEntity >::value ) {
-        conf->import( acumulateParams< TimerNodeJson >(), "timerEntity" );
+    Parametres params = conf->getParams();
 
+    if constexpr ( std::is_same< EntityType, ClockEntity >::value ) {
+        params.aclocks = acumulateParams< AclockNodeJson >();
+    } else if constexpr ( std::is_same< EntityType, TimerEntity >::value ) {
+        params.timers = acumulateParams< TimerNodeJson >();
     } else if constexpr ( std::is_same< EntityType, LogEntity >::value ) {
-        conf->import( acumulateParams< LoggerNodeJson >(), "logEntity" );
+        params.logs = acumulateParams< LoggerNodeJson >();
     }
+
+    conf->import( params );
 }
 
 template < class EntityType >
@@ -143,12 +147,12 @@ typename Wfr< EntityType >::EntityNode Wfr< EntityType >::makeNode() {
 
 template < class EntityType >
 typename Wfr< EntityType >::EntityNode
-Wfr< EntityType >::makeNode( int hours, int minutes, int seconds ) {
+Wfr< EntityType >::makeNode( int hours, int minutes, int seconds, double volume ) {
     static_assert( std::is_same< EntityType, ClockEntity >::value ||
                    std::is_same< EntityType, TimerEntity >::value,
                    "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return EntityNode { .entityWidget =
-                        std::make_shared< EntityType >( hours, minutes, seconds ),
+    return EntityNode { .entityWidget = std::make_shared< EntityType >(
+                        hours, minutes, seconds, volume ),
                         .closeBtn = std::make_shared< Gtk::Button >( "X" ) };
 }
 
@@ -193,21 +197,19 @@ void Wfr< EntityType >::onCloseClicked( typename EntityNodeArr::iterator enodeIt
 template < class EntityType > void Wfr< EntityType >::fillNodeArr() {
     auto conf = core::configure::Configure::init();
     if constexpr ( std::is_same< EntityType, ClockEntity >::value ) {
-        for ( auto && el :
-              conf->getParams().at( "aclockEntity" ).get< AclockNodeJson >() ) {
-            auto [ h, m, s ] = el;
-            entityNodeArr.push_back( makeNode( h, m, s ) );
+        for ( auto && el : conf->getParams().aclocks ) {
+            auto [ h, m, s, volume ] = el;
+            entityNodeArr.push_back( makeNode( h, m, s, volume ) );
         }
 
     } else if constexpr ( std::is_same< EntityType, TimerEntity >::value ) {
-        for ( auto && el :
-              conf->getParams().at( "timerEntity" ).get< TimerNodeJson >() ) {
-            auto [ h, m, s ] = el;
-            entityNodeArr.push_back( makeNode( h, m, s ) );
+        for ( auto && el : conf->getParams().timers ) {
+            auto [ h, m, s, volume ] = el;
+            entityNodeArr.push_back( makeNode( h, m, s, volume ) );
         }
 
     } else if constexpr ( std::is_same< EntityType, LogEntity >::value ) {
-        for ( auto && el : conf->getParams().at( "logEntity" ).get< LoggerNodeJson >() ) {
+        for ( auto && el : conf->getParams().logs ) {
             entityNodeArr.push_back( makeNode( el ) );
         }
     }

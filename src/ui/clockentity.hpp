@@ -17,7 +17,7 @@ namespace core::ui {
 
 class ClockEntity final : public Gtk::Grid {
 public:
-    using AclockNJEntity = configure::Configure::AclockNJEntity;
+    using AclockNJEntity = configure::AclockNJEntity;
     Gtk::SpinButton   spHours, spMinutes, spSeconds;
     Gtk::Switch       sw;
     Glib::ustring     delimiterString { " : " };
@@ -36,7 +36,7 @@ public:
 
 public:
     ClockEntity();
-    ClockEntity( int hours, int minutes, int seconds );
+    ClockEntity( int hours, int minutes, int seconds, double volume );
     ~ClockEntity();
     void           returnSensElements();
     AclockNJEntity getValues() const;

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <chrono>
+#include <cstdint>
 #include <filesystem>
 #include <iostream>
 #include <map>
@@ -14,15 +15,41 @@
 
 namespace core::configure {
 
+using VolumeNodeJson = double;
+
+struct TimingNodes final {
+    std::uint8_t hour;
+    std::uint8_t minute;
+    std::uint8_t second;
+    VolumeNodeJson volume;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE( TimingNodes, hour, minute, second, volume );
+};
+
+using LoggerNJEntity = std::string;
+using LoggerNodeJson = std::vector< LoggerNJEntity >;
+
+using AclockNJEntity = TimingNodes;
+using AclockNodeJson = std::vector< AclockNJEntity >;
+
+using TimerNJEntity  = TimingNodes;
+using TimerNodeJson  = std::vector< TimerNJEntity >;
+
+struct ParametresImpl final {
+    LoggerNodeJson logs;
+    AclockNodeJson aclocks;
+    TimerNodeJson  timers;
+
+    std::filesystem::path pathToLogFile;
+    std::filesystem::path pathToTheme;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+    ParametresImpl, logs, aclocks, timers, pathToLogFile, pathToTheme );
+};
+
 class Configure final {
 public:
-    using Parametres     = nlohmann::json;
-    using LoggerNJEntity = std::string;
-    using LoggerNodeJson = std::vector< LoggerNJEntity >;
-    using AclockNJEntity = std::array< int, 3 >;
-    using AclockNodeJson = std::vector< AclockNJEntity >;
-    using TimerNJEntity  = std::array< int, 3 >;
-    using TimerNodeJson  = std::vector< TimerNJEntity >;
+    using Parametres = ParametresImpl;
 
 private:
     struct ConfImpl {
@@ -43,10 +70,7 @@ private:
         Parametres            getParams() const;
         std::filesystem::path getArgv0() const;
 
-        template < class JEntity >
-        void import( JEntity el, std::string_view jEntityName ) {
-            params[ jEntityName.data() ] = el;
-        }
+        void import( Parametres newParams ) { params = newParams; }
 
         ConfImpl( std::filesystem::path argv0 );
     };
@@ -55,8 +79,7 @@ private:
     static std::shared_ptr< ConfImpl > confImpl;
 
 public:
-    static std::shared_ptr< ConfImpl >
-                                       init( std::filesystem::path argv0 );
+    static std::shared_ptr< ConfImpl > init( std::filesystem::path argv0 );
     static std::shared_ptr< ConfImpl > init();
 };
 
