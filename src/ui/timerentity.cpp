@@ -106,7 +106,7 @@ timerPtr(), progressBarDispetcher() {
 TimerEntity::~TimerEntity() {}
 
 void TimerEntity::onButtonClicked() {
-    if ( btn.get_label().c_str() == strStart.c_str() ) {
+    if ( btn.get_label() == strStart.c_str() ) {
         int                  secValue  = spSeconds.get_value_as_int();
         int                  minValue  = spMinutes.get_value_as_int() * 60;
         int                  hourValue = spHours.get_value_as_int() * 3600;
