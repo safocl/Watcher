@@ -4,7 +4,7 @@
 #include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_timer.h>
-#include <atomic>
+#include <mutex>
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
@@ -13,7 +13,7 @@
 namespace core::sdlplayer {
 
 class SdlPlayer final {
-    static std::atomic_bool isLock;
+    static std::mutex sdlPlayerMutex;
 
 public:
     SdlPlayer();

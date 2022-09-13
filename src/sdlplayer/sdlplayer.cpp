@@ -1,9 +1,10 @@
 #include "sdlplayer.hpp"
 #include <SDL2/SDL_mixer.h>
+#include <mutex>
 
 namespace core::sdlplayer {
 
-std::atomic_bool SdlPlayer::isLock = false;
+std::mutex SdlPlayer::sdlPlayerMutex {};
 
 SdlPlayer::SdlPlayer() {
     if ( SDL_Init( SDL_INIT_AUDIO ) < 0 )
@@ -24,9 +25,8 @@ SdlPlayer::~SdlPlayer() {
 
 void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
                                  double                volume ) {
-    while ( isLock )
-        SDL_Delay( 1 );
-    isLock     = true;
+    std::lock_guard mutLock( sdlPlayerMutex );
+
     auto chunk = Mix_LoadWAV( wavFile.generic_string().c_str() );
     Mix_VolumeMusic( MIX_MAX_VOLUME * ( volume * 0.01 ) );
     if ( chunk == nullptr )
@@ -34,14 +34,12 @@ void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
     if ( Mix_PlayChannel( -1, chunk, 0 ) < 0 )
         throw std::runtime_error( Mix_GetError() );
     SDL_Delay( 5000 );
-    isLock = false;
 }
 
 void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
                                   double                volume ) {
-    while ( isLock )
-        SDL_Delay( 1 );
-    isLock = true;
+    std::lock_guard mutLock( sdlPlayerMutex );
+
     Mix_Init( MIX_INIT_OPUS );
     auto chunk = Mix_LoadMUS( opusFile.generic_string().c_str() );
     if ( chunk == nullptr )
@@ -52,7 +50,6 @@ void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
     SDL_Delay( 5000 );
     Mix_FreeMusic( chunk );
     Mix_Quit();
-    isLock = false;
 }
 
 }   // namespace core::sdlplayer

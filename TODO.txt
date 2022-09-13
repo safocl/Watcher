@@ -1,2 +1,8 @@
-[ ] Finish working with the locale
-[ ] serialize/deserialize json in config class
+[*] Finish working with the locale
+[*] serialize/deserialize json in config class
+[*] fix data race in sdlplayer
+[ ] implement sdl_mixer modules for sdlplayer
+[ ] reimplement wfr via std::variant
+[ ] clearing of #include directives.
+[ ] replace installation path
+[ ] wav file playback is normal?
