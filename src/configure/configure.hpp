@@ -42,6 +42,7 @@ struct ParametresImpl final {
 
     std::filesystem::path pathToLogFile;
     std::filesystem::path pathToTheme;
+    std::filesystem::path pathToAlarmAudio;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(
     ParametresImpl, logs, aclocks, timers, pathToLogFile, pathToTheme );

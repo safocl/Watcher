@@ -20,11 +20,47 @@ namespace core::configure {
 
 std::shared_ptr< Configure::ConfImpl > Configure::confImpl { nullptr };
 
-static std::filesystem::path defineSysConfPath() {
+namespace{
+std::filesystem::path defineSysDataPath() {
+    std::filesystem::path pathToData {};
+#ifdef __linux__
+    pathToData = "/usr/share";
+#elif _WIN32
+    pathToData = std::string { std::getenv( "APPDATA" ) };
+#endif
+
+    if ( pathToData.empty() )
+        throw std::runtime_error( "The data path is undefined." );
+    else
+        pathToData /= "watcher";
+    return pathToData;
+}
+
+std::filesystem::path defineUserDataPath() {
+    std::filesystem::path pathToUserData {};
+#ifdef __linux__
+    auto dir = std::getenv( "XDG_DATA_HOME" );
+    if ( dir )
+        pathToUserData = std::string { dir };
+    else
+        pathToUserData = std::string( std::getenv( "HOME" ) ) + "/.local/share";
+#elif _WIN32
+    pathToUserData = std::string { std::getenv( "APPDATA" ) };
+#endif
+
+    if ( pathToUserData.empty() )
+        throw std::runtime_error( "The config path is undefined." );
+    else
+        pathToUserData /= "watcher";
+    return pathToUserData;
+}
+
+std::filesystem::path defineSysConfPath() {
     std::filesystem::path pathToConfig {};
 #ifdef __linux__
-    if ( std::getenv( "XDG_CONFIG_HOME" ) != nullptr )
-        pathToConfig = std::string { std::getenv( "XDG_CONFIG_HOME" ) };
+    auto dir = std::getenv( "XDG_CONFIG_HOME" );
+    if ( dir )
+        pathToConfig = std::string { dir };
     else
         pathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
 #elif _WIN32
@@ -36,6 +72,7 @@ static std::filesystem::path defineSysConfPath() {
     else
         pathToConfig /= "watcher/config.json";
     return pathToConfig;
+}
 }
 
 Configure::ConfImpl::ConfImpl( std::filesystem::path argv0 ) :
@@ -55,10 +92,18 @@ std::shared_ptr< Configure::ConfImpl > Configure::init( std::filesystem::path ar
 std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
 
 void Configure::ConfImpl::fillDefaultParams() {
-    defaultParams.pathToLogFile =
-    pathToConfig.parent_path().generic_string() + "/log.txt";
-    defaultParams.pathToTheme =
-    pathToConfig.parent_path().generic_string() + "/theme.css";
+    defaultParams.pathToLogFile = defineUserDataPath() / "/log.txt";
+
+    defaultParams.pathToTheme = defineUserDataPath().generic_string() + "/theme.css";
+    if ( !std::filesystem::exists( defaultParams.pathToTheme ) )
+        defaultParams.pathToTheme = defineSysDataPath() / "/theme.css";
+
+    defaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
+    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) ) 
+        defaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
+
+    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
+        throw std::runtime_error( "System audio file for a BEEP is not found" );
 
     LoggerNodeJson lnj { { "uppu" } };
     defaultParams.logs = lnj;
