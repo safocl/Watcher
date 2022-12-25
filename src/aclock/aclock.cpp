@@ -72,15 +72,7 @@ void Aclock::on( const int               hour,
             std::cout << "Alarm clock the ringing into: "
                       << timeOutput << std::endl;
             if ( !offFlag_ ) {
-                auto player =
-                std::make_unique< core::sdlplayer::SdlPlayer >();
-                auto conf = core::configure::Configure::init();
-                auto pathToSound { conf->getArgv0()
-                                   .parent_path()
-                                   .generic_string() +
-                                   "/../share/alarm.opus" };
-                player->playFromOpusFile( pathToSound,
-                                          obj.getSoundVolume() );
+                core::player::beep( obj.getValues().volume );
             }
         },
         std::ref( obj ),

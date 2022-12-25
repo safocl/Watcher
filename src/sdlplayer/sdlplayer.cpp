@@ -1,4 +1,5 @@
 #include "sdlplayer.hpp"
+#include "configure/configure.hpp"
 #include <SDL2/SDL_mixer.h>
 #include <mutex>
 
@@ -53,3 +54,13 @@ void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
 }
 
 }   // namespace core::sdlplayer
+
+namespace core::player{
+void beep( double volume ) {
+    static sdlplayer::SdlPlayer sdlPlayer {};
+
+    const auto conf = configure::Configure::init()->getParams();
+
+    sdlPlayer.playFromOpusFile( conf.pathToAlarmAudio, volume );
+}
+}

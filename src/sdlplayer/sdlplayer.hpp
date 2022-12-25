@@ -25,3 +25,7 @@ public:
 };
 
 }   // namespace core::sdlplayer
+
+namespace core::player{
+void beep( double volume );
+}

@@ -52,18 +52,7 @@ void Timer::start( const std::chrono::seconds & timerDuration,
             std::cout << "Timer stoped at: " << timeOutput
                       << std::endl;
             if ( !closeThreadFlag_ ) {
-                auto player =
-                std::make_unique< core::sdlplayer::SdlPlayer >();
-                auto conf = core::configure::Configure::init();
-                std::filesystem::path pathToSound {
-                    conf->getArgv0()
-                    .parent_path()
-                    .generic_string() +
-                    "/../share/alarm.opus"
-                };
-
-                player->playFromOpusFile( pathToSound,
-                                          obj.getSoundVolume() );
+                core::player::beep( obj.getValues().volume );
             }
         },
         doneSleepTimePoint,
