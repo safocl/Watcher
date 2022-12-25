@@ -46,8 +46,10 @@ void ClockEntity::init() {
         auto secondsContext = spSeconds.get_style_context();
 
         hourContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
-        minutesContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
-        secondsContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
+        minutesContext->add_provider( cssProvider,
+                                      GTK_STYLE_PROVIDER_PRIORITY_USER );
+        secondsContext->add_provider( cssProvider,
+                                      GTK_STYLE_PROVIDER_PRIORITY_USER );
     } else
         std::cout << "css file not found" << std::endl;
 
@@ -99,8 +101,9 @@ void ClockEntity::init() {
 ClockEntity::ClockEntity() :
 spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
 spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(), aclock_(),
-swBlock( false ), progressBar(), volume(), progressBarDispetcher(), progressBarPercent() {
+spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(),
+aclock_(), swBlock( false ), progressBar(), volume(), progressBarDispetcher(),
+progressBarPercent() {
     init();
 }
 
@@ -169,5 +172,7 @@ void ClockEntity::setProgressBarPercent( double percent ) {
     progressBarDispetcher.emit();
 }
 
-void ClockEntity::onProgressBarEmit() { progressBar.set_fraction( progressBarPercent ); }
+void ClockEntity::onProgressBarEmit() {
+    progressBar.set_fraction( progressBarPercent );
+}
 }   // namespace core::ui

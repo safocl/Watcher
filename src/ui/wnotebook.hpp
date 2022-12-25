@@ -7,9 +7,9 @@
 namespace core::ui {
 
 class WNotebook final : public Gtk::Notebook {
-    Wfr< ClockEntity > frAcl;
-    Wfr< TimerEntity > frTm;
-    Wfr< LogEntity >   frLog;
+    WidgetProvider< AclockContanerFrame > frAcl;
+    WidgetProvider< TimerContanerFrame >  frTm;
+    WidgetProvider< LoggerContanerFrame > frLog;
 
 public:
     WNotebook();
