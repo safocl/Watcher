@@ -6,6 +6,7 @@
 #include "timerentity.hpp"
 #include "clockentity.hpp"
 
+#include <gtkmm/expander.h>
 #include <glibmm/main.h>
 #include <gtkmm/scrolledwindow.h>
 #include <fstream>
@@ -15,6 +16,7 @@
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/switch.h>
 #include <gtkmm/grid.h>
+#include <ios>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -27,6 +29,7 @@
 #include <gtkmm/enums.h>
 #include <utility>
 #include <concepts>
+#include <vector>
 
 namespace core::ui {
 
@@ -427,35 +430,66 @@ public:
 
         textWraper->set_child( *logText );
 
-        widgets.grid.attach_next_to(
-        *textWraper, widgets.btnAdd, Gtk::PositionType::BOTTOM );
-
-        auto logTextRefrashButton = Gtk::make_managed< Gtk::Button >();
-        logTextRefrashButton->set_expand();
-        logTextRefrashButton->set_label( "Refrash" );
+        auto textWraperExpander = Gtk::make_managed< Gtk::Expander >();
+        textWraperExpander->set_label( "Log text" );
 
         widgets.grid.attach_next_to(
-        *logTextRefrashButton, *textWraper, Gtk::PositionType::RIGHT );
+        *textWraperExpander, widgets.btnAdd, Gtk::PositionType::BOTTOM, 2, 1 );
+
+        auto textWraperGrid = Gtk::make_managed< Gtk::Grid >();
+
+        textWraperGrid->attach( *textWraper, 0, 0 );
+
+        auto logTextRefreshButton = Gtk::make_managed< Gtk::Button >();
+        //logTextRefreshButton->set_expand();
+        logTextRefreshButton->set_label( "Refresh" );
+
+        textWraperGrid->attach_next_to(
+        *logTextRefreshButton, *textWraper, Gtk::PositionType::RIGHT );
+
+        textWraperExpander->set_child( *textWraperGrid );
 
         auto refreshLog = [ logText ]() {
             auto conf = configure::Configure::init()->getParams();
 
-            auto        logFile = std::ifstream( conf.pathToLogFile );
-            std::string logFileStr;
+            auto logFile = std::ifstream( conf.pathToLogFile );
 
             auto logBuffer = logText->get_buffer();
             logBuffer->set_text( "" );
 
-            while ( std::getline( logFile, logFileStr ) ) {
-                logBuffer->insert( logBuffer->end(), logFileStr + "\n" );
+            using linesContanerType = std::vector< std::string >;
+            linesContanerType lines( 10 );
+
+            linesContanerType::size_type it = 0;
+
+            for ( std::string line; std::getline( logFile, line ); ) {
+                lines.at( it ) = line;
+
+                ++it;
+
+                if ( it == lines.size() )
+                    it = 0;
             }
 
-            logFile.close();
+            if ( it != 0 )
+                --it;
+            else
+                it = lines.size() - 1;
+
+            for ( linesContanerType::size_type newIt = it + 1;; ++newIt ) {
+                if ( newIt == lines.size() )
+                    newIt = 0;
+
+                logBuffer->insert( logBuffer->end(), lines.at( newIt ) + "\n" );
+
+                if ( newIt == it )
+                    break;
+            }
         };
 
         refreshLog();
 
-        logTextRefrashButton->signal_clicked().connect( refreshLog );
+        logTextRefreshButton->signal_clicked().connect( refreshLog );
     }
 
     auto getName() const -> std::string { return widgets.label; }
