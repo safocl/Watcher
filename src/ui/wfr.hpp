@@ -2,6 +2,7 @@
 
 #include "configure/configure.hpp"
 #include "glibmm/dispatcher.h"
+#include "gtkmm/object.h"
 #include "logentity.hpp"
 #include "timerentity.hpp"
 #include "clockentity.hpp"
@@ -438,7 +439,7 @@ public:
 
         auto textWraperGrid = Gtk::make_managed< Gtk::Grid >();
 
-        textWraperGrid->attach( *textWraper, 0, 0 );
+        textWraperGrid->attach( *textWraper, 0, 0, 1, 2 );
 
         auto logTextRefreshButton = Gtk::make_managed< Gtk::Button >();
         //logTextRefreshButton->set_expand();
@@ -447,9 +448,18 @@ public:
         textWraperGrid->attach_next_to(
         *logTextRefreshButton, *textWraper, Gtk::PositionType::RIGHT );
 
+        auto needLinesSpin = Gtk::make_managed< Gtk::SpinButton >();
+        needLinesSpin->set_range( 0, 100 );
+        needLinesSpin->set_increments( 1.0, 10.0 );
+        needLinesSpin->set_expand( false );
+        needLinesSpin->set_halign( Gtk::Align::CENTER );
+        needLinesSpin->set_valign( Gtk::Align::START );
+        textWraperGrid->attach_next_to(
+        *needLinesSpin, *logTextRefreshButton, Gtk::PositionType::BOTTOM );
+
         textWraperExpander->set_child( *textWraperGrid );
 
-        auto refreshLog = [ logText ]() {
+        auto refreshLog = [ needLinesSpin, logText ]() {
             auto conf = configure::Configure::init()->getParams();
 
             auto logFile = std::ifstream( conf.pathToLogFile );
@@ -457,33 +467,22 @@ public:
             auto logBuffer = logText->get_buffer();
             logBuffer->set_text( "" );
 
-            using linesContanerType = std::vector< std::string >;
-            linesContanerType lines( 10 );
+            const decltype( logFile )::off_type offsetAtEnd = 0;
+            logFile.seekg( offsetAtEnd, decltype( logFile )::end );
 
-            linesContanerType::size_type it = 0;
+            const int needLines = needLinesSpin->get_value_as_int();
 
-            for ( std::string line; std::getline( logFile, line ); ) {
-                lines.at( it ) = line;
-
-                ++it;
-
-                if ( it == lines.size() )
-                    it = 0;
+            for ( int endOfLines = 0; endOfLines < needLines + 1;
+                  logFile.seekg( -1, decltype( logFile )::cur ) ) {
+                if ( logFile.peek() == '\n' )
+                    ++endOfLines;
             }
+            logFile.seekg( 2, decltype( logFile )::cur );
 
-            if ( it != 0 )
-                --it;
-            else
-                it = lines.size() - 1;
-
-            for ( linesContanerType::size_type newIt = it + 1;; ++newIt ) {
-                if ( newIt == lines.size() )
-                    newIt = 0;
-
-                logBuffer->insert( logBuffer->end(), lines.at( newIt ) + "\n" );
-
-                if ( newIt == it )
-                    break;
+            for ( int i = 0; i < needLines + 1; ++i ) {
+                std::string line;
+                std::getline( logFile, line );
+                logBuffer->insert( logBuffer->end(), line + "\n" );
             }
         };
 
