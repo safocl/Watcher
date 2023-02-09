@@ -25,18 +25,20 @@ void Aclock::on( const int               hour,
             auto        tm_ = std::localtime( &t );
 
             auto beginTimePoint =
-            std::chrono::high_resolution_clock::now();
+            std::chrono::system_clock::now();
             auto endTm    = *tm_;
             endTm.tm_hour = hour;
             endTm.tm_min  = minute;
             endTm.tm_sec  = sec;
             auto endTimePoint =
-            std::chrono::high_resolution_clock::from_time_t(
+            std::chrono::system_clock::from_time_t(
             std::mktime( &endTm ) );
+
             if ( beginTimePoint > endTimePoint )
                 endTimePoint += std::chrono::hours( 24 );
             if ( beginTimePoint > endTimePoint )
                 throw std::runtime_error( "invalid input time" );
+
             const std::chrono::milliseconds fullDiffMs =
             std::chrono::duration_cast< std::chrono::milliseconds >(
             endTimePoint - beginTimePoint );
@@ -56,7 +58,7 @@ void Aclock::on( const int               hour,
                 std::chrono::duration_cast<
                 std::chrono::milliseconds >(
                 endTimePoint -
-                std::chrono::high_resolution_clock::now() );
+                std::chrono::system_clock::now() );
                 obj.setProgressBarPercent(
                 static_cast< double >( lostMs.count() ) /
                 static_cast< double >( fullDiffMs.count() ) );
@@ -65,7 +67,7 @@ void Aclock::on( const int               hour,
             obj.returnSensElements();
 
             auto t2 = std::chrono::system_clock::to_time_t(
-            std::chrono::high_resolution_clock::now() );
+            std::chrono::system_clock::now() );
             auto timeOutput =
             std::put_time( std::localtime( &t2 ), "%F %T" );
             std::cout.imbue( std::locale( "en_US.utf8" ) );

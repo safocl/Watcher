@@ -7,3 +7,4 @@ file( GLOB cpps
 add_library( sdlplayer OBJECT ${cpps} )
 
 target_link_libraries(sdlplayer PUBLIC ${SDL2_MIXER_LIBRARIES})
+target_link_libraries(sdlplayer PUBLIC configure)

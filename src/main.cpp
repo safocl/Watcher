@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <exception>
 #include <filesystem>
 #include <iostream>
 #include <gtkmm/application.h>
@@ -12,18 +13,21 @@
 
 //namespace fs = std::filesystem;
 int main( [[maybe_unused]] int argc, [[maybe_unused]] char * argv[] ) {
+	try {
     auto conf = core::configure::Configure::init( SDL_GetBasePath() );
     conf->loadFromConfigFile();
 
     auto app =
-    Gtk::Application::create( "org.safocl.watcher" );
+    Gtk::Application::create(argc,argv, "org.safocl.watcher" );
 
-    //core::mForm::MainWindow window { app.get() };
-    //window.set_default_size( 400, 400 );
+	core::mForm::MainWindow window { app.get() };
+	window.set_default_size( 400, 400 );
 
-//    window.show();
-//    app->run();
-//    app->add_window( window );
+	window.show_all();
 
-    return app->make_window_and_run<core::mForm::MainWindow>(argc, argv, app.get() );
+    return app->run( window );
+} catch (const std::exception& e){
+	std::cout << e.what() << std::endl;
+	return EXIT_FAILURE;
+}
 }

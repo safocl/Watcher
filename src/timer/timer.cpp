@@ -45,7 +45,7 @@ void Timer::start( const std::chrono::seconds & timerDuration,
             obj.returnSens();
 
             auto t = std::chrono::system_clock::to_time_t(
-            std::chrono::high_resolution_clock::now() );
+            std::chrono::system_clock::now() );
             auto timeOutput =
             std::put_time( std::localtime( &t ), "%F %T" );
             std::cout.imbue( std::locale( "en_US.utf8" ) );

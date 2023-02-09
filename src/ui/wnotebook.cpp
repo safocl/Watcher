@@ -12,6 +12,8 @@ WNotebook::WNotebook() : frAcl( "Alarm clock" ), frTm( "Timer" ), frLog( "Logger
     prepend_page( frAcl.widget, frAcl.getName() );
     prepend_page( frTm.widget, frTm.getName() );
     prepend_page( frLog.widget, frLog.getName() );
+
+	show_all();
 }
 
 WNotebook::~WNotebook() {}

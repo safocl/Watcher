@@ -27,6 +27,8 @@ std::filesystem::path defineSysDataPath() {
     pathToData = "/usr/share";
 #elif _WIN32
     pathToData = std::string { std::getenv( "APPDATA" ) };
+#elif __FreeBSD__
+	pathToData = "/usr/local/share";
 #endif
 
     if ( pathToData.empty() )
@@ -40,6 +42,12 @@ std::filesystem::path defineUserDataPath() {
     std::filesystem::path pathToUserData {};
 #ifdef __linux__
     auto dir = std::getenv( "XDG_DATA_HOME" );
+    if ( dir )
+        pathToUserData = std::string { dir };
+    else
+        pathToUserData = std::string( std::getenv( "HOME" ) ) + "/.local/share";
+#elif __FreeBSD__
+	auto dir = std::getenv( "XDG_DATA_HOME" );
     if ( dir )
         pathToUserData = std::string { dir };
     else
@@ -58,6 +66,12 @@ std::filesystem::path defineUserDataPath() {
 std::filesystem::path defineSysConfPath() {
     std::filesystem::path pathToConfig {};
 #ifdef __linux__
+    auto dir = std::getenv( "XDG_CONFIG_HOME" );
+    if ( dir )
+        pathToConfig = std::string { dir };
+    else
+        pathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
+#elif __FreeBSD__
     auto dir = std::getenv( "XDG_CONFIG_HOME" );
     if ( dir )
         pathToConfig = std::string { dir };
@@ -99,11 +113,11 @@ void Configure::ConfImpl::fillDefaultParams() {
         defaultParams.pathToTheme = defineSysDataPath() / "/theme.css";
 
     defaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
-    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) ) 
+    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
         defaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
 
     if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
-        throw std::runtime_error( "System audio file for a BEEP is not found" );
+        std::cout << "System audio file for a BEEP is not found\n";
 
     LoggerNodeJson lnj { { "uppu" } };
     defaultParams.logs = lnj;

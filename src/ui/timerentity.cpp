@@ -37,26 +37,29 @@ void TimerEntity::init() {
     Gtk::Label * delimiter1 = Gtk::make_managed< Gtk::Label >( delimiterString );
     Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
 
-    btn.set_valign( Gtk::Align::CENTER );
-    btn.set_halign( Gtk::Align::CENTER );
+    btn.set_valign( Gtk::Align::ALIGN_CENTER );
+    btn.set_halign( Gtk::Align::ALIGN_CENTER );
     btn.set_size_request( 70 );
 
-    spHours.set_valign( Gtk::Align::CENTER );
-    spHours.set_halign( Gtk::Align::CENTER );
+    spHours.set_valign( Gtk::Align::ALIGN_CENTER );
+    spHours.set_halign( Gtk::Align::ALIGN_CENTER );
 
-    spMinutes.set_valign( Gtk::Align::CENTER );
-    spMinutes.set_halign( Gtk::Align::CENTER );
+    spMinutes.set_valign( Gtk::Align::ALIGN_CENTER );
+    spMinutes.set_halign( Gtk::Align::ALIGN_CENTER );
 
-    spSeconds.set_valign( Gtk::Align::CENTER );
-    spSeconds.set_halign( Gtk::Align::CENTER );
+    spSeconds.set_valign( Gtk::Align::ALIGN_CENTER );
+    spSeconds.set_halign( Gtk::Align::ALIGN_CENTER );
 
-    volume.set_halign( Gtk::Align::CENTER );
-    volume.set_valign( Gtk::Align::CENTER );
+    volume.set_halign( Gtk::Align::ALIGN_CENTER );
+    volume.set_valign( Gtk::Align::ALIGN_CENTER );
 
-    progressBar.set_margin( 1 );
+    progressBar.set_margin_top( 1 );
+    progressBar.set_margin_bottom( 1 );
+    progressBar.set_margin_right( 1 );
+    progressBar.set_margin_left( 1 );
 
-    volume.set_halign( Gtk::Align::CENTER );
-    volume.set_valign( Gtk::Align::CENTER );
+    volume.set_halign( Gtk::Align::ALIGN_CENTER );
+    volume.set_valign( Gtk::Align::ALIGN_CENTER );
 
     set_column_spacing( 10 );
     set_row_spacing( 3 );
@@ -68,9 +71,11 @@ void TimerEntity::init() {
     attach( *delimiter2, ++attachColumns, 1, 1, 1 );
     attach( spSeconds, ++attachColumns, 1 );
     attach( btn, ++attachColumns, 1 );
-    attach_next_to( volume, btn, Gtk::PositionType::RIGHT );
+    attach_next_to( volume, btn, Gtk::PositionType::POS_RIGHT );
     ++attachColumns;
-    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM, attachColumns );
+    attach_next_to( progressBar, spHours, Gtk::PositionType::POS_BOTTOM, attachColumns );
+
+	show_all();
 
     btn.signal_clicked().connect( sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );
 

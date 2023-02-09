@@ -53,23 +53,26 @@ void ClockEntity::init() {
     } else
         std::cout << "css file not found" << std::endl;
 
-    spHours.set_valign( Gtk::Align::CENTER );
-    spHours.set_halign( Gtk::Align::CENTER );
+    spHours.set_valign( Gtk::Align::ALIGN_CENTER);
+    spHours.set_halign( Gtk::Align::ALIGN_CENTER );
 
-    spMinutes.set_valign( Gtk::Align::CENTER );
-    spMinutes.set_halign( Gtk::Align::CENTER );
+    spMinutes.set_valign( Gtk::Align::ALIGN_CENTER );
+    spMinutes.set_halign( Gtk::Align::ALIGN_CENTER );
 
-    spSeconds.set_valign( Gtk::Align::CENTER );
-    spSeconds.set_halign( Gtk::Align::CENTER );
+    spSeconds.set_valign( Gtk::Align::ALIGN_CENTER );
+    spSeconds.set_halign( Gtk::Align::ALIGN_CENTER );
 
-    sw.set_halign( Gtk::Align::CENTER );
-    sw.set_valign( Gtk::Align::CENTER );
+    sw.set_halign( Gtk::Align::ALIGN_CENTER );
+    sw.set_valign( Gtk::Align::ALIGN_CENTER );
     sw.set_size_request( 70 );
 
-    progressBar.set_margin( 1 );
+    progressBar.set_margin_top( 1 );
+    progressBar.set_margin_bottom( 1 );
+    progressBar.set_margin_right( 1 );
+    progressBar.set_margin_left( 1 );
 
-    volume.set_halign( Gtk::Align::CENTER );
-    volume.set_valign( Gtk::Align::CENTER );
+    volume.set_halign( Gtk::Align::ALIGN_CENTER );
+    volume.set_valign( Gtk::Align::ALIGN_CENTER );
 
     set_column_spacing( 10 );
     set_row_spacing( 3 );
@@ -85,9 +88,9 @@ void ClockEntity::init() {
     attach( spSeconds, ++attachCount, 1 );
     attach( sw, ++attachCount, 1 );
     attach( volume, ++attachCount, 1 );
-    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM, attachCount );
+    attach_next_to( progressBar, spHours, Gtk::PositionType::POS_BOTTOM, attachCount );
 
-    //    show_all_children();
+	show_all_children();
 
     sw.property_active().signal_changed().connect(
     sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );

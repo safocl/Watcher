@@ -131,13 +131,13 @@ public:
             else
                 widgets.grid.attach_next_to( *entity,
                                              *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::BOTTOM,
+                                             Gtk::PositionType::POS_BOTTOM,
                                              1,
                                              1 );
             widgets.grid.attach_next_to(
-            *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
-            closeBtn->set_halign( Gtk::Align::CENTER );
-            closeBtn->set_valign( Gtk::Align::CENTER );
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
             closeBtn->signal_clicked().connect( [ this, enode ]() {
                 if ( widgets.entityNodeArr.size() > 1 ) {
                     auto [ entity, closeBtn ] = *enode;
@@ -152,29 +152,30 @@ public:
         widgets.grid.attach_next_to(
         widgets.btnAdd,
         *std::prev( widgets.entityNodeArr.end() )->entityWidget,
-        Gtk::PositionType::BOTTOM,
+        Gtk::PositionType::POS_BOTTOM,
         2,
         1 );
 
-        widgets.btnAdd.set_halign( Gtk::Align::CENTER );
+        widgets.btnAdd.set_halign( Gtk::Align::ALIGN_CENTER );
 
-        set_child( widgets.grid );
+        //widgets.grid.set_parent(*this);
+		add(widgets.grid);
 
         widgets.btnAdd.signal_clicked().connect( [ this ]() {
-            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::TOP );
+            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::POS_TOP );
             widgets.entityNodeArr.push_back( makeNode< EntityType, EntityNode >() );
             auto enodeIt              = std::prev( widgets.entityNodeArr.end() );
             auto [ entity, closeBtn ] = *enodeIt;
 
-            closeBtn->set_halign( Gtk::Align::CENTER );
-            closeBtn->set_valign( Gtk::Align::CENTER );
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
 
             widgets.grid.attach_next_to( *entity,
                                          *std::prev( enodeIt )->entityWidget,
-                                         Gtk::PositionType::BOTTOM );
+                                         Gtk::PositionType::POS_BOTTOM );
 
             widgets.grid.attach_next_to(
-            *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
 
             closeBtn->signal_clicked().connect( [ this, enodeIt ]() {
                 if ( widgets.entityNodeArr.size() > 1 ) {
@@ -188,6 +189,8 @@ public:
         }
 
         );
+
+		show_all();
     }
 
     auto getName() const -> std::string { return widgets.label; }
@@ -247,13 +250,13 @@ public:
             else
                 widgets.grid.attach_next_to( *entity,
                                              *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::BOTTOM,
+                                             Gtk::PositionType::POS_BOTTOM,
                                              1,
                                              1 );
             widgets.grid.attach_next_to(
-            *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
-            closeBtn->set_halign( Gtk::Align::CENTER );
-            closeBtn->set_valign( Gtk::Align::CENTER );
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
             closeBtn->signal_clicked().connect( [ this, enode ]() {
                 if ( widgets.entityNodeArr.size() > 1 ) {
                     auto [ entity, closeBtn ] = *enode;
@@ -268,29 +271,30 @@ public:
         widgets.grid.attach_next_to(
         widgets.btnAdd,
         *std::prev( widgets.entityNodeArr.end() )->entityWidget,
-        Gtk::PositionType::BOTTOM,
+        Gtk::PositionType::POS_BOTTOM,
         2,
         1 );
 
-        widgets.btnAdd.set_halign( Gtk::Align::CENTER );
+        widgets.btnAdd.set_halign( Gtk::Align::ALIGN_CENTER );
 
-        set_child( widgets.grid );
+        //widgets.grid.set_parent(*this);
+		add(widgets.grid);
 
         widgets.btnAdd.signal_clicked().connect( [ this ]() {
-            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::TOP );
+            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::POS_TOP );
             widgets.entityNodeArr.push_back( makeNode< EntityType, EntityNode >() );
             auto enodeIt              = std::prev( widgets.entityNodeArr.end() );
             auto [ entity, closeBtn ] = *enodeIt;
 
-            closeBtn->set_halign( Gtk::Align::CENTER );
-            closeBtn->set_valign( Gtk::Align::CENTER );
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
 
             widgets.grid.attach_next_to( *entity,
                                          *std::prev( enodeIt )->entityWidget,
-                                         Gtk::PositionType::BOTTOM );
+                                         Gtk::PositionType::POS_BOTTOM );
 
             widgets.grid.attach_next_to(
-            *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
 
             closeBtn->signal_clicked().connect( [ this, enodeIt ]() {
                 if ( widgets.entityNodeArr.size() > 1 ) {
@@ -365,13 +369,13 @@ public:
             else
                 widgets.grid.attach_next_to( *entity,
                                              *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::BOTTOM,
+                                             Gtk::PositionType::POS_BOTTOM,
                                              1,
                                              1 );
             widgets.grid.attach_next_to(
-            *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
-            closeBtn->set_halign( Gtk::Align::CENTER );
-            closeBtn->set_valign( Gtk::Align::CENTER );
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
             closeBtn->signal_clicked().connect( [ this, enode ]() {
                 if ( widgets.entityNodeArr.size() > 1 ) {
                     auto [ entity, closeBtn ] = *enode;
@@ -386,29 +390,30 @@ public:
         widgets.grid.attach_next_to(
         widgets.btnAdd,
         *std::prev( widgets.entityNodeArr.end() )->entityWidget,
-        Gtk::PositionType::BOTTOM,
+        Gtk::PositionType::POS_BOTTOM,
         2,
         1 );
 
-        widgets.btnAdd.set_halign( Gtk::Align::CENTER );
+        widgets.btnAdd.set_halign( Gtk::Align::ALIGN_CENTER );
 
-        set_child( widgets.grid );
+		//widgets.grid.set_parent(*this);
+		add(widgets.grid);
 
         widgets.btnAdd.signal_clicked().connect( [ this ]() {
-            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::TOP );
+            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::POS_TOP );
             widgets.entityNodeArr.push_back( makeNode< EntityType, EntityNode >() );
             auto enodeIt              = std::prev( widgets.entityNodeArr.end() );
             auto [ entity, closeBtn ] = *enodeIt;
 
-            closeBtn->set_halign( Gtk::Align::CENTER );
-            closeBtn->set_valign( Gtk::Align::CENTER );
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
 
             widgets.grid.attach_next_to( *entity,
                                          *std::prev( enodeIt )->entityWidget,
-                                         Gtk::PositionType::BOTTOM );
+                                         Gtk::PositionType::POS_BOTTOM );
 
             widgets.grid.attach_next_to(
-            *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
 
             closeBtn->signal_clicked().connect( [ this, enodeIt ]() {
                 if ( widgets.entityNodeArr.size() > 1 ) {
@@ -424,18 +429,20 @@ public:
         );
 
         auto logText = Gtk::make_managed< Gtk::TextView >();
-        logText->set_expand();
+        logText->set_vexpand();
+        logText->set_hexpand();
         logText->set_editable( false );
 
         auto textWraper = Gtk::make_managed< Gtk::ScrolledWindow >();
 
-        textWraper->set_child( *logText );
+		//logText->set_parent(*textWraper);
+		textWraper->add(*logText);
 
         auto textWraperExpander = Gtk::make_managed< Gtk::Expander >();
         textWraperExpander->set_label( "Log text" );
 
         widgets.grid.attach_next_to(
-        *textWraperExpander, widgets.btnAdd, Gtk::PositionType::BOTTOM, 2, 1 );
+        *textWraperExpander, widgets.btnAdd, Gtk::PositionType::POS_BOTTOM, 2, 1 );
 
         auto textWraperGrid = Gtk::make_managed< Gtk::Grid >();
 
@@ -446,18 +453,20 @@ public:
         logTextRefreshButton->set_label( "Refresh" );
 
         textWraperGrid->attach_next_to(
-        *logTextRefreshButton, *textWraper, Gtk::PositionType::RIGHT );
+        *logTextRefreshButton, *textWraper, Gtk::PositionType::POS_RIGHT );
 
         auto needLinesSpin = Gtk::make_managed< Gtk::SpinButton >();
         needLinesSpin->set_range( 0, 100 );
         needLinesSpin->set_increments( 1.0, 10.0 );
-        needLinesSpin->set_expand( false );
-        needLinesSpin->set_halign( Gtk::Align::CENTER );
-        needLinesSpin->set_valign( Gtk::Align::START );
+        needLinesSpin->set_vexpand( false );
+        needLinesSpin->set_hexpand( false );
+        needLinesSpin->set_halign( Gtk::Align::ALIGN_CENTER );
+        needLinesSpin->set_valign( Gtk::Align::ALIGN_START );
         textWraperGrid->attach_next_to(
-        *needLinesSpin, *logTextRefreshButton, Gtk::PositionType::BOTTOM );
+        *needLinesSpin, *logTextRefreshButton, Gtk::PositionType::POS_BOTTOM );
 
-        textWraperExpander->set_child( *textWraperGrid );
+		//textWraperGrid->set_parent(*textWraperExpander);
+		textWraperExpander->add(*textWraperGrid);
 
         auto refreshLog = [ needLinesSpin, logText ]() {
             auto conf = configure::Configure::init()->getParams();
