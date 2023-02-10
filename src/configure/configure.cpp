@@ -49,7 +49,7 @@ std::filesystem::path defineUserDataPath() {
 #elif __FreeBSD__
 	auto dir = std::getenv( "XDG_DATA_HOME" );
     if ( dir )
-        pathToUserData = std::string { dir };
+        pathToUserData = std::string ( dir );
     else
         pathToUserData = std::string( std::getenv( "HOME" ) ) + "/.local/share";
 #elif _WIN32
@@ -106,18 +106,45 @@ std::shared_ptr< Configure::ConfImpl > Configure::init( std::filesystem::path ar
 std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
 
 void Configure::ConfImpl::fillDefaultParams() {
-    defaultParams.pathToLogFile = defineUserDataPath() / "/log.txt";
+	auto userDataPath = defineUserDataPath();
+	auto systemDataPath = defineSysDataPath();
 
-    defaultParams.pathToTheme = defineUserDataPath().generic_string() + "/theme.css";
-    if ( !std::filesystem::exists( defaultParams.pathToTheme ) )
-        defaultParams.pathToTheme = defineSysDataPath() / "/theme.css";
+	std::cout << "User data direccoty is " << userDataPath << std::endl;
+	std::cout << "System data direccoty is " << systemDataPath << std::endl;
 
-    defaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
-    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
-        defaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
+	if ( ! std::filesystem::exists(userDataPath) )
+		std::filesystem::create_directory(userDataPath);
 
-    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
-        std::cout << "System audio file for a BEEP is not found\n";
+	{
+    auto const pathToLogFile =  userDataPath / "log.txt";
+	if ( ! std::filesystem::exists( pathToLogFile ) ) {
+		std::ofstream logFile( pathToLogFile );
+		logFile << "Initial log comment\n";
+	}
+	defaultParams.pathToLogFile =  pathToLogFile;
+	}
+
+	{
+	auto const userPathToTheme = userDataPath / "theme.css";
+	auto const sysPathToTheme = systemDataPath / "theme.css";
+	if ( std::filesystem::exists(userPathToTheme) )
+		defaultParams.pathToTheme = userPathToTheme;
+	else
+		if ( std::filesystem::exists(sysPathToTheme))
+			defaultParams.pathToTheme = sysPathToTheme;
+	}
+
+	{
+	auto const userPathToAlarm = userDataPath /  "alarm.opus";
+	auto const sysPathToAlarm = systemDataPath / "alarm.opus";
+	if ( std::filesystem::exists(userPathToAlarm) )
+		defaultParams.pathToAlarmAudio = userPathToAlarm;
+	else
+		if ( std::filesystem::exists(sysPathToAlarm))
+			defaultParams.pathToAlarmAudio = sysPathToAlarm;
+		else
+			std::cout << "System audio file for a BEEP is not found\n";
+	}
 
     LoggerNodeJson lnj { { "uppu" } };
     defaultParams.logs = lnj;
@@ -180,8 +207,6 @@ void Configure::ConfImpl::loadFromConfigFile() {
         operator>>( configFile, *tmpJConfig );
 
         fillParams( tmpJConfig->get< Parametres >() );
-
-        configFile.close();
     }
 
     lastLoadConfig = std::chrono::system_clock::now();

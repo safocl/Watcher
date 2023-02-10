@@ -6,3 +6,4 @@
 [ ] clearing of #include directives.
 [ ] replace installation path
 [ ] wav file playback is normal?
+[ ] fix bug with crash on playback

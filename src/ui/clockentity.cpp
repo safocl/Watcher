@@ -35,7 +35,7 @@ void ClockEntity::init() {
     Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
 
     auto                  conf = core::configure::Configure::init();
-    std::filesystem::path cssPath { conf->getParams().pathToTheme };
+    std::filesystem::path cssPath ( conf->getParams().pathToTheme );
     if ( std::filesystem::exists( cssPath ) ) {
         auto cssProvider = Gtk::CssProvider::create();
         cssProvider->load_from_path( cssPath.generic_string() );

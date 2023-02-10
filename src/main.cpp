@@ -5,6 +5,7 @@
 #include <gtkmm/application.h>
 #include "ui/mainform.hpp"
 #include "configure/configure.hpp"
+#include <locale>
 #include <memory>
 #include <stdexcept>
 #include <streambuf>
@@ -14,11 +15,13 @@
 //namespace fs = std::filesystem;
 int main( [[maybe_unused]] int argc, [[maybe_unused]] char * argv[] ) {
 	try {
+		std::locale::global(std::locale());
+
     auto conf = core::configure::Configure::init( SDL_GetBasePath() );
     conf->loadFromConfigFile();
 
     auto app =
-    Gtk::Application::create(argc,argv, "org.safocl.watcher" );
+    Gtk::Application::create( argc, argv, "org.safocl.watcher" );
 
 	core::mForm::MainWindow window { app.get() };
 	window.set_default_size( 400, 400 );
