@@ -9,11 +9,11 @@
 #include <gtkmm/orientable.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/volumebutton.h>
-#include <sigc++/functors/mem_fun.h>
 #include <chrono>
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <gtkmm/cssprovider.h>
 
 namespace core::ui {
@@ -35,7 +35,7 @@ void ClockEntity::init() {
     Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
 
     auto                  conf = core::configure::Configure::init();
-    std::filesystem::path cssPath ( conf->getParams().pathToTheme );
+    std::filesystem::path cssPath( conf->getParams().pathToTheme );
     if ( std::filesystem::exists( cssPath ) ) {
         auto cssProvider = Gtk::CssProvider::create();
         cssProvider->load_from_path( cssPath.generic_string() );
@@ -53,7 +53,7 @@ void ClockEntity::init() {
     } else
         std::cout << "css file not found" << std::endl;
 
-    spHours.set_valign( Gtk::Align::ALIGN_CENTER);
+    spHours.set_valign( Gtk::Align::ALIGN_CENTER );
     spHours.set_halign( Gtk::Align::ALIGN_CENTER );
 
     spMinutes.set_valign( Gtk::Align::ALIGN_CENTER );
@@ -88,9 +88,10 @@ void ClockEntity::init() {
     attach( spSeconds, ++attachCount, 1 );
     attach( sw, ++attachCount, 1 );
     attach( volume, ++attachCount, 1 );
-    attach_next_to( progressBar, spHours, Gtk::PositionType::POS_BOTTOM, attachCount );
+    attach_next_to(
+    progressBar, spHours, Gtk::PositionType::POS_BOTTOM, attachCount );
 
-	show_all_children();
+    show_all_children();
 
     sw.property_active().signal_changed().connect(
     sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );
@@ -166,12 +167,7 @@ ClockEntity::AclockNJEntity ClockEntity::getValues() const {
 double ClockEntity::getSoundVolume() const { return volume.get_value(); }
 
 void ClockEntity::setProgressBarPercent( double percent ) {
-    if ( percent < 0 )
-        progressBarPercent = 0;
-    else if ( percent > 1 )
-        progressBarPercent = 0;
-    else
-        progressBarPercent = percent;
+    progressBarPercent = std::clamp( percent, 0.0, 1.0 );
     progressBarDispetcher.emit();
 }
 

@@ -14,7 +14,7 @@
 #include <gtkmm/label.h>
 #include <gtkmm/object.h>
 #include <memory>
-#include <sigc++/functors/mem_fun.h>
+#include <algorithm>
 
 namespace core::ui {
 
@@ -73,11 +73,13 @@ void TimerEntity::init() {
     attach( btn, ++attachColumns, 1 );
     attach_next_to( volume, btn, Gtk::PositionType::POS_RIGHT );
     ++attachColumns;
-    attach_next_to( progressBar, spHours, Gtk::PositionType::POS_BOTTOM, attachColumns );
+    attach_next_to(
+    progressBar, spHours, Gtk::PositionType::POS_BOTTOM, attachColumns );
 
-	show_all();
+    show_all();
 
-    btn.signal_clicked().connect( sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );
+    btn.signal_clicked().connect(
+    sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );
 
     dispatcher_.connect( sigc::mem_fun( *this, &TimerEntity::onDispatcherEmit ) );
 
@@ -155,15 +157,12 @@ TimerEntity::TimerNJEntity TimerEntity::getValues() const {
 double TimerEntity::getSoundVolume() const { return volume.get_value(); }
 
 void TimerEntity::setProgressBarPercent( double percent ) {
-    if ( percent < 0 )
-        progressBarPercent = 0;
-    else if ( percent > 1 )
-        progressBarPercent = 0;
-    else
-        progressBarPercent = percent;
+    progressBarPercent = std::clamp( percent, 0.0, 1.0 );
     progressBarDispetcher.emit();
 }
 
-void TimerEntity::onProgressBarEmit() { progressBar.set_fraction( progressBarPercent ); }
+void TimerEntity::onProgressBarEmit() {
+    progressBar.set_fraction( progressBarPercent );
+}
 
 }   // namespace core::ui
