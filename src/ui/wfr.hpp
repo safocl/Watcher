@@ -36,14 +36,15 @@
 namespace core::ui {
 
 template < class T >
-concept WatcherWidgetsAccamulateble = requires( T widget ) {
+concept WatcherWidgetsAccamulateble =
+requires( T widget ) {
     requires std::derived_from< T, Gtk::Widget >;
 
     requires std::constructible_from< T, std::string_view >;
 
     { widget.getName() } -> std::convertible_to< std::string >;
     { widget.saveLayoutToConfig() } -> std::same_as< void >;
-    //{ widget.loadLayoutFromConfig() } -> std::same_as< void >;
+    { widget.loadLayoutFromConfig() } -> std::same_as< void >;
 };
 
 template < WatcherWidgetsAccamulateble WidgetType > struct WidgetProvider {
@@ -81,8 +82,7 @@ inline EntityNode makeNode( std::string_view entry ) {
                         .closeBtn = std::make_shared< Gtk::Button >( "X" ) };
 }
 
-template < class EntityType, class EntityNode >
-inline EntityNode makeNode() {
+template < class EntityType, class EntityNode > inline EntityNode makeNode() {
     return EntityNode { .entityWidget = std::make_shared< EntityType >(),
                         .closeBtn     = std::make_shared< Gtk::Button >( "X" ) };
 }
@@ -99,22 +99,107 @@ template < class EType > struct ContanerFrameTraits {
     using Parametres    = core::configure::Configure::Parametres;
 };
 
-template < class EType , class NodeJsonT> struct GenericControlWidgets :
-public ContanerFrameTraits< EType >
-{
-	using NodeJson = NodeJsonT;
+inline typename ContanerFrameTraits< ClockEntity >::EntityNodeArr
+clocksFromConf( configure::AclockNodeJson paramsFromConfig ) {
+    typename ContanerFrameTraits< ClockEntity >::EntityNodeArr entityNodeArr;
+    for ( auto && el : paramsFromConfig ) {
+        auto [ h, m, s, volume ] = el;
+        entityNodeArr.push_back(
+        makeNode< typename ContanerFrameTraits< ClockEntity >::EntityType,
+                  typename ContanerFrameTraits< ClockEntity >::EntityNode >(
+        h, m, s, volume ) );
+    }
 
-	explicit GenericControlWidgets( std::string_view label, NodeJson paramsFromConfig ) : mLabel(label) {
+    return entityNodeArr;
+}
 
+inline typename ContanerFrameTraits< TimerEntity >::EntityNodeArr
+timersFromConf( configure::TimerNodeJson paramsFromConfig ) {
+    typename ContanerFrameTraits< TimerEntity >::EntityNodeArr entityNodeArr;
+    for ( auto && el : paramsFromConfig ) {
+        auto [ h, m, s, volume ] = el;
+        entityNodeArr.push_back(
+        makeNode< typename ContanerFrameTraits< TimerEntity >::EntityType,
+                  typename ContanerFrameTraits< TimerEntity >::EntityNode >(
+        h, m, s, volume ) );
+    }
+
+    return entityNodeArr;
+}
+
+inline typename ContanerFrameTraits< LogEntity >::EntityNodeArr
+logsFromConf( configure::LoggerNodeJson paramsFromConfig ) {
+    typename ContanerFrameTraits< LogEntity >::EntityNodeArr entityNodeArr;
+    for ( auto && el : paramsFromConfig ) {
+        entityNodeArr.push_back(
+        makeNode< typename ContanerFrameTraits< LogEntity >::EntityType,
+                  typename ContanerFrameTraits< LogEntity >::EntityNode >( el ) );
+    }
+
+    return entityNodeArr;
+}
+
+template < class EType >
+struct GenericControlWidgets : public ContanerFrameTraits< EType > {
+    GenericControlWidgets(
+    std::string_view                                        label,
+    typename ContanerFrameTraits< EType >::EntityNodeArr && paramsFromConfig ) :
+    mLabel( label ),
+    mEntityNodeArr( std::move( paramsFromConfig ) ) {
         mBtnAdd.set_label( "+++" );
 
         mGrid.set_column_spacing( 15 );
         mGrid.set_row_spacing( 20 );
 
-        loadLayoutFromConfig(paramsFromConfig);
+        fillLayout();
 
-        for ( auto enode = mEntityNodeArr.begin();
-              enode != mEntityNodeArr.end();
+        mGrid.attach_next_to( mBtnAdd,
+                              *std::prev( mEntityNodeArr.end() )->entityWidget,
+                              Gtk::PositionType::POS_BOTTOM,
+                              2,
+                              1 );
+
+        mBtnAdd.set_halign( Gtk::Align::ALIGN_CENTER );
+
+        mBtnAdd.signal_clicked().connect( [ this ]() {
+            mEntityNodeArr.push_back(
+            makeNode< typename ContanerFrameTraits< EType >::EntityType,
+                      typename ContanerFrameTraits< EType >::EntityNode >() );
+
+            mGrid.insert_next_to( mBtnAdd, Gtk::PositionType::POS_TOP );
+
+            auto enodeIt              = std::prev( mEntityNodeArr.end() );
+            auto [ entity, closeBtn ] = *enodeIt;
+
+            closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
+            closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
+
+            mGrid.attach_next_to( *entity,
+                                  *std::prev( enodeIt )->entityWidget,
+                                  Gtk::PositionType::POS_BOTTOM );
+
+            mGrid.attach_next_to(
+            *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
+
+            closeBtn->signal_clicked().connect( [ this, enodeIt ]() {
+                if ( mEntityNodeArr.size() > 1 ) {
+                    auto [ entity, closeBtn ] = *enodeIt;
+                    mGrid.remove( *entity );
+                    mGrid.remove( *closeBtn );
+
+                    mEntityNodeArr.erase( enodeIt );
+                }
+            } );
+
+            mGrid.show_all();
+        }
+
+        );
+    }
+
+protected:
+    void fillLayout() {
+        for ( auto enode = mEntityNodeArr.begin(); enode != mEntityNodeArr.end();
               ++enode ) {
             auto [ entity, closeBtn ] = *enode;
 
@@ -122,10 +207,10 @@ public ContanerFrameTraits< EType >
                 mGrid.attach( *entity, 1, 1 );
             else
                 mGrid.attach_next_to( *entity,
-                                             *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::POS_BOTTOM,
-                                             1,
-                                             1 );
+                                      *std::prev( enode )->entityWidget,
+                                      Gtk::PositionType::POS_BOTTOM,
+                                      1,
+                                      1 );
             mGrid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
             closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
@@ -140,244 +225,219 @@ public ContanerFrameTraits< EType >
                 }
             } );
         }
+    }
 
-        mGrid.attach_next_to(
-        mBtnAdd,
-        *std::prev( mEntityNodeArr.end() )->entityWidget,
-        Gtk::PositionType::POS_BOTTOM,
-        2,
-        1 );
-
-        mBtnAdd.set_halign( Gtk::Align::ALIGN_CENTER );
-
-		mBtnAdd.signal_clicked().connect( [ this ]() {
-			mGrid.insert_next_to( mBtnAdd, Gtk::PositionType::POS_TOP );
-			mEntityNodeArr.push_back( makeNode< typename ContanerFrameTraits< EType >::EntityType, typename ContanerFrameTraits< EType >::EntityNode >() );
-			auto enodeIt              = std::prev( mEntityNodeArr.end() );
-			auto [ entity, closeBtn ] = *enodeIt;
-
-			closeBtn->set_halign( Gtk::Align::ALIGN_CENTER );
-			closeBtn->set_valign( Gtk::Align::ALIGN_CENTER );
-
-			mGrid.attach_next_to( *entity,
-										 *std::prev( enodeIt )->entityWidget,
-										 Gtk::PositionType::POS_BOTTOM );
-
-			mGrid.attach_next_to(
-			*closeBtn, *entity, Gtk::PositionType::POS_RIGHT, 1, 1 );
-
-			closeBtn->signal_clicked().connect( [ this, enodeIt ]() {
-				if ( mEntityNodeArr.size() > 1 ) {
-					auto [ entity, closeBtn ] = *enodeIt;
-					mGrid.remove( *entity );
-					mGrid.remove( *closeBtn );
-
-					mEntityNodeArr.erase( enodeIt );
-				}
-			} );
-
-			closeBtn->show();
-		}
-
-		);
-
-	}
-
-	auto loadLayoutFromConfig(NodeJson paramsFromConfig) -> void {
-		if constexpr (std::same_as<NodeJson, configure::TimerNodeJson> || std::same_as<NodeJson, configure::AclockNodeJson>){
-        for ( auto && el : paramsFromConfig ) {
-            auto [ h, m, s, volume ] = el;
-
-            mEntityNodeArr.push_back(
-            makeNode< typename ContanerFrameTraits< EType >::EntityType, typename ContanerFrameTraits< EType >::EntityNode >( h, m, s, volume ) );
+    void eraseLayout() {
+        for ( auto [ entity, closeBtn ] : mEntityNodeArr ) {
+            mGrid.remove( *entity );
+            mGrid.remove( *closeBtn );
         }
-		}
 
-		if constexpr (std::same_as<NodeJson, configure::LoggerNodeJson>){
-		for ( auto && el : paramsFromConfig ) {
-			mEntityNodeArr.push_back(
-			makeNode< typename ContanerFrameTraits< EType >::EntityType, typename ContanerFrameTraits< EType >::EntityNode >( el ) );
-		}
-		}
+        mEntityNodeArr.clear();
     }
 
 protected:
-    std::string       mLabel;
-    Gtk::Button       mBtnAdd;
-    Gtk::Grid         mGrid;
-    typename ContanerFrameTraits< EType >::EntityNodeArr	  mEntityNodeArr;
+    std::string                                          mLabel;
+    Gtk::Button                                          mBtnAdd;
+    Gtk::Grid                                            mGrid;
+    typename ContanerFrameTraits< EType >::EntityNodeArr mEntityNodeArr;
 };
 
-using AclockControlWidgets = GenericControlWidgets<ClockEntity, configure::AclockNodeJson>;
-class AclockContanerFrame :
-public AclockControlWidgets,
-public Gtk::Frame {
+using AclockControlWidgets = GenericControlWidgets< ClockEntity >;
+class AclockContanerFrame : protected AclockControlWidgets, public Gtk::Frame {
 public:
-	explicit AclockContanerFrame( std::string_view label ) : AclockControlWidgets(label, configure::Configure::init()->getParams().aclocks) {
+    using NodeJson = configure::AclockNodeJson;
 
-					add(mGrid);
+    explicit AclockContanerFrame( std::string_view label ) :
+    AclockControlWidgets(
+    label, clocksFromConf( configure::Configure::init()->getParams().aclocks ) ) {
+        add( mGrid );
 
-		show_all();
-	}
+        show_all();
+    }
 
-	auto getName() const -> std::string { return mLabel; }
-	auto saveLayoutToConfig() const -> void {
-		NodeJson njson {};
+    auto getName() const -> std::string { return mLabel; }
+    auto saveLayoutToConfig() const -> void {
+        NodeJson njson {};
 
-		for ( auto && el : mEntityNodeArr ) {
-			njson.push_back( el.entityWidget->getValues() );
-		}
+        for ( auto && el : mEntityNodeArr ) {
+            njson.push_back( el.entityWidget->getValues() );
+        }
 
-		auto conf = core::configure::Configure::init();
+        auto conf = core::configure::Configure::init();
 
-		auto params    = conf->getParams();
-		params.aclocks = njson;
+        auto params    = conf->getParams();
+        params.aclocks = njson;
 
-		conf->import( params );
-	}
+        conf->import( params );
+    }
+
+    auto loadLayoutFromConfig() -> void {
+        eraseLayout();
+        mEntityNodeArr =
+        clocksFromConf( configure::Configure::init()->getParams().aclocks );
+        fillLayout();
+    }
 };
 
-using TimerControlWidgets = GenericControlWidgets<TimerEntity, configure::TimerNodeJson>;
-class TimerContanerFrame :
-public TimerControlWidgets,
-public Gtk::Frame {
+using TimerControlWidgets = GenericControlWidgets< TimerEntity >;
+class TimerContanerFrame : protected TimerControlWidgets, public Gtk::Frame {
 public:
-	explicit TimerContanerFrame( std::string_view label ) : TimerControlWidgets(label, configure::Configure::init()->getParams().timers){
-		add(mGrid);
+    using NodeJson = configure::TimerNodeJson;
 
-		show_all();
-	}
+    explicit TimerContanerFrame( std::string_view label ) :
+    TimerControlWidgets(
+    label, timersFromConf( configure::Configure::init()->getParams().timers ) ) {
+        add( mGrid );
 
-	auto getName() const -> std::string { return mLabel; }
+        show_all();
+    }
 
-	auto saveLayoutToConfig() const -> void {
-		NodeJson njson {};
+    auto getName() const -> std::string { return mLabel; }
 
-		for ( auto && el : mEntityNodeArr ) {
-			njson.push_back( el.entityWidget->getValues() );
-		}
+    auto saveLayoutToConfig() const -> void {
+        NodeJson njson {};
 
-		auto conf = core::configure::Configure::init();
+        for ( auto && el : mEntityNodeArr ) {
+            njson.push_back( el.entityWidget->getValues() );
+        }
 
-		auto params   = conf->getParams();
-		params.timers = njson;
+        auto conf = core::configure::Configure::init();
 
-		conf->import( params );
-	}
+        auto params   = conf->getParams();
+        params.timers = njson;
+
+        conf->import( params );
+    }
+
+    auto loadLayoutFromConfig() -> void {
+        eraseLayout();
+        mEntityNodeArr =
+        timersFromConf( configure::Configure::init()->getParams().timers );
+        fillLayout();
+    }
 };
 
-using LoggerControlWidgets = GenericControlWidgets<LogEntity, configure::LoggerNodeJson>;
-class LoggerContanerFrame :
-public LoggerControlWidgets,
-public Gtk::Frame {
+using LoggerControlWidgets = GenericControlWidgets< LogEntity >;
+class LoggerContanerFrame : protected LoggerControlWidgets, public Gtk::Frame {
 public:
-	using LoggerControlWidgets::EntityNode;
+    using NodeJson = configure::LoggerNodeJson;
+    using LoggerControlWidgets::EntityNode;
 
-	explicit LoggerContanerFrame( std::string_view label ) : LoggerControlWidgets(label, configure::Configure::init()->getParams().logs){
-		auto logText = Gtk::make_managed< Gtk::TextView >();
-		logText->set_vexpand();
-		logText->set_hexpand();
-		logText->set_editable( false );
+    explicit LoggerContanerFrame( std::string_view label ) :
+    LoggerControlWidgets(
+    label, logsFromConf( configure::Configure::init()->getParams().logs ) ) {
+        auto logText = Gtk::make_managed< Gtk::TextView >();
+        logText->set_vexpand();
+        logText->set_hexpand();
+        logText->set_editable( false );
 
-		auto textWraper = Gtk::make_managed< Gtk::ScrolledWindow >();
+        auto textWraper = Gtk::make_managed< Gtk::ScrolledWindow >();
 
-		//logText->set_parent(*textWraper);
-		textWraper->add(*logText);
+        //logText->set_parent(*textWraper);
+        textWraper->add( *logText );
 
-		auto textWraperExpander = Gtk::make_managed< Gtk::Expander >();
-		textWraperExpander->set_label( "Log text" );
+        auto textWraperExpander = Gtk::make_managed< Gtk::Expander >();
+        textWraperExpander->set_label( "Log text" );
 
-		mGrid.attach_next_to(
-		*textWraperExpander, mBtnAdd, Gtk::PositionType::POS_BOTTOM, 2, 1 );
+        mGrid.attach_next_to(
+        *textWraperExpander, mBtnAdd, Gtk::PositionType::POS_BOTTOM, 2, 1 );
 
-		auto textWraperGrid = Gtk::make_managed< Gtk::Grid >();
+        auto textWraperGrid = Gtk::make_managed< Gtk::Grid >();
 
-		textWraperGrid->attach( *textWraper, 0, 0, 1, 2 );
+        textWraperGrid->attach( *textWraper, 0, 0, 1, 2 );
 
-		auto logTextRefreshButton = Gtk::make_managed< Gtk::Button >();
-		//logTextRefreshButton->set_expand();
-		logTextRefreshButton->set_label( "Refresh" );
+        auto logTextRefreshButton = Gtk::make_managed< Gtk::Button >();
+        //logTextRefreshButton->set_expand();
+        logTextRefreshButton->set_label( "Refresh" );
 
-		textWraperGrid->attach_next_to(
-		*logTextRefreshButton, *textWraper, Gtk::PositionType::POS_RIGHT );
+        textWraperGrid->attach_next_to(
+        *logTextRefreshButton, *textWraper, Gtk::PositionType::POS_RIGHT );
 
-		auto needLinesSpin = Gtk::make_managed< Gtk::SpinButton >();
-		needLinesSpin->set_range( 0, 100 );
-		needLinesSpin->set_increments( 1.0, 10.0 );
-		needLinesSpin->set_vexpand( false );
-		needLinesSpin->set_hexpand( false );
-		needLinesSpin->set_halign( Gtk::Align::ALIGN_CENTER );
-		needLinesSpin->set_valign( Gtk::Align::ALIGN_START );
-		textWraperGrid->attach_next_to(
-		*needLinesSpin, *logTextRefreshButton, Gtk::PositionType::POS_BOTTOM );
+        auto needLinesSpin = Gtk::make_managed< Gtk::SpinButton >();
+        needLinesSpin->set_range( 0, 100 );
+        needLinesSpin->set_increments( 1.0, 10.0 );
+        needLinesSpin->set_vexpand( false );
+        needLinesSpin->set_hexpand( false );
+        needLinesSpin->set_halign( Gtk::Align::ALIGN_CENTER );
+        needLinesSpin->set_valign( Gtk::Align::ALIGN_START );
+        textWraperGrid->attach_next_to(
+        *needLinesSpin, *logTextRefreshButton, Gtk::PositionType::POS_BOTTOM );
 
-		//textWraperGrid->set_parent(*textWraperExpander);
-		textWraperExpander->add(*textWraperGrid);
+        //textWraperGrid->set_parent(*textWraperExpander);
+        textWraperExpander->add( *textWraperGrid );
 
-		auto refreshLog = [ needLinesSpin, logText ]() {
-			auto conf = configure::Configure::init()->getParams();
+        auto refreshLog = [ needLinesSpin, logText ]() {
+            auto conf = configure::Configure::init()->getParams();
 
-			auto logFile = std::ifstream( conf.pathToLogFile );
+            auto logFile = std::ifstream( conf.pathToLogFile );
 
-			auto logBuffer = logText->get_buffer();
-			logBuffer->set_text( "" );
+            auto logBuffer = logText->get_buffer();
+            logBuffer->set_text( "" );
 
-			constexpr decltype( logFile )::off_type offsetAtEnd = 0;
-			logFile.seekg( offsetAtEnd, decltype( logFile )::end );
+            constexpr decltype( logFile )::off_type offsetAtEnd = 0;
+            logFile.seekg( offsetAtEnd, decltype( logFile )::end );
 
-			const int needLines = needLinesSpin->get_value_as_int();
+            const int needLines = needLinesSpin->get_value_as_int();
 
-			bool isEof = false;
-			int endOfLines{};
-			for ( ; endOfLines < needLines + 1;
-				  logFile.seekg( -1, decltype( logFile )::cur ) ) {
-				if (! logFile.good()){
-					isEof = true;
-					break;
-				}
+            bool isEof = false;
+            int  endOfLines {};
+            for ( ; endOfLines < needLines + 1;
+                  logFile.seekg( -1, decltype( logFile )::cur ) ) {
+                if ( !logFile.good() ) {
+                    isEof = true;
+                    break;
+                }
 
-				if ( logFile.peek() == '\n' )
-					++endOfLines;
-			}
+                if ( logFile.peek() == '\n' )
+                    ++endOfLines;
+            }
 
-			if (! isEof)
-				logFile.seekg( 2, decltype( logFile )::cur );
-			else{
-				logFile.close();
-				logFile = std::ifstream( conf.pathToLogFile );
-			}
+            if ( !isEof )
+                logFile.seekg( 2, decltype( logFile )::cur );
+            else {
+                logFile.close();
+                logFile = std::ifstream( conf.pathToLogFile );
+            }
 
-			for ( int i = 0; i < endOfLines; ++i ) {
-				std::string line;
-				std::getline( logFile, line );
-				logBuffer->insert( logBuffer->end(), line + "\n" );
-			}
-		};
+            for ( int i = 0; i < endOfLines; ++i ) {
+                std::string line;
+                std::getline( logFile, line );
+                logBuffer->insert( logBuffer->end(), line + "\n" );
+            }
+        };
 
-		refreshLog();
+        refreshLog();
 
-		logTextRefreshButton->signal_clicked().connect( refreshLog );
+        logTextRefreshButton->signal_clicked().connect( refreshLog );
 
-		add(mGrid);
+        add( mGrid );
 
-		show_all();
-	}
+        show_all();
+    }
 
-	auto getName() const -> std::string { return mLabel; }
-	auto saveLayoutToConfig() const -> void {
-		NodeJson njson {};
+    auto getName() const -> std::string { return mLabel; }
+    auto saveLayoutToConfig() const -> void {
+        NodeJson njson {};
 
-		for ( auto && el : mEntityNodeArr ) {
-			njson.push_back( el.entityWidget->getValues() );
-		}
+        for ( auto && el : mEntityNodeArr ) {
+            njson.push_back( el.entityWidget->getValues() );
+        }
 
-		auto conf = core::configure::Configure::init();
+        auto conf = core::configure::Configure::init();
 
-		auto params = conf->getParams();
-		params.logs = njson;
+        auto params = conf->getParams();
+        params.logs = njson;
 
-		conf->import( params );
-	}
+        conf->import( params );
+    }
+
+    auto loadLayoutFromConfig() -> void {
+        eraseLayout();
+        mEntityNodeArr =
+        logsFromConf( configure::Configure::init()->getParams().logs );
+        fillLayout();
+    }
 };
 
 }   // namespace core::ui
