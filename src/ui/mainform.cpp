@@ -1,33 +1,50 @@
 #include "mainform.hpp"
 #include "configure/configure.hpp"
+#include "gtkmm/builder.h"
+#include "gtkmm/button.h"
+#include "ui/entityManager.hpp"
 
-#include <gtkmm/application.h>
-#include <gtkmm/enums.h>
-#include <gtkmm/grid.h>
-#include <sigc++/functors/mem_fun.h>
+namespace core::ui {
 
-namespace core::mForm {
+MainWindow::MainWindow( Glib::RefPtr< Gtk::Application > app ) :
+mApp( std::move( app ) ) {
+    mMainWindowBuilder =
+    Gtk::Builder::create_from_file( "gtk4main.ui", "mainWindowLayout" );
 
-MainWindow::MainWindow( Gtk::Application * app ) :
-nb(), btnClose( "Quit" ), grid(), app( app ) {
-    btnClose.set_vexpand( false );
-    btnClose.set_halign( Gtk::Align::CENTER );
+    auto mainLayout =
+    mMainWindowBuilder->get_widget< Gtk::Grid >( "mainWindowLayout" );
 
-    grid.attach( nb, 1, 1 );
-    grid.attach( btnClose, 1, 2 );
+    mBtnQuit = mMainWindowBuilder->get_widget< Gtk::Button >( "btnQuit" );
 
-    set_child(grid);
+    mBtnQuit->signal_clicked().connect( [ this ] {
+        auto conf = configure::Configure::init();
+        conf->saveToConfigFile();
+        this->mApp->quit();
+    } );
 
-    btnClose.signal_clicked().connect(
-    sigc::mem_fun( *this, &MainWindow::onBtnCloseClicked ) );
-}
+    auto logLayout   = mMainWindowBuilder->get_widget< Gtk::Grid >( "logLayout" );
+    auto timerLayout = mMainWindowBuilder->get_widget< Gtk::Grid >( "timerLayout" );
+    auto clockLayout = mMainWindowBuilder->get_widget< Gtk::Grid >( "clockLayout" );
 
-void MainWindow::onBtnCloseClicked() {
-    nb.saveLayout();
-    auto conf = configure::Configure::init();
-    conf->saveToConfigFile();
-    app->quit();
+    mEntityManager.setDynamicEntitiesLayouts(
+    entity::Manager::DynamicEntitiesLayouts {
+    .clock = clockLayout, .timer = timerLayout, .log = logLayout } );
+
+    auto clockAddBtn =
+    mMainWindowBuilder->get_widget< Gtk::Button >( "clockAddBtn" );
+    clockAddBtn->signal_clicked().connect(
+    [ this ] { mEntityManager.pushAcloack(); } );
+
+    auto timerAddBtn =
+    mMainWindowBuilder->get_widget< Gtk::Button >( "timerAddBtn" );
+    timerAddBtn->signal_clicked().connect(
+    [ this ] { mEntityManager.pushTimer(); } );
+
+    auto logAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "logAddBtn" );
+    logAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushLogger(); } );
+
+    set_child( *mainLayout );
 }
 
 MainWindow::~MainWindow() {}
-}   // namespace core::mForm
+}   // namespace core::ui

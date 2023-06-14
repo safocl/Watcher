@@ -1,164 +1,116 @@
 #include "timerentity.hpp"
+#include "sdlplayer/sdlplayer.hpp"
 #include "timer/timer.hpp"
 
-#include <gtkmm/adjustment.h>
+#include <gtkmm/label.h>
+#include <gtkmm/builder.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/volumebutton.h>
+
 #include <atomic>
 #include <functional>
+#include <iostream>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
-#include <gtkmm/enums.h>
-#include <gtkmm/label.h>
-#include <gtkmm/object.h>
 #include <memory>
-#include <sigc++/functors/mem_fun.h>
 
-namespace core::ui {
+namespace core::ui::entity {
 
-void TimerEntity::init() {
-    spHours.set_width_chars( 2 );
-    spHours.set_numeric();
-    spHours.set_wrap();
+Timer::Timer( Gtk::Grid & parent ) : Timer( parent, 0, 0, 0, 0.0 ) {}
 
-    spMinutes.set_width_chars( 2 );
-    spMinutes.set_numeric();
-    spMinutes.set_wrap();
+Timer::Timer( Gtk::Grid & parent, int h, int m, int s, double v ) :
+mParent( &parent ) {
+    auto builder = Gtk::Builder::create_from_file( "gtk4timer.ui", "mainLayout" );
 
-    spSeconds.set_width_chars( 2 );
-    spSeconds.set_numeric();
-    spSeconds.set_wrap();
+    mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
-    volume.set_adjustment( Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
-    volume.set_value( 50 );
+    mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-    Gtk::Label * delimiter1 = Gtk::make_managed< Gtk::Label >( delimiterString );
-    Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
+    auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
+    mProgressBarDispetcher.connect( [ this, mProgressBar ]() {
+        mProgressBar->set_fraction( mProgressBarPercent );
+    } );
 
-    btn.set_valign( Gtk::Align::CENTER );
-    btn.set_halign( Gtk::Align::CENTER );
-    btn.set_size_request( 70 );
+    mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
+    mSpinHours->set_value( h );
 
-    spHours.set_valign( Gtk::Align::CENTER );
-    spHours.set_halign( Gtk::Align::CENTER );
+    mSpinMinutes = builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
+    mSpinMinutes->set_value( m );
 
-    spMinutes.set_valign( Gtk::Align::CENTER );
-    spMinutes.set_halign( Gtk::Align::CENTER );
+    mSpinSeconds = builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
+    mSpinSeconds->set_value( s );
 
-    spSeconds.set_valign( Gtk::Align::CENTER );
-    spSeconds.set_halign( Gtk::Align::CENTER );
+    mVolume = builder->get_widget< Gtk::VolumeButton >( "volumeBtn" );
+    mVolume->set_value( v );
 
-    volume.set_halign( Gtk::Align::CENTER );
-    volume.set_valign( Gtk::Align::CENTER );
+    auto mBtn = builder->get_widget< Gtk::Button >( "startStopBtn" );
+    mBtn->signal_clicked().connect( [ this, mBtn ]() {
+        if ( mBtn->get_label() == "Start" ) {
+            int                  secValue  = mSpinSeconds->get_value_as_int();
+            int                  minValue  = mSpinMinutes->get_value_as_int() * 60;
+            int                  hourValue = mSpinHours->get_value_as_int() * 3600;
+            std::chrono::seconds fullValueSec { secValue + minValue + hourValue };
 
-    progressBar.set_margin( 1 );
+            //timer = std::make_unique< core::utils::Timer >();
+            mTimer.start(
+            fullValueSec,
+            [ this ]( double percent ) {
+                mProgressBarPercent = std::clamp( percent, 0.0, 1.0 );
 
-    volume.set_halign( Gtk::Align::CENTER );
-    volume.set_valign( Gtk::Align::CENTER );
+                mProgressBarDispetcher.emit();
+            },
+            [ this ] { dispatcher_.emit(); },
+            [ this ] { player::beep( mVolume->get_value() ); } );
 
-    set_column_spacing( 10 );
-    set_row_spacing( 3 );
+            mSpinHours->set_sensitive( false );
+            mSpinMinutes->set_sensitive( false );
+            mSpinSeconds->set_sensitive( false );
+            mBtn->set_label( "Stop" );
+        } else {
+            mTimer.stop();
+        }
+    } );
 
-    int attachColumns = 0;
-    attach( spHours, ++attachColumns, 1 );
-    attach( *delimiter1, ++attachColumns, 1, 1, 1 );
-    attach( spMinutes, ++attachColumns, 1 );
-    attach( *delimiter2, ++attachColumns, 1, 1, 1 );
-    attach( spSeconds, ++attachColumns, 1 );
-    attach( btn, ++attachColumns, 1 );
-    attach_next_to( volume, btn, Gtk::PositionType::RIGHT );
-    ++attachColumns;
-    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM, attachColumns );
+    dispatcher_.connect( [ this, mProgressBar, mBtn ] {
+        mSpinHours->set_sensitive();
+        mSpinMinutes->set_sensitive();
+        mSpinSeconds->set_sensitive();
+        mBtn->set_label( "Start" );
+        mProgressBar->set_fraction( 0 );
+    } );
 
-    btn.signal_clicked().connect( sigc::mem_fun( *this, &TimerEntity::onButtonClicked ) );
+    mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
 
-    dispatcher_.connect( sigc::mem_fun( *this, &TimerEntity::onDispatcherEmit ) );
-
-    progressBarDispetcher.connect(
-    sigc::mem_fun( *this, &TimerEntity::onProgressBarEmit ) );
+    mProgressBarDispetcher.connect(
+    [ this, mProgressBar ] { mProgressBar->set_fraction( mProgressBarPercent ); } );
 }
 
-TimerEntity::TimerEntity() :
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), delimiterString( " : " ),
-strStart( "Start" ), strStop( "Stop" ), btn( strStart ), progressBar(), volume(),
-timerPtr(), progressBarDispetcher() {
-    init();
+Timer::~Timer() {
+    mTimer.stop();
+    mParent->remove( *mLayout );
 }
 
-TimerEntity::TimerEntity( int h, int m, int s, double v ) :
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), delimiterString( " : " ),
-strStart( "Start" ), strStop( "Stop" ), btn( strStart ), progressBar(), volume(),
-timerPtr(), progressBarDispetcher() {
-    init();
-
-    spHours.set_value( h );
-    spMinutes.set_value( m );
-    spSeconds.set_value( s );
-    volume.set_value( v );
-}
-
-TimerEntity::~TimerEntity() {}
-
-void TimerEntity::onButtonClicked() {
-    if ( btn.get_label() == strStart.c_str() ) {
-        int                  secValue  = spSeconds.get_value_as_int();
-        int                  minValue  = spMinutes.get_value_as_int() * 60;
-        int                  hourValue = spHours.get_value_as_int() * 3600;
-        std::chrono::seconds fullValueSec { secValue + minValue + hourValue };
-
-        timerPtr = std::make_unique< Timer >();
-        timerPtr->start( fullValueSec, *this );
-
-        spHours.set_sensitive( false );
-        spMinutes.set_sensitive( false );
-        spSeconds.set_sensitive( false );
-        btn.set_label( strStop );
-    } else {
-        spHours.set_sensitive( true );
-        spMinutes.set_sensitive( true );
-        spSeconds.set_sensitive( true );
-        btn.set_label( strStart );
-        timerPtr->stop();
-    }
-}
-
-void TimerEntity::returnSens() { dispatcher_.emit(); }
-
-void TimerEntity::onDispatcherEmit() {
-    spHours.set_sensitive();
-    spMinutes.set_sensitive();
-    spSeconds.set_sensitive();
-    btn.set_label( strStart );
-    progressBar.set_fraction( 0 );
-}
-
-TimerEntity::TimerNJEntity TimerEntity::getValues() const {
+Timer::TimerNJEntity Timer::getValues() const {
     return TimerNJEntity {
-        static_cast< std::uint8_t >( spHours.get_value_as_int() ),
-        static_cast< std::uint8_t >( spMinutes.get_value_as_int() ),
-        static_cast< std::uint8_t >( spSeconds.get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
         getSoundVolume()
     };
 }
 
-double TimerEntity::getSoundVolume() const { return volume.get_value(); }
+double Timer::getSoundVolume() const { return mVolume->get_value(); }
 
-void TimerEntity::setProgressBarPercent( double percent ) {
-    if ( percent < 0 )
-        progressBarPercent = 0;
-    else if ( percent > 1 )
-        progressBarPercent = 0;
-    else
-        progressBarPercent = percent;
-    progressBarDispetcher.emit();
-}
+//void Timer::setProgressBarPercent( double percent ) {
+//if ( percent < 0 )
+//progressBarPercent = 0;
+//else if ( percent > 1 )
+//progressBarPercent = 0;
+//else
+//progressBarPercent = percent;
+//progressBarDispetcher.emit();
+//}
 
-void TimerEntity::onProgressBarEmit() { progressBar.set_fraction( progressBarPercent ); }
-
-}   // namespace core::ui
+}   // namespace core::ui::entity

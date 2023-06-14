@@ -1,47 +1,38 @@
 #include "logentity.hpp"
+#include "gtkmm/button.h"
+#include "gtkmm/entry.h"
 
-#include <gtkmm/enums.h>
-#include <functional>
+#include <gtkmm/builder.h>
+#include <glibmm/convert.h>
+
 #include <iostream>
-#include <string_view>
+#include <string>
 
-namespace core::ui {
+namespace core::ui::entity {
 
-void LogEntity::init() {
-    if ( entry.get_text_length() == 0 )
-        entry.set_placeholder_text( "Write text" );
+Log::Log( Gtk::Grid & parent ) : Log( parent, "" ) {}
 
-    entry.set_hexpand();
-    entry.set_valign( Gtk::Align::CENTER );
+Log::Log( Gtk::Grid & parent, std::string text ) : mParent( &parent ) {
+    auto builder = Gtk::Builder::create_from_file( "gtk4logger.ui", "mainLayout" );
 
-    btn.set_valign( Gtk::Align::CENTER );
-    btn.set_halign( Gtk::Align::CENTER );
+    mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
-    set_column_spacing( 10 );
-    set_row_spacing( 3 );
+    mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
 
-    attach( entry, 1, 1 );
-    attach( btn, 2, 1 );
+    mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-    btn.signal_clicked().connect( sigc::mem_fun( *this, &LogEntity::onButtonClicked ) );
+    mEntry = builder->get_widget< Gtk::Entry >( "entry" );
+    mEntry->set_text( Glib::locale_to_utf8( text ) );
+
+    auto logBtn = builder->get_widget< Gtk::Button >( "loginBtn" );
+    logBtn->signal_clicked().connect(
+    [ this ]() { mLogger.log( Glib::locale_from_utf8( mEntry->get_text() ) ); } );
 }
 
-LogEntity::LogEntity() : entry {}, btn { btnLabel.data() }, logger {} { init(); }
+Log::~Log() { mParent->remove( *mLayout ); }
 
-LogEntity::LogEntity( std::string_view s ) :
-entry {}, btn { btnLabel.data() }, logger {} {
-    entry.set_text( s.data() );
-    init();
+Log::LoggerNJEntity Log::getValues() const {
+    return LoggerNJEntity { Glib::locale_from_utf8( mEntry->get_text() ) };
 }
 
-LogEntity::~LogEntity() {}
-
-void LogEntity::onButtonClicked() {
-    logger.log( static_cast< std::string >( entry.get_text() ) );
-}
-
-LogEntity::LoggerNJEntity LogEntity::getValues() const {
-    return LoggerNJEntity { entry.get_text().c_str() };
-}
-
-}   // namespace core::ui
+}   // namespace core::ui::entity

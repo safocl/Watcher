@@ -1,178 +1,101 @@
 #include "clockentity.hpp"
+#include "sdlplayer/sdlplayer.hpp"
 #include "configure/configure.hpp"
-#include "timer/timer.hpp"
 
-#include <glibmm/dispatcher.h>
-#include <gtkmm/enums.h>
-#include <gtkmm/label.h>
-#include <gtkmm/object.h>
-#include <gtkmm/orientable.h>
-#include <gtkmm/progressbar.h>
-#include <gtkmm/volumebutton.h>
-#include <sigc++/functors/mem_fun.h>
+#include "gtkmm/button.h"
+#include "gtkmm/progressbar.h"
+#include "gtkmm/spinbutton.h"
+#include "gtkmm/switch.h"
+#include "gtkmm/volumebutton.h"
+
+#include <algorithm>
 #include <chrono>
+#include <exception>
 #include <filesystem>
 #include <iostream>
-#include <string>
-#include <gtkmm/cssprovider.h>
 
-namespace core::ui {
+#include <gtkmm/grid.h>
+#include <gtkmm/builder.h>
+#include <sigc++/functors/mem_fun.h>
 
-void ClockEntity::init() {
-    spHours.set_width_chars( 2 );
-    spHours.set_numeric();
-    spHours.set_wrap();
+namespace core::ui::entity {
 
-    spMinutes.set_width_chars( 2 );
-    spMinutes.set_numeric();
-    spMinutes.set_wrap();
+Clock::Clock( Gtk::Grid & parent ) : Clock( parent, 0, 0, 0, 50.0 ) {}
 
-    spSeconds.set_width_chars( 2 );
-    spSeconds.set_numeric();
-    spSeconds.set_wrap();
+Clock::Clock( Gtk::Grid & parent, int h, int m, int s, double v ) :
+mParent( &parent ) {
+    auto builder = Gtk::Builder::create_from_file( "gtk4clock.ui", "mainLayout" );
 
-    Gtk::Label * delimiter1 = Gtk::make_managed< Gtk::Label >( delimiterString );
-    Gtk::Label * delimiter2 = Gtk::make_managed< Gtk::Label >( delimiterString );
+    mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
-    auto                  conf = core::configure::Configure::init();
-    std::filesystem::path cssPath { conf->getParams().pathToTheme };
-    if ( std::filesystem::exists( cssPath ) ) {
-        auto cssProvider = Gtk::CssProvider::create();
-        cssProvider->load_from_path( cssPath.generic_string() );
-        auto swContext = sw.get_style_context();
-        swContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
-        auto hourContext    = spHours.get_style_context();
-        auto minutesContext = spMinutes.get_style_context();
-        auto secondsContext = spSeconds.get_style_context();
+    mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-        hourContext->add_provider( cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER );
-        minutesContext->add_provider( cssProvider,
-                                      GTK_STYLE_PROVIDER_PRIORITY_USER );
-        secondsContext->add_provider( cssProvider,
-                                      GTK_STYLE_PROVIDER_PRIORITY_USER );
-    } else
-        std::cout << "css file not found" << std::endl;
+    auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
+    mProgressBarDispetcher.connect( [ this, mProgressBar ]() {
+        mProgressBar->set_fraction( mProgressBarPercent );
+    } );
 
-    spHours.set_valign( Gtk::Align::CENTER );
-    spHours.set_halign( Gtk::Align::CENTER );
+    mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
+    mSpinHours->set_value( h );
 
-    spMinutes.set_valign( Gtk::Align::CENTER );
-    spMinutes.set_halign( Gtk::Align::CENTER );
+    mSpinMinutes = builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
+    mSpinMinutes->set_value( m );
 
-    spSeconds.set_valign( Gtk::Align::CENTER );
-    spSeconds.set_halign( Gtk::Align::CENTER );
+    mSpinSeconds = builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
+    mSpinSeconds->set_value( s );
 
-    sw.set_halign( Gtk::Align::CENTER );
-    sw.set_valign( Gtk::Align::CENTER );
-    sw.set_size_request( 70 );
+    mVolume = builder->get_widget< Gtk::VolumeButton >( "volumeBtn" );
+    mVolume->set_value( v );
 
-    progressBar.set_margin( 1 );
+    auto mAclockToggle = builder->get_widget< Gtk::Switch >( "switch" );
+    mAclockToggle->property_active().signal_changed().connect(
+    [ this, mAclockToggle ]() {
+        if ( mAclockToggle->get_active() ) {
+            mAclock.on(
+            mSpinHours->get_value_as_int(),
+            mSpinMinutes->get_value_as_int(),
+            mSpinSeconds->get_value_as_int(),
+            [ this ]( double percent ) {
+                mProgressBarPercent = std::clamp( percent, 0.0, 1.0 );
 
-    volume.set_halign( Gtk::Align::CENTER );
-    volume.set_valign( Gtk::Align::CENTER );
+                mProgressBarDispetcher.emit();
+            },
+            [ this ] { dispatcher_.emit(); },
+            [ this ] { player::beep( mVolume->get_value() ); } );
 
-    set_column_spacing( 10 );
-    set_row_spacing( 3 );
+            mSpinHours->set_sensitive( false );
+            mSpinMinutes->set_sensitive( false );
+            mSpinSeconds->set_sensitive( false );
+        } else {
+            mAclock.off();
+        }
+    } );
 
-    volume.set_adjustment( Gtk::Adjustment::create( 0, 0, 100, 5, 5 ) );
-    volume.set_value( 50 );
+    mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
 
-    int attachCount = 0;
-    attach( spHours, ++attachCount, 1 );
-    attach( *delimiter1, ++attachCount, 1, 1, 1 );
-    attach( spMinutes, ++attachCount, 1 );
-    attach( *delimiter2, ++attachCount, 1, 1, 1 );
-    attach( spSeconds, ++attachCount, 1 );
-    attach( sw, ++attachCount, 1 );
-    attach( volume, ++attachCount, 1 );
-    attach_next_to( progressBar, spHours, Gtk::PositionType::BOTTOM, attachCount );
-
-    //    show_all_children();
-
-    sw.property_active().signal_changed().connect(
-    sigc::mem_fun( *this, &ClockEntity::onSwChanged ) );
-
-    dispatcher_.connect( sigc::mem_fun( *this, &ClockEntity::onDispatcherEmit ) );
-
-    progressBarDispetcher.connect(
-    sigc::mem_fun( *this, &ClockEntity::onProgressBarEmit ) );
+    dispatcher_.connect( [ this, mAclockToggle, mProgressBar ]() {
+        mSpinHours->set_sensitive();
+        mSpinMinutes->set_sensitive();
+        mSpinSeconds->set_sensitive();
+        mAclockToggle->set_active( false );
+        mProgressBar->set_fraction( 0 );
+    } );
 }
 
-ClockEntity::ClockEntity() :
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(),
-aclock_(), swBlock( false ), progressBar(), volume(), progressBarDispetcher(),
-progressBarPercent() {
-    init();
+Clock::~Clock() { /* std::cout << "Clock destruct" << std::endl;*/
+    mAclock.off();
+    mParent->remove( *mLayout );
 }
 
-ClockEntity::ClockEntity( int h, int m, int s, double v ) :
-spHours( Gtk::Adjustment::create( 0, 0, 23, 1, 1, 0 ) ),
-spMinutes( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ),
-spSeconds( Gtk::Adjustment::create( 0, 0, 59, 1, 1, 0 ) ), sw(), dispatcher_(),
-aclock_(), swBlock( false ), progressBar(), volume(), progressBarDispetcher(),
-progressBarPercent() {
-    init();
-
-    spHours.set_value( h );
-    spMinutes.set_value( m );
-    spSeconds.set_value( s );
-    volume.set_value( v );
-}
-
-ClockEntity::~ClockEntity() { /* std::cout << "ClockEntity destruct" << std::endl;*/
-}
-
-void ClockEntity::onSwChanged() {
-    if ( sw.get_active() ) {
-        aclock_.on( spHours.get_value_as_int(),
-                    spMinutes.get_value_as_int(),
-                    spSeconds.get_value_as_int(),
-                    *this );
-        spHours.set_sensitive( false );
-        spMinutes.set_sensitive( false );
-        spSeconds.set_sensitive( false );
-    } else {
-        aclock_.off();
-        spHours.set_sensitive( true );
-        spMinutes.set_sensitive( true );
-        spSeconds.set_sensitive( true );
-    }
-}
-
-void ClockEntity::returnSensElements() { dispatcher_.emit(); }
-
-void ClockEntity::onDispatcherEmit() {
-    spHours.set_sensitive();
-    spMinutes.set_sensitive();
-    spSeconds.set_sensitive();
-    sw.set_active( false );
-    progressBar.set_fraction( 0 );
-}
-
-ClockEntity::AclockNJEntity ClockEntity::getValues() const {
+Clock::AclockNJEntity Clock::getValues() const {
     return AclockNJEntity {
-        static_cast< std::uint8_t >( spHours.get_value_as_int() ),
-        static_cast< std::uint8_t >( spMinutes.get_value_as_int() ),
-        static_cast< std::uint8_t >( spSeconds.get_value_as_int() ),
-        volume.get_value()
+        static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
+        mVolume->get_value()
     };
 }
 
-double ClockEntity::getSoundVolume() const { return volume.get_value(); }
+double Clock::getSoundVolume() const { return mVolume->get_value(); }
 
-void ClockEntity::setProgressBarPercent( double percent ) {
-    if ( percent < 0 )
-        progressBarPercent = 0;
-    else if ( percent > 1 )
-        progressBarPercent = 0;
-    else
-        progressBarPercent = percent;
-    progressBarDispetcher.emit();
-}
-
-void ClockEntity::onProgressBarEmit() {
-    progressBar.set_fraction( progressBarPercent );
-}
-}   // namespace core::ui
+}   // namespace core::ui::entity

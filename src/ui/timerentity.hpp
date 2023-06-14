@@ -16,37 +16,32 @@
 #include <gtkmm/progressbar.h>
 #include <gtkmm/volumebutton.h>
 
-namespace core::ui {
+namespace core::ui::entity {
 
-
-class TimerEntity final : public Gtk::Grid {
+class Timer final {
+public:
     using TimerNJEntity = configure::TimerNJEntity;
-    Gtk::SpinButton  spHours, spMinutes, spSeconds;
-    Glib::ustring    delimiterString;
-    Glib::ustring    strStart;
-    Glib::ustring    strStop;
-    Gtk::Button      btn;
-    Glib::Dispatcher dispatcher_;
-    Gtk::ProgressBar progressBar;
-    Gtk::VolumeButton volume;
-    std::unique_ptr< Timer > timerPtr;
-    Glib::Dispatcher progressBarDispetcher;
 
-    std::atomic<double> progressBarPercent;
+    Gtk::Button * mDestroyBtn;
 
-    void init();
-    void onButtonClicked();
-    void onProgressBarEmit();
-    void onDispatcherEmit();
+private:
+    Gtk::Grid * mParent;
+    Gtk::Grid * mLayout;
+
+    Gtk::SpinButton *   mSpinHours, *mSpinMinutes, *mSpinSeconds;
+    Gtk::VolumeButton * mVolume;
+    Glib::Dispatcher    dispatcher_;
+    Glib::Dispatcher    mProgressBarDispetcher;
+    core::utils::Timer  mTimer;
+
+    std::atomic< double > mProgressBarPercent;
 
 public:
-    TimerEntity();
-    TimerEntity( int hours, int minutes, int seconds, double volume );
-    ~TimerEntity();
-    void returnSens();
+    Timer( Gtk::Grid & parent );
+    Timer( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
+    ~Timer();
     TimerNJEntity getValues() const;
-    double getSoundVolume() const;
-    void setProgressBarPercent(double percent);
+    double        getSoundVolume() const;
 };
 
-}   // namespace core::ui
+}   // namespace core::ui::entity

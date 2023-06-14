@@ -11,18 +11,18 @@
 #include <ctime>
 #include <atomic>
 
-namespace core::ui {
-class TimerEntity;
-}
-
+namespace core::utils {
 class Timer final {
     std::atomic_bool closeThreadFlag { false };
 
 public:
-    void start( const std::chrono::seconds & timerDuration,
-                core::ui::TimerEntity & );
+    void start( const std::chrono::seconds &       timerDuration,
+                std::function< void( double ) > && refreshProgress,
+                std::function< void() > &&         doOnEnd,
+                std::function< void() > &&         doAction );
     void stop();
 
     static std::chrono::milliseconds ticksTime;
 };
 //std::chrono::milliseconds Timer::ticksTime{1};
+}   // namespace core::utils

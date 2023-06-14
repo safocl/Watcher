@@ -1,31 +1,36 @@
 #pragma once
 
 #include <gtkmm/entry.h>
+#include <gtkmm/builder.h>
 #include <glibmm/ustring.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
-#include <string_view>
+#include <string>
 #include "configure/configure.hpp"
+#include "glibmm/refptr.h"
 #include "logger/logger.hpp"
 
-namespace core::ui {
+namespace core::ui::entity {
 
-class LogEntity final : public Gtk::Grid {
+class Log final {
+public:
     using LoggerNJEntity = configure::LoggerNJEntity;
-    Gtk::Entry          entry;
-    std::string_view    btnLabel { "Log in" };
-    Gtk::Button         btn;
 
-    Logger logger;
+    Gtk::Button * mDestroyBtn;
 
-    void init();
-    void onButtonClicked();
+private:
+    Gtk::Grid * mParent;
+    Gtk::Grid * mLayout;
+
+    Gtk::Entry * mEntry;
+
+    Logger mLogger;
 
 public:
-    LogEntity();
-    LogEntity( std::string_view entry );
-    ~LogEntity();
+    Log( Gtk::Grid & parent );
+    Log( Gtk::Grid & parent, std::string entry );
+    ~Log();
     LoggerNJEntity getValues() const;
 };
 
-}   // namespace core::ui
+}   // namespace core::ui::entity

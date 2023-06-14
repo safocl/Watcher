@@ -3,6 +3,9 @@
 #include "configure/configure.hpp"
 #include "aclock/aclock.hpp"
 
+#include <functional>
+
+#include <gtkmm/button.h>
 #include <glibmm/dispatcher.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/volumebutton.h>
@@ -10,38 +13,35 @@
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/switch.h>
 #include <gtkmm/grid.h>
-#include <gtkmm/label.h>
-#include <glibmm/ustring.h>
 
-namespace core::ui {
+namespace core::ui::entity {
 
-class ClockEntity final : public Gtk::Grid {
+class Clock final {
 public:
     using AclockNJEntity = configure::AclockNJEntity;
-    Gtk::SpinButton   spHours, spMinutes, spSeconds;
-    Gtk::Switch       sw;
-    Glib::ustring     delimiterString { " : " };
-    Glib::Dispatcher  dispatcher_;
-    Aclock            aclock_;
-    std::atomic_bool  swBlock;
-    Gtk::ProgressBar  progressBar;
-    Gtk::VolumeButton volume;
-    Glib::Dispatcher  progressBarDispetcher;
-    std::atomic<double> progressBarPercent;
 
-    void init();
-    void onSwChanged();
-    void onDispatcherEmit();
-    void onProgressBarEmit();
+    Gtk::Button * mDestroyBtn;
+
+private:
+    Gtk::Grid * mParent;
+    Gtk::Grid * mLayout;
+
+    Gtk::SpinButton *   mSpinHours, *mSpinMinutes, *mSpinSeconds;
+    Gtk::VolumeButton * mVolume;
+    //Gtk::Switch *         mAclockToggle;
+    //Gtk::ProgressBar *    mProgressBar;
+    Glib::Dispatcher      dispatcher_;
+    Glib::Dispatcher      mProgressBarDispetcher;
+    Aclock                mAclock;
+    std::atomic< double > mProgressBarPercent;
 
 public:
-    ClockEntity();
-    ClockEntity( int hours, int minutes, int seconds, double volume );
-    ~ClockEntity();
-    void           returnSensElements();
+    Clock( Gtk::Grid & parent );
+    Clock( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
+    ~Clock();
+
     AclockNJEntity getValues() const;
     double         getSoundVolume() const;
-    void           setProgressBarPercent( double percent );
 };
 
-}   // namespace core::ui
+}   // namespace core::ui::entity

@@ -1,26 +1,28 @@
 #pragma once
 
-#include "wnotebook.hpp"
+#include "entityManager.hpp"
+#include "glibmm/refptr.h"
+#include "gtkmm/builder.h"
 
 #include <gtkmm/window.h>
 #include <gtkmm/button.h>
 #include <gtkmm/application.h>
 #include <gtkmm/grid.h>
 
-namespace core::mForm {
+namespace core::ui {
 
 class MainWindow final : public Gtk::Window {
-    ui::WNotebook nb;
-    Gtk::Button   btnClose;
-    Gtk::Grid     grid;
+    Gtk::Button * mBtnQuit;
 
-    Gtk::Application * app;
+    Glib::RefPtr< Gtk::Builder > mMainWindowBuilder;
 
-    void onBtnCloseClicked();
+    Glib::RefPtr< Gtk::Application > mApp;
+
+    entity::Manager mEntityManager;
 
 public:
-    MainWindow( Gtk::Application * );
+    MainWindow( Glib::RefPtr< Gtk::Application > );
     ~MainWindow();
 };
 
-}   // namespace core::mForm
+}   // namespace core::ui
