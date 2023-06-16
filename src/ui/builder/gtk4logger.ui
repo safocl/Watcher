@@ -29,6 +29,7 @@
         </child>
         <child>
           <object class="GtkEntry" id="entry">
+            <property name="hexpand">True</property>
             <property name="placeholder-text">Write text</property>
             <layout>
               <property name="column">0</property>

@@ -18,11 +18,21 @@
 
 namespace core::ui::entity {
 
-Timer::Timer( Gtk::Grid & parent ) : Timer( parent, 0, 0, 0, 0.0 ) {}
+Timer::Timer( Gtk::Grid & parent ) : Timer( parent, 0, 0, 0, 50.0 ) {}
 
 Timer::Timer( Gtk::Grid & parent, int h, int m, int s, double v ) :
 mParent( &parent ) {
-    auto builder = Gtk::Builder::create_from_file( "gtk4timer.ui", "mainLayout" );
+    auto conf = configure::Configure::init()->getParams();
+
+    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4timer.ui";
+
+    if ( !std::filesystem::exists( uiFile ) )
+        uiFile = conf.systemPathToUiDir / "gtk4timer.ui";
+
+    if ( !std::filesystem::exists( uiFile ) )
+        throw std::runtime_error( "File gtk4timer.ui is not exist in the system" );
+
+    auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
 
     mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 

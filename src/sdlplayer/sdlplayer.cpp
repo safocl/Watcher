@@ -24,8 +24,7 @@ SdlPlayer::~SdlPlayer() {
     SDL_Quit();
 }
 
-void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
-                                 double                volume ) {
+void SdlPlayer::playFromWavFile( std::filesystem::path wavFile, double volume ) {
     std::lock_guard mutLock( sdlPlayerMutex );
 
     auto chunk = Mix_LoadWAV( wavFile.generic_string().c_str() );
@@ -37,8 +36,7 @@ void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
     SDL_Delay( 5000 );
 }
 
-void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
-                                  double                volume ) {
+void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile, double volume ) {
     std::lock_guard mutLock( sdlPlayerMutex );
 
     Mix_Init( MIX_INIT_OPUS );
@@ -55,12 +53,13 @@ void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
 
 }   // namespace core::sdlplayer
 
-namespace core::player{
+namespace core::player {
 void beep( double volume ) {
     static sdlplayer::SdlPlayer sdlPlayer {};
 
-    const auto conf = configure::Configure::init()->getParams();
+    const auto audioFile =
+    configure::Configure::init()->getParams().pathToAlarmAudio;
 
-    sdlPlayer.playFromOpusFile( conf.pathToAlarmAudio, volume );
+    sdlPlayer.playFromOpusFile( audioFile, volume );
 }
-}
+}   // namespace core::player

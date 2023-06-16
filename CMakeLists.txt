@@ -5,7 +5,7 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 set( CMAKE_CXX_STANDARD 20 REQUIRED )
 
 
-project( Watcher LANGUAGES CXX )
+project( watcher LANGUAGES CXX )
 
 #message("\n")
 #message("OS: ${CMAKE_SYSTEM_NAME}")
@@ -14,7 +14,7 @@ project( Watcher LANGUAGES CXX )
 message( "Build type is ${CMAKE_BUILD_TYPE}" )
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror)
-    set(CMAKE_CXX_FLAGS_DEBUG -fsanitize=address,undefined) 
+    set(CMAKE_CXX_FLAGS_DEBUG -fsanitize=address,undefined)
 endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     add_compile_options(-Wall -Wextra)
@@ -44,8 +44,13 @@ add_subdirectory( src )
 message("CMAKE prefix is ${CMAKE_INSTALL_PREFIX}")
 
 set(resPath ${CMAKE_SOURCE_DIR}/resources)
+
+file( GLOB uiXmlFiles
+        ${CMAKE_SOURCE_DIR}/src/ui/builder/gtk4*.ui)
+
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    install(FILES ${resPath}/style.css ${resPath}/alarm.opus DESTINATION ${CMAKE_INSTALL_DATAROOTDIR})
+	install(FILES ${resPath}/alarm.opus ${uiXmlFiles} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME})
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    install(FILES ${resPath}/style.css ${resPath}/alarm.opus DESTINATION Watcher/share)
+    install(FILES ${resPath}/alarm.opus ${uiXmlFiles} DESTINATION ${PROJECT_NAME}/share)
 endif()

@@ -18,9 +18,9 @@ namespace core::configure {
 using VolumeNodeJson = double;
 
 struct TimingNodes final {
-    std::uint8_t hour;
-    std::uint8_t minute;
-    std::uint8_t second;
+    std::uint8_t   hour;
+    std::uint8_t   minute;
+    std::uint8_t   second;
     VolumeNodeJson volume;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE( TimingNodes, hour, minute, second, volume );
@@ -32,8 +32,8 @@ using LoggerNodeJson = std::vector< LoggerNJEntity >;
 using AclockNJEntity = TimingNodes;
 using AclockNodeJson = std::vector< AclockNJEntity >;
 
-using TimerNJEntity  = TimingNodes;
-using TimerNodeJson  = std::vector< TimerNJEntity >;
+using TimerNJEntity = TimingNodes;
+using TimerNodeJson = std::vector< TimerNJEntity >;
 
 struct ParametresImpl final {
     LoggerNodeJson logs;
@@ -41,12 +41,14 @@ struct ParametresImpl final {
     TimerNodeJson  timers;
 
     std::filesystem::path pathToLogFile;
-    std::filesystem::path pathToTheme;
     std::filesystem::path pathToAlarmAudio;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(
-    ParametresImpl, logs, aclocks, timers, pathToLogFile, pathToTheme );
+    std::filesystem::path systemPathToUiDir;
+    std::filesystem::path userPathToUiDir;
 };
+
+using json = nlohmann::json;
+void to_json( json & j, const ParametresImpl & );
+void from_json( const json & j, ParametresImpl & );
 
 class Configure final {
 public:

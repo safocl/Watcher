@@ -12,8 +12,6 @@
 namespace core::ui {
 
 class MainWindow final : public Gtk::Window {
-    Gtk::Button * mBtnQuit;
-
     Glib::RefPtr< Gtk::Builder > mMainWindowBuilder;
 
     Glib::RefPtr< Gtk::Application > mApp;

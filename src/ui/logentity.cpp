@@ -13,7 +13,17 @@ namespace core::ui::entity {
 Log::Log( Gtk::Grid & parent ) : Log( parent, "" ) {}
 
 Log::Log( Gtk::Grid & parent, std::string text ) : mParent( &parent ) {
-    auto builder = Gtk::Builder::create_from_file( "gtk4logger.ui", "mainLayout" );
+    auto conf = configure::Configure::init()->getParams();
+
+    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4logger.ui";
+
+    if ( !std::filesystem::exists( uiFile ) )
+        uiFile = conf.systemPathToUiDir / "gtk4logger.ui";
+
+    if ( !std::filesystem::exists( uiFile ) )
+        throw std::runtime_error( "File gtk4logger.ui is not exist in the system" );
+
+    auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
 
     mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 

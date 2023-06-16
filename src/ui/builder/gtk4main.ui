@@ -33,6 +33,66 @@
                     </layout>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkExpander">
+                    <child>
+                      <object class="GtkGrid">
+                        <child>
+                          <object class="GtkScrolledWindow">
+                            <child>
+                              <object class="GtkTextView" id="loggerReaderTextView">
+                                <property name="hexpand">True</property>
+                                <property name="vexpand">True</property>
+                              </object>
+                            </child>
+                            <layout>
+                              <property name="column">0</property>
+                              <property name="column-span">1</property>
+                              <property name="row">0</property>
+                              <property name="row-span">2</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="loggerReaderRefreshBtn">
+                            <property name="label">Refresh</property>
+                            <property name="valign">end</property>
+                            <layout>
+                              <property name="column">1</property>
+                              <property name="column-span">1</property>
+                              <property name="row">0</property>
+                              <property name="row-span">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="loggerReaderNeedLinesRefreshSpin">
+                            <property name="adjustment">logRefreshSpinAdj</property>
+                            <property name="valign">start</property>
+                            <child>
+                              <object class="GtkAdjustment" id="logRefreshSpinAdj">
+                                <property name="page-increment">10.0</property>
+                                <property name="step-increment">1.0</property>
+                                <property name="upper">100.0</property>
+                              </object>
+                            </child>
+                            <layout>
+                              <property name="column">1</property>
+                              <property name="column-span">1</property>
+                              <property name="row">1</property>
+                              <property name="row-span">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                      <property name="row-span">1</property>
+                    </layout>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
