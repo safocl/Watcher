@@ -57,12 +57,12 @@ public:
 private:
     struct ConfImpl {
     private:
-        Parametres                            params;
-        Parametres                            defaultParams;
-        std::chrono::system_clock::time_point lastLoadConfig;
-        std::chrono::system_clock::time_point lastChangeConfig;
-        std::filesystem::path                 pathToConfig;
-        std::filesystem::path                 argv0;
+        Parametres                            mParams;
+        Parametres                            mDefaultParams;
+        std::chrono::system_clock::time_point mLastLoadConfig;
+        std::chrono::system_clock::time_point mLastChangeConfig;
+        std::filesystem::path                 mPathToConfig;
+        std::filesystem::path                 mArgv0;
 
         void fillParams( const Parametres & params );
         void fillDefaultParams();
@@ -73,7 +73,7 @@ private:
         Parametres            getParams() const;
         std::filesystem::path getArgv0() const;
 
-        void import( Parametres newParams ) { params = newParams; }
+        void import( Parametres newParams ) { mParams = newParams; }
 
         ConfImpl( std::filesystem::path argv0 );
     };

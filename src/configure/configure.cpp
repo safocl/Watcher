@@ -56,28 +56,27 @@ std::filesystem::path defineUserDataPath() {
 }
 
 std::filesystem::path defineSysConfPath() {
-    std::filesystem::path pathToConfig {};
+    std::filesystem::path mPathToConfig {};
 #ifdef __linux__
     auto dir = std::getenv( "XDG_CONFIG_HOME" );
     if ( dir )
-        pathToConfig = std::string { dir };
+        mPathToConfig = std::string { dir };
     else
-        pathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
+        mPathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
 #elif _WIN32
-    pathToConfig   = std::string { std::getenv( "APPDATA" ) };
+    mPathToConfig  = std::string { std::getenv( "APPDATA" ) };
 #endif
 
-    if ( pathToConfig.empty() )
+    if ( mPathToConfig.empty() )
         throw std::runtime_error( "The config path is undefined." );
     else
-        pathToConfig /= "watcher/config.json";
-    return pathToConfig;
+        mPathToConfig /= "watcher/config.json";
+    return mPathToConfig;
 }
 }   // namespace
 
 Configure::ConfImpl::ConfImpl( std::filesystem::path argv0 ) :
-params {}, defaultParams {}, lastLoadConfig {}, lastChangeConfig {},
-pathToConfig { defineSysConfPath() }, argv0 { argv0 } {
+mPathToConfig { defineSysConfPath() }, mArgv0 { argv0 } {
     fillDefaultParams();
 }
 
@@ -100,30 +99,30 @@ Configure::init( std::filesystem::path argv0 ) {
 std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
 
 void Configure::ConfImpl::fillDefaultParams() {
-    defaultParams.pathToLogFile = defineUserDataPath() / "/log.txt";
+    mDefaultParams.pathToLogFile = defineUserDataPath() / "log.txt";
 
-    defaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
-    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
-        defaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
+    mDefaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
+    if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
+        mDefaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
 
-    if ( !std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
+    if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
         throw std::runtime_error( "System audio file for a BEEP is not found" );
 
-    defaultParams.systemPathToUiDir = defineSysDataPath();
-    defaultParams.userPathToUiDir   = defineUserDataPath();
+    mDefaultParams.systemPathToUiDir = defineSysDataPath();
+    mDefaultParams.userPathToUiDir   = defineUserDataPath();
 
     LoggerNodeJson lnj { { "uppu" } };
-    defaultParams.logs = lnj;
+    mDefaultParams.logs = lnj;
     AclockNodeJson anj { { 9, 10, 12, 100 } };
-    defaultParams.aclocks = anj;
+    mDefaultParams.aclocks = anj;
     TimerNodeJson tnj { { 8, 8, 8, 100 } };
-    defaultParams.timers = tnj;
+    mDefaultParams.timers = tnj;
 }
 
-void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
+void Configure::ConfImpl::fillParams( const Parametres & params ) {
     try {
-        if ( std::filesystem::exists( params_.pathToLogFile ) )
-            params.pathToLogFile = params_.pathToLogFile;
+        if ( std::filesystem::exists( params.pathToLogFile ) )
+            mParams.pathToLogFile = params.pathToLogFile;
         else {
             std::cout << "Not valid pathToLogFile in config file" << std::endl
                       << "load default pathToLogFile" << std::endl;
@@ -131,44 +130,46 @@ void Configure::ConfImpl::fillParams( const Parametres & params_ ) {
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        if ( std::filesystem::exists( params_.pathToAlarmAudio ) )
-            params.pathToAlarmAudio = params_.pathToAlarmAudio;
-        else if ( std::filesystem::exists( defaultParams.pathToAlarmAudio ) )
-            params.pathToAlarmAudio = defaultParams.pathToAlarmAudio;
+        if ( std::filesystem::exists( params.pathToAlarmAudio ) )
+            mParams.pathToAlarmAudio = params.pathToAlarmAudio;
+        else if ( std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
+            mParams.pathToAlarmAudio = mDefaultParams.pathToAlarmAudio;
         else
             std::cout << "Alarm audio file is not exists.";
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
-    params.aclocks = params_.aclocks;
+    mParams.aclocks = params.aclocks;
 
-    params.timers = params_.timers;
+    mParams.timers = params.timers;
 
-    params.logs = params_.logs;
+    mParams.logs = params.logs;
 
     try {
-        params.systemPathToUiDir = params_.systemPathToUiDir;
+        mParams.systemPathToUiDir = params.systemPathToUiDir;
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 
     try {
-        params.userPathToUiDir = params_.userPathToUiDir;
+        mParams.userPathToUiDir = params.userPathToUiDir;
     } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
-    auto params = defaultParams;
+    auto params = mDefaultParams;
 
-    if ( !std::filesystem::exists( pathToConfig ) ) {
-        std::filesystem::create_directories( pathToConfig.parent_path() );
+    if ( !std::filesystem::exists( mPathToConfig ) ) {
+        std::filesystem::create_directories( mPathToConfig.parent_path() );
 
-        nlohmann::json defaultParamsJS = defaultParams;
+        nlohmann::json mDefaultParamsJS = mDefaultParams;
 
-        std::ofstream configFile { pathToConfig };
-        configFile << std::setw( 4 ) << defaultParamsJS << std::endl;
+        std::ofstream configFile { mPathToConfig };
+        configFile << std::setw( 4 ) << mDefaultParamsJS << std::endl;
         configFile.close();
 
-        lastChangeConfig = std::chrono::system_clock::now();
+        mLastChangeConfig = std::chrono::system_clock::now();
+
+        mParams = mDefaultParams;
     } else {
-        std::ifstream configFile { pathToConfig };
+        std::ifstream configFile { mPathToConfig };
         auto          tmpJConfig = std::make_unique< nlohmann::json >();
 
         operator>>( configFile, *tmpJConfig );
@@ -180,31 +181,33 @@ void Configure::ConfImpl::loadFromConfigFile() {
         fillParams( params );
     }
 
-    lastLoadConfig = std::chrono::system_clock::now();
+    mLastLoadConfig = std::chrono::system_clock::now();
+
+    std::cout << "\nConfig file path is: " << confImpl->mPathToConfig << "\n\n";
 }
 
-Configure::Parametres Configure::ConfImpl::getParams() const { return params; }
+Configure::Parametres Configure::ConfImpl::getParams() const { return mParams; }
 
 void Configure::ConfImpl::saveToConfigFile() {
-    nlohmann::json paramsJS = params;
-    std::ofstream  configFile { pathToConfig };
+    nlohmann::json paramsJS = mParams;
+    std::ofstream  configFile { mPathToConfig };
     configFile << std::setw( 4 ) << paramsJS << std::endl;
     configFile.close();
 
-    lastChangeConfig = std::chrono::system_clock::now();
+    mLastChangeConfig = std::chrono::system_clock::now();
 }
 
-std::filesystem::path Configure::ConfImpl::getArgv0() const { return argv0; }
+std::filesystem::path Configure::ConfImpl::getArgv0() const { return mArgv0; }
 
 using json = nlohmann::json;
 void to_json( json & j, const ParametresImpl & p ) {
     j = json { { "aclocks", p.aclocks },
-               { "timers ", p.timers },
-               { "logs ", p.logs },
-               { "pathToAlarmAudio ", p.pathToAlarmAudio },
-               { "systemPathToUiDir ", p.systemPathToUiDir },
-               { "userPathToUiDir ", p.userPathToUiDir },
-               { "pathToLogFile ", p.pathToLogFile } };
+               { "timers", p.timers },
+               { "logs", p.logs },
+               { "pathToAlarmAudio", p.pathToAlarmAudio },
+               { "systemPathToUiDir", p.systemPathToUiDir },
+               { "userPathToUiDir", p.userPathToUiDir },
+               { "pathToLogFile", p.pathToLogFile } };
 }
 
 void from_json( const json & j, ParametresImpl & p ) {
