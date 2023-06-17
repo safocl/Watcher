@@ -1,3 +1,0 @@
-[submodule "3rd-party/nlohmann_json"]
-	path = 3rd-party/nlohmann_json
-	url = https://github.com/nlohmann/json.git

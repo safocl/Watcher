@@ -24,12 +24,12 @@ endif()
 
 message("Build system is ${CMAKE_SYSTEM_NAME}")
 
-#set(CMAKE_INSTALL_PREFIX "" )
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig)
     pkg_search_module( GTKMM REQUIRED gtkmm-4.0 )
     pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
+
+	find_package(nlohmann_json REQUIRED)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -38,7 +38,6 @@ endif()
 
 
 set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory( 3rd-party/nlohmann_json )
 add_subdirectory( src )
 
 message("CMAKE prefix is ${CMAKE_INSTALL_PREFIX}")
