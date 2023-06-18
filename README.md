@@ -3,12 +3,10 @@
 ### Dependies:
 - gtkmm4 -- to make and linkage (headers and libs).
 - sdl2 and sdl2_mixer -- to make and linkage (headers and libs).
-- this project use [nlohmann/json](https://github.com/nlohmann/json/tree/eb7376bb131a4b19a5fc6aacfd046fd298cd0119) for JSON parse.
+- this project use [nlohmann/json](https://github.com/nlohmann/json) for JSON parse.
 
 ### Build
 on GNU/Linux:
-
-after cloning this repository, you should do `git submodule update --init`.
 
 ```bash
 $ mkdir build && cd build
@@ -31,7 +29,6 @@ the run file will been in the build/bin directoriy
 
 
 ## Screenshots:
-![N|Solid](https://i.imgur.com/7WBBTGd.png)
-![N|Solid](https://i.imgur.com/3r9vGhS.png)
-![N|Solid](https://i.imgur.com/pdykep1.png)
-![N|Solid](https://i.imgur.com/GpxHrQ9.png)
+![N|Solid](Screenshots/WatcherLogger.webp?raw=true)
+![N|Solid](Screenshots/WatcherTimer.webp?raw=true)
+![N|Solid](Screenshots/WatcherAclock.webp?raw=true)
