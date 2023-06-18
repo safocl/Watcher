@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.10.3 -->
+<!-- Created with Cambalache 0.12.1 -->
 <interface>
-  <requires lib="gtk" version="4.6"/>
+  <requires lib="gtk" version="4.10"/>
   <object class="GtkWindow">
     <child>
       <object class="GtkGrid" id="mainLayout">
@@ -9,18 +9,17 @@
         <property name="margin-top">3</property>
         <child>
           <object class="GtkSpinButton" id="spinHours">
-            <property name="adjustment">hoursAdj</property>
-            <property name="halign">center</property>
-            <property name="margin-end">3</property>
-            <property name="margin-start">3</property>
-            <property name="valign">center</property>
-            <child>
-              <object class="GtkAdjustment" id="hoursAdj">
+            <property name="adjustment">
+              <object class="GtkAdjustment">
                 <property name="page-increment">10.0</property>
                 <property name="step-increment">1.0</property>
                 <property name="upper">24.0</property>
               </object>
-            </child>
+            </property>
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <layout>
               <property name="column">0</property>
               <property name="column-span">1</property>
@@ -44,18 +43,17 @@
         </child>
         <child>
           <object class="GtkSpinButton" id="spinMinutes">
-            <property name="adjustment">minutesAdj</property>
-            <property name="halign">center</property>
-            <property name="margin-end">3</property>
-            <property name="margin-start">3</property>
-            <property name="valign">center</property>
-            <child>
-              <object class="GtkAdjustment" id="minutesAdj">
+            <property name="adjustment">
+              <object class="GtkAdjustment">
                 <property name="page-increment">10.0</property>
                 <property name="step-increment">1.0</property>
                 <property name="upper">60.0</property>
               </object>
-            </child>
+            </property>
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <layout>
               <property name="column">2</property>
               <property name="row">0</property>
@@ -104,18 +102,17 @@
         </child>
         <child>
           <object class="GtkSpinButton" id="spinSeconds">
-            <property name="adjustment">secondsAdj</property>
-            <property name="halign">center</property>
-            <property name="margin-end">3</property>
-            <property name="margin-start">3</property>
-            <property name="valign">center</property>
-            <child>
-              <object class="GtkAdjustment" id="secondsAdj">
+            <property name="adjustment">
+              <object class="GtkAdjustment">
                 <property name="page-increment">10.0</property>
                 <property name="step-increment">1.0</property>
                 <property name="upper">60.0</property>
               </object>
-            </child>
+            </property>
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <layout>
               <property name="column">4</property>
               <property name="column-span">1</property>
@@ -139,18 +136,17 @@
         </child>
         <child>
           <object class="GtkVolumeButton" id="volumeBtn">
-            <property name="adjustment">volumeAdj</property>
-            <property name="margin-end">3</property>
-            <property name="margin-start">3</property>
-            <property name="value">50.0</property>
-            <child>
-              <object class="GtkAdjustment" id="volumeAdj">
+            <property name="adjustment">
+              <object class="GtkAdjustment">
                 <property name="page-increment">5.0</property>
                 <property name="step-increment">5.0</property>
                 <property name="upper">100.0</property>
                 <property name="value">25.0</property>
               </object>
-            </child>
+            </property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="value">50.0</property>
             <layout>
               <property name="column">6</property>
               <property name="column-span">1</property>
