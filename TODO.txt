@@ -4,5 +4,5 @@
 [ ] implement sdl_mixer modules for sdlplayer
 [-] reimplement wfr via std::variant //it is not conveniently
 [ ] clearing of #include directives.
-[ ] replace installation path
+[*] replace installation path
 [ ] wav file playback is normal?
