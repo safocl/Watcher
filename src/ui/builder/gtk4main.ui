@@ -97,6 +97,11 @@
                 </child>
               </object>
             </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">Logger</property>
+              </object>
+            </child>
             <child>
               <object class="GtkGrid">
                 <child>
@@ -124,6 +129,11 @@
                 </child>
               </object>
             </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">Timer</property>
+              </object>
+            </child>
             <child>
               <object class="GtkGrid">
                 <child>
@@ -149,6 +159,11 @@
                     </layout>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">Aclock</property>
               </object>
             </child>
             <!-- Custom fragments -->
