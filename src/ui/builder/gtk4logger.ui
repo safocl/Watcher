@@ -5,9 +5,13 @@
   <object class="GtkWindow">
     <child>
       <object class="GtkGrid" id="mainLayout">
+        <property name="margin-bottom">5</property>
+        <property name="margin-top">3</property>
         <child>
           <object class="GtkButton" id="destroyBtn">
             <property name="label">X</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <layout>
               <property name="column">2</property>
               <property name="column-span">1</property>
@@ -19,6 +23,8 @@
         <child>
           <object class="GtkButton" id="loginBtn">
             <property name="label">Log in</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <layout>
               <property name="column">1</property>
               <property name="column-span">1</property>
@@ -30,6 +36,8 @@
         <child>
           <object class="GtkEntry" id="entry">
             <property name="hexpand">True</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <property name="placeholder-text">Write text</property>
             <layout>
               <property name="column">0</property>

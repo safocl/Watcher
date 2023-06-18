@@ -5,9 +5,15 @@
   <object class="GtkWindow">
     <child>
       <object class="GtkGrid" id="mainLayout">
+        <property name="margin-bottom">5</property>
+        <property name="margin-top">3</property>
         <child>
           <object class="GtkSpinButton" id="spinHours">
             <property name="adjustment">hoursAdj</property>
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <child>
               <object class="GtkAdjustment" id="hoursAdj">
                 <property name="page-increment">10.0</property>
@@ -26,6 +32,10 @@
         <child>
           <object class="GtkSpinButton" id="spinMinutes">
             <property name="adjustment">minutesAdj</property>
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <child>
               <object class="GtkAdjustment" id="minutesAdj">
                 <property name="page-increment">10.0</property>
@@ -43,6 +53,8 @@
         <child>
           <object class="GtkLabel">
             <property name="label">:</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <layout>
               <property name="column">1</property>
               <property name="column-span">1</property>
@@ -54,6 +66,8 @@
         <child>
           <object class="GtkLabel">
             <property name="label">:</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <layout>
               <property name="column">3</property>
               <property name="column-span">1</property>
@@ -65,6 +79,8 @@
         <child>
           <object class="GtkButton" id="destroyBtn">
             <property name="label">X</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <layout>
               <property name="column">7</property>
               <property name="column-span">1</property>
@@ -76,6 +92,10 @@
         <child>
           <object class="GtkSpinButton" id="spinSeconds">
             <property name="adjustment">secondsAdj</property>
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <child>
               <object class="GtkAdjustment" id="secondsAdj">
                 <property name="page-increment">10.0</property>
@@ -106,6 +126,10 @@
         </child>
         <child>
           <object class="GtkSwitch" id="switch">
+            <property name="halign">center</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <layout>
               <property name="column">5</property>
               <property name="column-span">1</property>
@@ -117,6 +141,8 @@
         <child>
           <object class="GtkVolumeButton" id="volumeBtn">
             <property name="adjustment">volumeAdj</property>
+            <property name="margin-end">3</property>
+            <property name="margin-start">3</property>
             <property name="value">50.0</property>
             <child>
               <object class="GtkAdjustment" id="volumeAdj">

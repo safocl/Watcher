@@ -4,6 +4,7 @@
   <!-- interface-name gtk4watcher.ui -->
   <requires lib="gtk" version="4.6"/>
   <object class="GtkWindow">
+    <property name="resizable">False</property>
     <child>
       <object class="GtkGrid" id="mainWindowLayout">
         <child>
@@ -15,6 +16,8 @@
                 <child>
                   <object class="GtkButton" id="logAddBtn">
                     <property name="label">+++</property>
+                    <property name="margin-bottom">3</property>
+                    <property name="margin-top">3</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">1</property>
@@ -100,6 +103,8 @@
                 <child>
                   <object class="GtkButton" id="timerAddBtn">
                     <property name="label">+++</property>
+                    <property name="margin-bottom">3</property>
+                    <property name="margin-top">3</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">1</property>
@@ -125,6 +130,8 @@
                 <child>
                   <object class="GtkButton" id="clockAddBtn">
                     <property name="label">+++</property>
+                    <property name="margin-bottom">3</property>
+                    <property name="margin-top">3</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="column-span">1</property>
