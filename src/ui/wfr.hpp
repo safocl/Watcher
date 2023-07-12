@@ -1,3 +1,25 @@
+/**
+ *\file wfr.hpp
+ *\copyright GPL-3.0-or-later
+ *\author safocl (megaSafocl)
+ *\date 2023
+ *
+ * \detail \"Copyright safocl (megaSafocl) 2023\"
+ This file is part of PockerCalc2.
+
+ PockerCalc2 is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+
+ PockerCalc2 is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ more details.
+
+ You should have received a copy of the GNU General Public License along with
+ PockerCalc2. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma once
 
 #include "configure/configure.hpp"
@@ -35,7 +57,8 @@
 namespace core::ui {
 
 template < class T >
-concept WatcherWidgetsAccamulateble = requires( T widget ) {
+concept WatcherWidgetsAccamulateble =
+requires( T widget ) {
     requires std::derived_from< T, Gtk::Widget >;
 
     requires std::constructible_from< T, std::string_view >;
@@ -45,15 +68,19 @@ concept WatcherWidgetsAccamulateble = requires( T widget ) {
     { widget.loadLayoutFromConfig() } -> std::same_as< void >;
 };
 
-template < WatcherWidgetsAccamulateble WidgetType > struct WidgetProvider {
+template < WatcherWidgetsAccamulateble WidgetType >
+struct WidgetProvider {
     WidgetType widget;
 
 public:
-    explicit WidgetProvider( std::string_view label ) : widget( label ) {}
+    explicit WidgetProvider( std::string_view label ) :
+    widget( label ) {}
     ~WidgetProvider() {}
 
     auto getName() const -> std::string { return widget.getName(); }
-    auto saveLayoutToConfig() const -> void { return widget.saveLayoutToConfig(); }
+    auto saveLayoutToConfig() const -> void {
+        return widget.saveLayoutToConfig();
+    }
     auto loadLayoutFromConfig() const -> void {
         return widget.loadLayoutFromConfig();
     }
@@ -64,7 +91,8 @@ template < class EntityType > struct Enode final {
     std::shared_ptr< Gtk::Button > closeBtn;
 };
 
-template < class EntityNodeArrType > struct GenericControlWidgets final {
+template < class EntityNodeArrType >
+struct GenericControlWidgets final {
     std::string       label;
     Gtk::Button       btnAdd;
     Gtk::Grid         grid;
@@ -79,14 +107,17 @@ template < class EType > struct ContanerFrameTraits {
 };
 
 template < class EntityType, class EntityNode >
-inline EntityNode makeNode( int hours, int minutes, int seconds, double volume ) {
+inline EntityNode
+makeNode( int hours, int minutes, int seconds, double volume ) {
     static_assert(
     std::is_same< EntityType, ClockEntity >::value ||
     std::is_same< EntityType, TimerEntity >::value,
     "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return EntityNode { .entityWidget = std::make_shared< EntityType >(
+    return EntityNode { .entityWidget =
+                        std::make_shared< EntityType >(
                         hours, minutes, seconds, volume ),
-                        .closeBtn = std::make_shared< Gtk::Button >( "X" ) };
+                        .closeBtn =
+                        std::make_shared< Gtk::Button >( "X" ) };
 }
 
 template < class EntityType, class EntityNode >
@@ -94,14 +125,19 @@ inline EntityNode makeNode( std::string_view entry ) {
     static_assert(
     std::is_same< EntityType, LogEntity >::value,
     "In Wfr< EntityType >::makeNode() : unacceptable use for this type" );
-    return EntityNode { .entityWidget =
-                        std::make_shared< EntityType >( entry.data() ),
-                        .closeBtn = std::make_shared< Gtk::Button >( "X" ) };
+    return EntityNode {
+        .entityWidget =
+        std::make_shared< EntityType >( entry.data() ),
+        .closeBtn = std::make_shared< Gtk::Button >( "X" )
+    };
 }
 
-template < class EntityType, class EntityNode > EntityNode makeNode() {
-    return EntityNode { .entityWidget = std::make_shared< EntityType >(),
-                        .closeBtn     = std::make_shared< Gtk::Button >( "X" ) };
+template < class EntityType, class EntityNode >
+EntityNode makeNode() {
+    return EntityNode { .entityWidget =
+                        std::make_shared< EntityType >(),
+                        .closeBtn =
+                        std::make_shared< Gtk::Button >( "X" ) };
 }
 
 class AclockContanerFrame :
@@ -129,11 +165,12 @@ public:
             if ( enode == widgets.entityNodeArr.begin() )
                 widgets.grid.attach( *entity, 1, 1 );
             else
-                widgets.grid.attach_next_to( *entity,
-                                             *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::BOTTOM,
-                                             1,
-                                             1 );
+                widgets.grid.attach_next_to(
+                *entity,
+                *std::prev( enode )->entityWidget,
+                Gtk::PositionType::BOTTOM,
+                1,
+                1 );
             widgets.grid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
             closeBtn->set_halign( Gtk::Align::CENTER );
@@ -161,17 +198,20 @@ public:
         set_child( widgets.grid );
 
         widgets.btnAdd.signal_clicked().connect( [ this ]() {
-            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::TOP );
-            widgets.entityNodeArr.push_back( makeNode< EntityType, EntityNode >() );
-            auto enodeIt              = std::prev( widgets.entityNodeArr.end() );
+            widgets.grid.insert_next_to( widgets.btnAdd,
+                                         Gtk::PositionType::TOP );
+            widgets.entityNodeArr.push_back(
+            makeNode< EntityType, EntityNode >() );
+            auto enodeIt = std::prev( widgets.entityNodeArr.end() );
             auto [ entity, closeBtn ] = *enodeIt;
 
             closeBtn->set_halign( Gtk::Align::CENTER );
             closeBtn->set_valign( Gtk::Align::CENTER );
 
-            widgets.grid.attach_next_to( *entity,
-                                         *std::prev( enodeIt )->entityWidget,
-                                         Gtk::PositionType::BOTTOM );
+            widgets.grid.attach_next_to(
+            *entity,
+            *std::prev( enodeIt )->entityWidget,
+            Gtk::PositionType::BOTTOM );
 
             widgets.grid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
@@ -245,11 +285,12 @@ public:
             if ( enode == widgets.entityNodeArr.begin() )
                 widgets.grid.attach( *entity, 1, 1 );
             else
-                widgets.grid.attach_next_to( *entity,
-                                             *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::BOTTOM,
-                                             1,
-                                             1 );
+                widgets.grid.attach_next_to(
+                *entity,
+                *std::prev( enode )->entityWidget,
+                Gtk::PositionType::BOTTOM,
+                1,
+                1 );
             widgets.grid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
             closeBtn->set_halign( Gtk::Align::CENTER );
@@ -277,17 +318,20 @@ public:
         set_child( widgets.grid );
 
         widgets.btnAdd.signal_clicked().connect( [ this ]() {
-            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::TOP );
-            widgets.entityNodeArr.push_back( makeNode< EntityType, EntityNode >() );
-            auto enodeIt              = std::prev( widgets.entityNodeArr.end() );
+            widgets.grid.insert_next_to( widgets.btnAdd,
+                                         Gtk::PositionType::TOP );
+            widgets.entityNodeArr.push_back(
+            makeNode< EntityType, EntityNode >() );
+            auto enodeIt = std::prev( widgets.entityNodeArr.end() );
             auto [ entity, closeBtn ] = *enodeIt;
 
             closeBtn->set_halign( Gtk::Align::CENTER );
             closeBtn->set_valign( Gtk::Align::CENTER );
 
-            widgets.grid.attach_next_to( *entity,
-                                         *std::prev( enodeIt )->entityWidget,
-                                         Gtk::PositionType::BOTTOM );
+            widgets.grid.attach_next_to(
+            *entity,
+            *std::prev( enodeIt )->entityWidget,
+            Gtk::PositionType::BOTTOM );
 
             widgets.grid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
@@ -363,11 +407,12 @@ public:
             if ( enode == widgets.entityNodeArr.begin() )
                 widgets.grid.attach( *entity, 1, 1 );
             else
-                widgets.grid.attach_next_to( *entity,
-                                             *std::prev( enode )->entityWidget,
-                                             Gtk::PositionType::BOTTOM,
-                                             1,
-                                             1 );
+                widgets.grid.attach_next_to(
+                *entity,
+                *std::prev( enode )->entityWidget,
+                Gtk::PositionType::BOTTOM,
+                1,
+                1 );
             widgets.grid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
             closeBtn->set_halign( Gtk::Align::CENTER );
@@ -395,17 +440,20 @@ public:
         set_child( widgets.grid );
 
         widgets.btnAdd.signal_clicked().connect( [ this ]() {
-            widgets.grid.insert_next_to( widgets.btnAdd, Gtk::PositionType::TOP );
-            widgets.entityNodeArr.push_back( makeNode< EntityType, EntityNode >() );
-            auto enodeIt              = std::prev( widgets.entityNodeArr.end() );
+            widgets.grid.insert_next_to( widgets.btnAdd,
+                                         Gtk::PositionType::TOP );
+            widgets.entityNodeArr.push_back(
+            makeNode< EntityType, EntityNode >() );
+            auto enodeIt = std::prev( widgets.entityNodeArr.end() );
             auto [ entity, closeBtn ] = *enodeIt;
 
             closeBtn->set_halign( Gtk::Align::CENTER );
             closeBtn->set_valign( Gtk::Align::CENTER );
 
-            widgets.grid.attach_next_to( *entity,
-                                         *std::prev( enodeIt )->entityWidget,
-                                         Gtk::PositionType::BOTTOM );
+            widgets.grid.attach_next_to(
+            *entity,
+            *std::prev( enodeIt )->entityWidget,
+            Gtk::PositionType::BOTTOM );
 
             widgets.grid.attach_next_to(
             *closeBtn, *entity, Gtk::PositionType::RIGHT, 1, 1 );
@@ -431,22 +479,28 @@ public:
 
         textWraper->set_child( *logText );
 
-        auto textWraperExpander = Gtk::make_managed< Gtk::Expander >();
+        auto textWraperExpander =
+        Gtk::make_managed< Gtk::Expander >();
         textWraperExpander->set_label( "Log text" );
 
-        widgets.grid.attach_next_to(
-        *textWraperExpander, widgets.btnAdd, Gtk::PositionType::BOTTOM, 2, 1 );
+        widgets.grid.attach_next_to( *textWraperExpander,
+                                     widgets.btnAdd,
+                                     Gtk::PositionType::BOTTOM,
+                                     2,
+                                     1 );
 
         auto textWraperGrid = Gtk::make_managed< Gtk::Grid >();
 
         textWraperGrid->attach( *textWraper, 0, 0, 1, 2 );
 
-        auto logTextRefreshButton = Gtk::make_managed< Gtk::Button >();
+        auto logTextRefreshButton =
+        Gtk::make_managed< Gtk::Button >();
         //logTextRefreshButton->set_expand();
         logTextRefreshButton->set_label( "Refresh" );
 
-        textWraperGrid->attach_next_to(
-        *logTextRefreshButton, *textWraper, Gtk::PositionType::RIGHT );
+        textWraperGrid->attach_next_to( *logTextRefreshButton,
+                                        *textWraper,
+                                        Gtk::PositionType::RIGHT );
 
         auto needLinesSpin = Gtk::make_managed< Gtk::SpinButton >();
         needLinesSpin->set_range( 0, 100 );
@@ -454,8 +508,9 @@ public:
         needLinesSpin->set_expand( false );
         needLinesSpin->set_halign( Gtk::Align::CENTER );
         needLinesSpin->set_valign( Gtk::Align::START );
-        textWraperGrid->attach_next_to(
-        *needLinesSpin, *logTextRefreshButton, Gtk::PositionType::BOTTOM );
+        textWraperGrid->attach_next_to( *needLinesSpin,
+                                        *logTextRefreshButton,
+                                        Gtk::PositionType::BOTTOM );
 
         textWraperExpander->set_child( *textWraperGrid );
 

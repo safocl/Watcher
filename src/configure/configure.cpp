@@ -1,3 +1,25 @@
+/**
+ *@file configure.hpp
+ *@copyright GPL-3.0-or-later
+ *@author safocl (megaSafocl)
+ *@date 2023
+ *
+ * @detail \"Copyright safocl (megaSafocl) 2023\"
+ This file is part of PockerCalc2.
+
+ PockerCalc2 is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+
+ PockerCalc2 is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ more details.
+
+ You should have received a copy of the GNU General Public License along with
+ PockerCalc2. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "configure.hpp"
 #include <array>
 #include <chrono>
@@ -18,7 +40,9 @@
 
 namespace core::configure {
 
-std::shared_ptr< Configure::ConfImpl > Configure::confImpl { nullptr };
+std::shared_ptr< Configure::ConfImpl > Configure::confImpl {
+    nullptr
+};
 
 namespace {
 std::filesystem::path defineSysDataPath() {
@@ -43,7 +67,8 @@ std::filesystem::path defineUserDataPath() {
     if ( dir )
         pathToUserData = std::string { dir };
     else
-        pathToUserData = std::string( std::getenv( "HOME" ) ) + "/.local/share";
+        pathToUserData =
+        std::string( std::getenv( "HOME" ) ) + "/.local/share";
 #elif _WIN32
     pathToUserData = std::string { std::getenv( "APPDATA" ) };
 #endif
@@ -62,7 +87,8 @@ std::filesystem::path defineSysConfPath() {
     if ( dir )
         mPathToConfig = std::string { dir };
     else
-        mPathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
+        mPathToConfig =
+        std::string( std::getenv( "HOME" ) ) + "/.config";
 #elif _WIN32
     mPathToConfig  = std::string { std::getenv( "APPDATA" ) };
 #endif
@@ -88,25 +114,32 @@ Configure::init( std::filesystem::path argv0 ) {
 
         auto params = confImpl->getParams();
         std::cout << "\nLog file path is: " << params.pathToLogFile
-                  << "\nAlarm audio file path is: " << params.pathToAlarmAudio
-                  << "\nUser ui dir path is: " << params.userPathToUiDir
-                  << "\nSystem ui dir path is: " << params.systemPathToUiDir
-                  << "\n\n";
+                  << "\nAlarm audio file path is: "
+                  << params.pathToAlarmAudio
+                  << "\nUser ui dir path is: "
+                  << params.userPathToUiDir
+                  << "\nSystem ui dir path is: "
+                  << params.systemPathToUiDir << "\n\n";
     }
     return confImpl;
 }
 
-std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
+std::shared_ptr< Configure::ConfImpl > Configure::init() {
+    return confImpl;
+}
 
 void Configure::ConfImpl::fillDefaultParams() {
     mDefaultParams.pathToLogFile = defineUserDataPath() / "log.txt";
 
-    mDefaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
+    mDefaultParams.pathToAlarmAudio =
+    defineUserDataPath() / "alarm.opus";
     if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
-        mDefaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
+        mDefaultParams.pathToAlarmAudio =
+        defineSysDataPath() / "alarm.opus";
 
     if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
-        throw std::runtime_error( "System audio file for a BEEP is not found" );
+        throw std::runtime_error(
+        "System audio file for a BEEP is not found" );
 
     mDefaultParams.systemPathToUiDir = defineSysDataPath();
     mDefaultParams.userPathToUiDir   = defineUserDataPath();
@@ -124,19 +157,26 @@ void Configure::ConfImpl::fillParams( const Parametres & params ) {
         if ( std::filesystem::exists( params.pathToLogFile ) )
             mParams.pathToLogFile = params.pathToLogFile;
         else {
-            std::cout << "Not valid pathToLogFile in config file" << std::endl
+            std::cout << "Not valid pathToLogFile in config file"
+                      << std::endl
                       << "load default pathToLogFile" << std::endl;
         }
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
 
     try {
         if ( std::filesystem::exists( params.pathToAlarmAudio ) )
             mParams.pathToAlarmAudio = params.pathToAlarmAudio;
-        else if ( std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
-            mParams.pathToAlarmAudio = mDefaultParams.pathToAlarmAudio;
+        else if ( std::filesystem::exists(
+                  mDefaultParams.pathToAlarmAudio ) )
+            mParams.pathToAlarmAudio =
+            mDefaultParams.pathToAlarmAudio;
         else
             std::cout << "Alarm audio file is not exists.";
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
 
     mParams.aclocks = params.aclocks;
 
@@ -146,18 +186,23 @@ void Configure::ConfImpl::fillParams( const Parametres & params ) {
 
     try {
         mParams.systemPathToUiDir = params.systemPathToUiDir;
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
 
     try {
         mParams.userPathToUiDir = params.userPathToUiDir;
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) {
+        std::cout << err.what() << std::endl;
+    }
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
     auto params = mDefaultParams;
 
     if ( !std::filesystem::exists( mPathToConfig ) ) {
-        std::filesystem::create_directories( mPathToConfig.parent_path() );
+        std::filesystem::create_directories(
+        mPathToConfig.parent_path() );
 
         nlohmann::json mDefaultParamsJS = mDefaultParams;
 
@@ -170,7 +215,7 @@ void Configure::ConfImpl::loadFromConfigFile() {
         mParams = mDefaultParams;
     } else {
         std::ifstream configFile { mPathToConfig };
-        auto          tmpJConfig = std::make_unique< nlohmann::json >();
+        auto tmpJConfig = std::make_unique< nlohmann::json >();
 
         operator>>( configFile, *tmpJConfig );
 
@@ -183,10 +228,13 @@ void Configure::ConfImpl::loadFromConfigFile() {
 
     mLastLoadConfig = std::chrono::system_clock::now();
 
-    std::cout << "\nConfig file path is: " << confImpl->mPathToConfig << "\n\n";
+    std::cout << "\nConfig file path is: " << confImpl->mPathToConfig
+              << "\n\n";
 }
 
-Configure::Parametres Configure::ConfImpl::getParams() const { return mParams; }
+Configure::Parametres Configure::ConfImpl::getParams() const {
+    return mParams;
+}
 
 void Configure::ConfImpl::saveToConfigFile() {
     nlohmann::json paramsJS = mParams;
@@ -197,7 +245,9 @@ void Configure::ConfImpl::saveToConfigFile() {
     mLastChangeConfig = std::chrono::system_clock::now();
 }
 
-std::filesystem::path Configure::ConfImpl::getArgv0() const { return mArgv0; }
+std::filesystem::path Configure::ConfImpl::getArgv0() const {
+    return mArgv0;
+}
 
 using json = nlohmann::json;
 void to_json( json & j, const ParametresImpl & p ) {
@@ -213,30 +263,44 @@ void to_json( json & j, const ParametresImpl & p ) {
 void from_json( const json & j, ParametresImpl & p ) {
     try {
         j.at( "aclocks" ).get_to( p.aclocks );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 
     try {
         j.at( "timers" ).get_to( p.timers );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 
     try {
         j.at( "logs" ).get_to( p.logs );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 
     try {
         j.at( "pathToAlarmAudio" ).get_to( p.pathToAlarmAudio );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 
     try {
         j.at( "systemPathToUiDir" ).get_to( p.systemPathToUiDir );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 
     try {
         j.at( "userPathToUiDir" ).get_to( p.userPathToUiDir );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 
     try {
         j.at( "pathToLogFile" ).get_to( p.pathToLogFile );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) {
+        std::cout << e.what() << std::endl;
+    }
 }
 }   // namespace core::configure

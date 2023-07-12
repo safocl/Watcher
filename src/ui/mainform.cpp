@@ -1,3 +1,25 @@
+/**
+ *\file mainform.cpp
+ *\copyright GPL-3.0-or-later
+ *\author safocl (megaSafocl)
+ *\date 2023
+ *
+ * \detail \"Copyright safocl (megaSafocl) 2023\"
+ This file is part of PockerCalc2.
+
+ PockerCalc2 is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+
+ PockerCalc2 is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ more details.
+
+ You should have received a copy of the GNU General Public License along with
+ PockerCalc2. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "mainform.hpp"
 #include "configure/configure.hpp"
 #include "gtkmm/spinbutton.h"
@@ -16,13 +38,15 @@ mMainWindowBuilder( Gtk::Builder::create_from_file(
 [] {
     auto conf = configure::Configure::init()->getParams();
 
-    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4main.ui";
+    std::filesystem::path uiFile =
+    conf.userPathToUiDir / "gtk4main.ui";
 
     if ( !std::filesystem::exists( uiFile ) )
         uiFile = conf.systemPathToUiDir / "gtk4main.ui";
 
     if ( !std::filesystem::exists( uiFile ) )
-        throw std::runtime_error( "File gtk4main.ui is not exist in the system" );
+        throw std::runtime_error(
+        "File gtk4main.ui is not exist in the system" );
 
     return uiFile.native();
 }(),
@@ -31,11 +55,13 @@ mApp( std::move( app ) ),
 mEntityManager( entity::Manager::DynamicEntitiesLayouts {
 .clock = mMainWindowBuilder->get_widget< Gtk::Grid >( "clockLayout" ),
 .timer = mMainWindowBuilder->get_widget< Gtk::Grid >( "timerLayout" ),
-.log   = mMainWindowBuilder->get_widget< Gtk::Grid >( "logLayout" ) } ) {
+.log =
+mMainWindowBuilder->get_widget< Gtk::Grid >( "logLayout" ) } ) {
     auto mainLayout =
     mMainWindowBuilder->get_widget< Gtk::Grid >( "mainWindowLayout" );
 
-    auto quitBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "btnQuit" );
+    auto quitBtn =
+    mMainWindowBuilder->get_widget< Gtk::Button >( "btnQuit" );
 
     quitBtn->signal_clicked().connect( [ this ] {
         mEntityManager.saveToConfig();
@@ -55,18 +81,22 @@ mEntityManager( entity::Manager::DynamicEntitiesLayouts {
     timerAddBtn->signal_clicked().connect(
     [ this ] { mEntityManager.pushTimer(); } );
 
-    auto logAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "logAddBtn" );
-    logAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushLogger(); } );
+    auto logAddBtn =
+    mMainWindowBuilder->get_widget< Gtk::Button >( "logAddBtn" );
+    logAddBtn->signal_clicked().connect(
+    [ this ] { mEntityManager.pushLogger(); } );
 
     auto loggerReader =
-    mMainWindowBuilder->get_widget< Gtk::TextView >( "loggerReaderTextView" );
+    mMainWindowBuilder->get_widget< Gtk::TextView >(
+    "loggerReaderTextView" );
 
     auto loggerReaderNeedLinesRefreshSpin =
     mMainWindowBuilder->get_widget< Gtk::SpinButton >(
     "loggerReaderNeedLinesRefreshSpin" );
 
     auto loggerReaderRefreshBtn =
-    mMainWindowBuilder->get_widget< Gtk::Button >( "loggerReaderRefreshBtn" );
+    mMainWindowBuilder->get_widget< Gtk::Button >(
+    "loggerReaderRefreshBtn" );
     loggerReaderRefreshBtn->signal_clicked().connect(
     [ loggerReader, loggerReaderNeedLinesRefreshSpin ] {
         auto conf = configure::Configure::init()->getParams();
@@ -79,7 +109,8 @@ mEntityManager( entity::Manager::DynamicEntitiesLayouts {
         constexpr decltype( logFile )::off_type offsetAtEnd = 0;
         logFile.seekg( offsetAtEnd, decltype( logFile )::end );
 
-        const int needLines = loggerReaderNeedLinesRefreshSpin->get_value_as_int();
+        const int needLines =
+        loggerReaderNeedLinesRefreshSpin->get_value_as_int();
 
         bool isEof = false;
         int  endOfLines {};

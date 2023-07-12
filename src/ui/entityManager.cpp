@@ -1,3 +1,25 @@
+/**
+ *@file entityManager.cpp
+ *@copyright GPL-3.0-or-later
+ *@author safocl (megaSafocl)
+ *@date 2023
+ *
+ * @detail \"Copyright safocl (megaSafocl) 2023\"
+ This file is part of PockerCalc2.
+
+ PockerCalc2 is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+
+ PockerCalc2 is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ more details.
+
+ You should have received a copy of the GNU General Public License along with
+ PockerCalc2. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "entityManager.hpp"
 #include "configure/configure.hpp"
 #include "ui/clockentity.hpp"
@@ -14,7 +36,8 @@ mEntitiesLayouts( std::move( layouts ) ) {
 
 Manager::~Manager() {}
 
-void Manager::setDynamicEntitiesLayouts( DynamicEntitiesLayouts layouts ) {
+void Manager::setDynamicEntitiesLayouts(
+DynamicEntitiesLayouts layouts ) {
     mEntitiesLayouts = std::move( layouts );
 }
 
@@ -49,7 +72,8 @@ void Manager::loadFromConfig() {
     auto conf = configure::Configure::init()->getParams();
 
     for ( auto logElement : conf.logs ) {
-        mElements.logs.emplace_back( *mEntitiesLayouts.log, logElement );
+        mElements.logs.emplace_back( *mEntitiesLayouts.log,
+                                     logElement );
         auto log = std::prev( mElements.logs.end() );
 
         log->mDestroyBtn->signal_clicked().connect(
@@ -57,7 +81,8 @@ void Manager::loadFromConfig() {
     }
     for ( auto timerElement : conf.timers ) {
         auto [ h, m, s, v ] = timerElement;
-        mElements.timers.emplace_back( *mEntitiesLayouts.timer, h, m, s, v );
+        mElements.timers.emplace_back(
+        *mEntitiesLayouts.timer, h, m, s, v );
 
         auto timer = std::prev( mElements.timers.end() );
 
@@ -67,7 +92,8 @@ void Manager::loadFromConfig() {
 
     for ( auto clockElement : conf.aclocks ) {
         auto [ h, m, s, v ] = clockElement;
-        mElements.clocks.emplace_back( *mEntitiesLayouts.clock, h, m, s, v );
+        mElements.clocks.emplace_back(
+        *mEntitiesLayouts.clock, h, m, s, v );
 
         auto clock = std::prev( mElements.clocks.end() );
 

@@ -1,3 +1,25 @@
+/**
+ *@file clockentity.cpp
+ *@copyright GPL-3.0-or-later
+ *@author safocl (megaSafocl)
+ *@date 2023
+ *
+ * @detail \"Copyright safocl (megaSafocl) 2023\"
+ This file is part of PockerCalc2.
+
+ PockerCalc2 is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+
+ PockerCalc2 is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ more details.
+
+ You should have received a copy of the GNU General Public License along with
+ PockerCalc2. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "clockentity.hpp"
 #include "sdlplayer/sdlplayer.hpp"
 #include "configure/configure.hpp"
@@ -27,38 +49,46 @@ Clock::Clock( Gtk::Grid & parent, int h, int m, int s, double v ) :
 mParent( &parent ) {
     auto conf = configure::Configure::init()->getParams();
 
-    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4clock.ui";
+    std::filesystem::path uiFile =
+    conf.userPathToUiDir / "gtk4clock.ui";
 
     if ( !std::filesystem::exists( uiFile ) )
         uiFile = conf.systemPathToUiDir / "gtk4clock.ui";
 
     if ( !std::filesystem::exists( uiFile ) )
-        throw std::runtime_error( "File gtk4clock.ui is not exist in the system" );
+        throw std::runtime_error(
+        "File gtk4clock.ui is not exist in the system" );
 
-    auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
+    auto builder =
+    Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
 
     mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
     mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-    auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
+    auto mProgressBar =
+    builder->get_widget< Gtk::ProgressBar >( "progress" );
     mProgressBarDispetcher.connect( [ this, mProgressBar ]() {
         mProgressBar->set_fraction( mProgressBarPercent );
     } );
 
-    mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
+    mSpinHours =
+    builder->get_widget< Gtk::SpinButton >( "spinHours" );
     mSpinHours->set_value( h );
 
-    mSpinMinutes = builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
+    mSpinMinutes =
+    builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
     mSpinMinutes->set_value( m );
 
-    mSpinSeconds = builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
+    mSpinSeconds =
+    builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
     mSpinSeconds->set_value( s );
 
     mVolume = builder->get_widget< Gtk::VolumeButton >( "volumeBtn" );
     mVolume->set_value( v );
 
-    auto mAclockToggle = builder->get_widget< Gtk::Switch >( "switch" );
+    auto mAclockToggle =
+    builder->get_widget< Gtk::Switch >( "switch" );
     mAclockToggle->property_active().signal_changed().connect(
     [ this, mAclockToggle ]() {
         if ( mAclockToggle->get_active() ) {
@@ -99,12 +129,13 @@ Clock::~Clock() { /* std::cout << "Clock destruct" << std::endl;*/
 }
 
 Clock::AclockNJEntity Clock::getValues() const {
-    return AclockNJEntity {
-        static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
-        static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
-        static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
-        mVolume->get_value()
-    };
+    return AclockNJEntity { static_cast< std::uint8_t >(
+                            mSpinHours->get_value_as_int() ),
+                            static_cast< std::uint8_t >(
+                            mSpinMinutes->get_value_as_int() ),
+                            static_cast< std::uint8_t >(
+                            mSpinSeconds->get_value_as_int() ),
+                            mVolume->get_value() };
 }
 
 double Clock::getSoundVolume() const { return mVolume->get_value(); }

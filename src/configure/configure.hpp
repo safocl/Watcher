@@ -1,3 +1,25 @@
+/**
+ *@file configure.cpp
+ *@copyright GPL-3.0-or-later
+ *@author safocl (megaSafocl)
+ *@date 2023
+ *
+ * @detail \"Copyright safocl (megaSafocl) 2023\"
+ This file is part of PockerCalc2.
+
+ PockerCalc2 is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+
+ PockerCalc2 is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ more details.
+
+ You should have received a copy of the GNU General Public License along with
+ PockerCalc2. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma once
 
 #include <array>
@@ -23,7 +45,8 @@ struct TimingNodes final {
     std::uint8_t   second;
     VolumeNodeJson volume;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE( TimingNodes, hour, minute, second, volume );
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+    TimingNodes, hour, minute, second, volume );
 };
 
 using LoggerNJEntity = std::string;
@@ -82,7 +105,8 @@ private:
     static std::shared_ptr< ConfImpl > confImpl;
 
 public:
-    static std::shared_ptr< ConfImpl > init( std::filesystem::path argv0 );
+    static std::shared_ptr< ConfImpl >
+    init( std::filesystem::path argv0 );
     static std::shared_ptr< ConfImpl > init();
 };
 
