@@ -1,12 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.12.1 -->
+<!-- Created with Cambalache 0.16.0 -->
 <interface>
   <!-- interface-name gtk4watcher.ui -->
-  <requires lib="gtk" version="4.10"/>
+  <requires lib="gtk" version="4.12"/>
   <object class="GtkWindow">
     <property name="resizable">False</property>
     <child>
       <object class="GtkGrid" id="mainWindowLayout">
+        <property name="halign">start</property>
         <child>
           <object class="GtkNotebook">
             <property name="halign">baseline</property>
@@ -17,6 +18,8 @@
                   <object class="GtkButton" id="logAddBtn">
                     <property name="label">+++</property>
                     <property name="margin-bottom">3</property>
+                    <property name="margin-end">4</property>
+                    <property name="margin-start">4</property>
                     <property name="margin-top">3</property>
                     <layout>
                       <property name="column">0</property>
@@ -38,6 +41,10 @@
                 </child>
                 <child>
                   <object class="GtkExpander">
+                    <property name="margin-bottom">2</property>
+                    <property name="margin-end">2</property>
+                    <property name="margin-start">2</property>
+                    <property name="margin-top">2</property>
                     <child>
                       <object class="GtkGrid">
                         <child>
@@ -45,6 +52,10 @@
                             <child>
                               <object class="GtkTextView" id="loggerReaderTextView">
                                 <property name="hexpand">True</property>
+                                <property name="margin-bottom">2</property>
+                                <property name="margin-end">2</property>
+                                <property name="margin-start">2</property>
+                                <property name="margin-top">2</property>
                                 <property name="vexpand">True</property>
                               </object>
                             </child>
@@ -59,6 +70,10 @@
                         <child>
                           <object class="GtkButton" id="loggerReaderRefreshBtn">
                             <property name="label">Refresh</property>
+                            <property name="margin-bottom">2</property>
+                            <property name="margin-end">2</property>
+                            <property name="margin-start">2</property>
+                            <property name="margin-top">2</property>
                             <property name="valign">end</property>
                             <layout>
                               <property name="column">1</property>
@@ -77,6 +92,10 @@
                                 <property name="upper">100.0</property>
                               </object>
                             </property>
+                            <property name="margin-bottom">2</property>
+                            <property name="margin-end">2</property>
+                            <property name="margin-start">2</property>
+                            <property name="margin-top">2</property>
                             <property name="valign">start</property>
                             <layout>
                               <property name="column">1</property>
@@ -88,6 +107,7 @@
                         </child>
                       </object>
                     </child>
+                    <style/>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">2</property>
@@ -108,6 +128,8 @@
                   <object class="GtkButton" id="timerAddBtn">
                     <property name="label">+++</property>
                     <property name="margin-bottom">3</property>
+                    <property name="margin-end">4</property>
+                    <property name="margin-start">4</property>
                     <property name="margin-top">3</property>
                     <layout>
                       <property name="column">0</property>
@@ -140,6 +162,8 @@
                   <object class="GtkButton" id="clockAddBtn">
                     <property name="label">+++</property>
                     <property name="margin-bottom">3</property>
+                    <property name="margin-end">4</property>
+                    <property name="margin-start">4</property>
                     <property name="margin-top">3</property>
                     <layout>
                       <property name="column">0</property>
@@ -178,6 +202,10 @@
         <child>
           <object class="GtkButton" id="btnQuit">
             <property name="label">Quit</property>
+            <property name="margin-bottom">4</property>
+            <property name="margin-end">4</property>
+            <property name="margin-start">4</property>
+            <property name="margin-top">4</property>
             <layout>
               <property name="column">0</property>
               <property name="column-span">1</property>

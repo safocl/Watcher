@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.12.1 -->
+<!-- Created with Cambalache 0.16.0 -->
 <interface>
-  <requires lib="gtk" version="4.10"/>
+  <requires lib="gtk" version="4.12"/>
   <object class="GtkWindow">
     <child>
       <object class="GtkGrid" id="mainLayout">
@@ -9,9 +9,11 @@
         <property name="margin-top">3</property>
         <child>
           <object class="GtkButton" id="destroyBtn">
-            <property name="label">X</property>
+            <property name="height-request">35</property>
+            <property name="label"> X </property>
             <property name="margin-end">3</property>
             <property name="margin-start">3</property>
+            <property name="width-request">35</property>
             <layout>
               <property name="column">2</property>
               <property name="column-span">1</property>

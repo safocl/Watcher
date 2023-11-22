@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.12.1 -->
+<!-- Created with Cambalache 0.16.0 -->
 <interface>
-  <requires lib="gtk" version="4.10"/>
+  <requires lib="gtk" version="4.12"/>
   <object class="GtkWindow">
     <child>
       <object class="GtkGrid" id="mainLayout">
@@ -50,9 +50,11 @@
         </child>
         <child>
           <object class="GtkLabel">
+            <property name="halign">center</property>
             <property name="label">:</property>
             <property name="margin-end">3</property>
             <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <layout>
               <property name="column">1</property>
               <property name="column-span">1</property>
@@ -63,9 +65,11 @@
         </child>
         <child>
           <object class="GtkLabel">
+            <property name="halign">center</property>
             <property name="label">:</property>
             <property name="margin-end">3</property>
             <property name="margin-start">3</property>
+            <property name="valign">center</property>
             <layout>
               <property name="column">3</property>
               <property name="column-span">1</property>
@@ -76,11 +80,33 @@
         </child>
         <child>
           <object class="GtkButton" id="destroyBtn">
-            <property name="label">X</property>
+            <property name="height-request">35</property>
+            <property name="label"> X </property>
             <property name="margin-end">3</property>
             <property name="margin-start">3</property>
+            <property name="width-request">35</property>
             <layout>
               <property name="column">7</property>
+              <property name="column-span">1</property>
+              <property name="row">0</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScaleButton" id="volumeBtn">
+            <property name="adjustment">
+              <object class="GtkAdjustment">
+                <property name="page-increment">5.0</property>
+                <property name="step-increment">5.0</property>
+                <property name="upper">100.0</property>
+                <property name="value">25.0</property>
+              </object>
+            </property>
+            <property name="icons">player-volume</property>
+            <style/>
+            <layout>
+              <property name="column">6</property>
               <property name="column-span">1</property>
               <property name="row">0</property>
               <property name="row-span">1</property>
@@ -129,27 +155,6 @@
             <property name="valign">center</property>
             <layout>
               <property name="column">5</property>
-              <property name="column-span">1</property>
-              <property name="row">0</property>
-              <property name="row-span">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkVolumeButton" id="volumeBtn">
-            <property name="adjustment">
-              <object class="GtkAdjustment">
-                <property name="page-increment">5.0</property>
-                <property name="step-increment">5.0</property>
-                <property name="upper">100.0</property>
-                <property name="value">25.0</property>
-              </object>
-            </property>
-            <property name="margin-end">3</property>
-            <property name="margin-start">3</property>
-            <property name="value">50.0</property>
-            <layout>
-              <property name="column">6</property>
               <property name="column-span">1</property>
               <property name="row">0</property>
               <property name="row-span">1</property>
