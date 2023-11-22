@@ -36,7 +36,7 @@
 #include <glibmm/ustring.h>
 #include <glibmm/dispatcher.h>
 #include <gtkmm/progressbar.h>
-#include <gtkmm/volumebutton.h>
+#include <gtkmm/scalebutton.h>
 
 namespace core::ui::entity {
 
@@ -50,21 +50,17 @@ private:
     Gtk::Grid * mParent;
     Gtk::Grid * mLayout;
 
-    Gtk::SpinButton *   mSpinHours, *mSpinMinutes, *mSpinSeconds;
-    Gtk::VolumeButton * mVolume;
-    Glib::Dispatcher    dispatcher_;
-    Glib::Dispatcher    mProgressBarDispetcher;
-    core::utils::Timer  mTimer;
+    Gtk::SpinButton *  mSpinHours, *mSpinMinutes, *mSpinSeconds;
+    Gtk::ScaleButton * mVolume;
+    Glib::Dispatcher   dispatcher_;
+    Glib::Dispatcher   mProgressBarDispetcher;
+    core::utils::Timer mTimer;
 
     std::atomic< double > mProgressBarPercent;
 
 public:
     Timer( Gtk::Grid & parent );
-    Timer( Gtk::Grid & parent,
-           int         hours,
-           int         minutes,
-           int         seconds,
-           double      volume );
+    Timer( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
     ~Timer();
     TimerNJEntity getValues() const;
     double        getSoundVolume() const;

@@ -30,7 +30,7 @@
 #include <gtkmm/button.h>
 #include <glibmm/dispatcher.h>
 #include <gtkmm/progressbar.h>
-#include <gtkmm/volumebutton.h>
+#include <gtkmm/scalebutton.h>
 #include <atomic>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/switch.h>
@@ -48,10 +48,9 @@ private:
     Gtk::Grid * mParent;
     Gtk::Grid * mLayout;
 
-    Gtk::SpinButton *   mSpinHours, *mSpinMinutes, *mSpinSeconds;
-    Gtk::VolumeButton * mVolume;
-    //Gtk::Switch *         mAclockToggle;
-    //Gtk::ProgressBar *    mProgressBar;
+    Gtk::SpinButton *  mSpinHours, *mSpinMinutes, *mSpinSeconds;
+    Gtk::ScaleButton * mVolume;
+
     Glib::Dispatcher      dispatcher_;
     Glib::Dispatcher      mProgressBarDispetcher;
     Aclock                mAclock;
@@ -59,11 +58,7 @@ private:
 
 public:
     Clock( Gtk::Grid & parent );
-    Clock( Gtk::Grid & parent,
-           int         hours,
-           int         minutes,
-           int         seconds,
-           double      volume );
+    Clock( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
     ~Clock();
 
     AclockNJEntity getValues() const;

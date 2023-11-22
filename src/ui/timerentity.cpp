@@ -46,52 +46,44 @@ Timer::Timer( Gtk::Grid & parent, int h, int m, int s, double v ) :
 mParent( &parent ) {
     auto conf = configure::Configure::init()->getParams();
 
-    std::filesystem::path uiFile =
-    conf.userPathToUiDir / "gtk4timer.ui";
+    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4timer.ui";
 
     if ( !std::filesystem::exists( uiFile ) )
         uiFile = conf.systemPathToUiDir / "gtk4timer.ui";
 
     if ( !std::filesystem::exists( uiFile ) )
-        throw std::runtime_error(
-        "File gtk4timer.ui is not exist in the system" );
+        throw std::runtime_error( "File gtk4timer.ui is not exist in the system" );
 
-    auto builder =
-    Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
+    auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
 
     mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
     mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-    auto mProgressBar =
-    builder->get_widget< Gtk::ProgressBar >( "progress" );
+    auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
     mProgressBarDispetcher.connect( [ this, mProgressBar ]() {
         mProgressBar->set_fraction( mProgressBarPercent );
     } );
 
-    mSpinHours =
-    builder->get_widget< Gtk::SpinButton >( "spinHours" );
+    mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
     mSpinHours->set_value( h );
 
-    mSpinMinutes =
-    builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
+    mSpinMinutes = builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
     mSpinMinutes->set_value( m );
 
-    mSpinSeconds =
-    builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
+    mSpinSeconds = builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
     mSpinSeconds->set_value( s );
 
-    mVolume = builder->get_widget< Gtk::VolumeButton >( "volumeBtn" );
+    mVolume = builder->get_widget< Gtk::ScaleButton >( "volumeBtn" );
     mVolume->set_value( v );
 
     auto mBtn = builder->get_widget< Gtk::Button >( "startStopBtn" );
     mBtn->signal_clicked().connect( [ this, mBtn ]() {
         if ( mBtn->get_label() == "Start" ) {
-            int secValue  = mSpinSeconds->get_value_as_int();
-            int minValue  = mSpinMinutes->get_value_as_int() * 60;
-            int hourValue = mSpinHours->get_value_as_int() * 3600;
-            std::chrono::seconds fullValueSec { secValue + minValue +
-                                                hourValue };
+            int                  secValue  = mSpinSeconds->get_value_as_int();
+            int                  minValue  = mSpinMinutes->get_value_as_int() * 60;
+            int                  hourValue = mSpinHours->get_value_as_int() * 3600;
+            std::chrono::seconds fullValueSec { secValue + minValue + hourValue };
 
             //timer = std::make_unique< core::utils::Timer >();
             mTimer.start(
@@ -122,10 +114,6 @@ mParent( &parent ) {
     } );
 
     mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
-
-    mProgressBarDispetcher.connect( [ this, mProgressBar ] {
-        mProgressBar->set_fraction( mProgressBarPercent );
-    } );
 }
 
 Timer::~Timer() {
@@ -134,13 +122,12 @@ Timer::~Timer() {
 }
 
 Timer::TimerNJEntity Timer::getValues() const {
-    return TimerNJEntity { static_cast< std::uint8_t >(
-                           mSpinHours->get_value_as_int() ),
-                           static_cast< std::uint8_t >(
-                           mSpinMinutes->get_value_as_int() ),
-                           static_cast< std::uint8_t >(
-                           mSpinSeconds->get_value_as_int() ),
-                           getSoundVolume() };
+    return TimerNJEntity {
+        static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
+        static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
+        getSoundVolume()
+    };
 }
 
 double Timer::getSoundVolume() const { return mVolume->get_value(); }
