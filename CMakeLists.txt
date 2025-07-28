@@ -67,8 +67,8 @@ set(resPath ${CMAKE_SOURCE_DIR}/resources)
 file( GLOB uiXmlFiles
         ${CMAKE_SOURCE_DIR}/src/ui/builder/gtk4*.ui)
 
-
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	include(GNUInstallDirs)
 	install(FILES ${resPath}/alarm.opus ${uiXmlFiles} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME})
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     install(FILES ${resPath}/alarm.opus ${uiXmlFiles} DESTINATION ${PROJECT_NAME}/share)
