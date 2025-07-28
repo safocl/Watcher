@@ -23,17 +23,13 @@
 #pragma once
 
 #include "configure/configure.hpp"
-#include "timer/timer.hpp"
 
 #include <atomic>
-#include <thread>
-#include <vector>
-#include <memory>
+#include <sigc++/connection.h>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/label.h>
-#include <glibmm/ustring.h>
 #include <glibmm/dispatcher.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scalebutton.h>
@@ -54,9 +50,11 @@ private:
     Gtk::ScaleButton * mVolume;
     Glib::Dispatcher   dispatcher_;
     Glib::Dispatcher   mProgressBarDispetcher;
-    core::utils::Timer mTimer;
 
     std::atomic< double > mProgressBarPercent;
+
+    sigc::connection mTicks;
+    sigc::connection mOnce;
 
 public:
     Timer( Gtk::Grid & parent );

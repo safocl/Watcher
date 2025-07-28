@@ -18,10 +18,14 @@
 #You should have received a copy of the GNU General Public License along with
 #watcher. If not, see <https://www.gnu.org/licenses/>.
 
-project(mainWindow)
+# set( CMAKE_CXX_STANDARD 23 REQUARED )
+
+# project(mainWindow)
 
 file( GLOB cpps
         *.cpp )
 
-add_library( ${PROJECT_NAME} OBJECT ${cpps} )
-target_link_libraries(${PROJECT_NAME} PUBLIC configure)
+add_library( mainWindow OBJECT ${cpps} )
+target_link_libraries(mainWindow PUBLIC configure)
+# add_library( ${PROJECT_NAME} OBJECT ${cpps} )
+# target_link_libraries(${PROJECT_NAME} PUBLIC configure)

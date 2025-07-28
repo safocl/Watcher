@@ -32,21 +32,19 @@
 
 #include <algorithm>
 #include <chrono>
-#include <exception>
+#include <stdexcept>
 #include <filesystem>
-#include <iostream>
+#include <print>
 
 #include <gtkmm/grid.h>
 #include <gtkmm/builder.h>
 #include <sigc++/functors/mem_fun.h>
-#include <stdexcept>
 
 namespace core::ui::entity {
 
 Clock::Clock( Gtk::Grid & parent ) : Clock( parent, 0, 0, 0, 50.0 ) {}
 
-Clock::Clock( Gtk::Grid & parent, int h, int m, int s, double v ) :
-mParent( &parent ) {
+Clock::Clock( Gtk::Grid & parent, int h, int m, int s, double v ) : mParent( &parent ) {
     auto conf = configure::Configure::init()->getParams();
 
     std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4clock.ui";
@@ -64,9 +62,7 @@ mParent( &parent ) {
     mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
     auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
-    mProgressBarDispetcher.connect( [ this, mProgressBar ]() {
-        mProgressBar->set_fraction( mProgressBarPercent );
-    } );
+    mProgressBarDispetcher.connect( [ this, mProgressBar ]() { mProgressBar->set_fraction( mProgressBarPercent ); } );
 
     mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
     mSpinHours->set_value( h );
@@ -81,52 +77,87 @@ mParent( &parent ) {
     mVolume->set_value( v );
 
     auto mAclockToggle = builder->get_widget< Gtk::Switch >( "switch" );
-    mAclockToggle->property_active().signal_changed().connect(
-    [ this, mAclockToggle ]() {
-        if ( mAclockToggle->get_active() ) {
-            mAclock.on(
-            mSpinHours->get_value_as_int(),
-            mSpinMinutes->get_value_as_int(),
-            mSpinSeconds->get_value_as_int(),
-            [ this ]( double percent ) {
-                mProgressBarPercent = std::clamp( percent, 0.0, 1.0 );
+    mAclockToggle->property_active().signal_changed().connect( [ this, mAclockToggle ] {
+        if ( mAclockToggle->get_active() && !mIsActive ) {
+            auto beginTimePoint = std::chrono::system_clock::now();
 
-                mProgressBarDispetcher.emit();
-            },
-            [ this ] { dispatcher_.emit(); },
-            [ this ] { player::beep( mVolume->get_value() ); } );
+            mIsActive = true;
+
+            const auto t      = std::time( nullptr );
+            auto       endTm  = *std::localtime( &t );
+            endTm.tm_hour     = mSpinHours->get_value_as_int();
+            endTm.tm_min      = mSpinMinutes->get_value_as_int();
+            endTm.tm_sec      = mSpinSeconds->get_value_as_int();
+            auto timeoutStamp = std::chrono::system_clock::from_time_t( std::mktime( &endTm ) );
+
+            if ( beginTimePoint > timeoutStamp )
+                timeoutStamp += std::chrono::hours( 24 );
+            if ( beginTimePoint > timeoutStamp )
+                throw std::runtime_error( "invalid input time" );
+            const auto fullDuration =
+            std::chrono::duration_cast< std::chrono::seconds >( timeoutStamp - beginTimePoint );
+
+            std::println( "Timestamp is: {0:%F %X}", std::chrono::current_zone()->to_local( timeoutStamp ) );
 
             mSpinHours->set_sensitive( false );
             mSpinMinutes->set_sensitive( false );
             mSpinSeconds->set_sensitive( false );
-        } else {
-            mAclock.off();
+
+            using namespace std::chrono_literals;
+            mTicks = Glib::signal_timeout().connect(
+            [ this, fullDuration, timeoutStamp ]() {
+                const auto leftDuration =
+                std::chrono::duration_cast< std::chrono::seconds >( timeoutStamp - std::chrono::system_clock::now() );
+                const double percent = double( leftDuration.count() ) / fullDuration.count();
+                mProgressBarPercent  = std::clamp( percent, 0.0, 1.0 );
+
+                mProgressBarDispetcher.emit();
+
+                return true;
+            },
+            ( 100ms ).count() );
+
+            mOnce = Glib::signal_timeout().connect_seconds(
+            [ this ] {
+                player::beep( mVolume->get_value() );
+                dispatcher_.emit();
+
+                return false;
+            },
+            fullDuration.count() );
+        } else if ( !mAclockToggle->get_active() && mIsActive ) {
+            dispatcher_.emit();
         }
     } );
 
     mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
 
     dispatcher_.connect( [ this, mAclockToggle, mProgressBar ]() {
+        mTicks.disconnect();
+        mOnce.disconnect();
         mSpinHours->set_sensitive();
         mSpinMinutes->set_sensitive();
         mSpinSeconds->set_sensitive();
+        mIsActive = false;
         mAclockToggle->set_active( false );
         mProgressBar->set_fraction( 0 );
+
+        std::println( "Aclock stoped at: {0:%F %X}",
+                      std::chrono::current_zone()->to_local( std::chrono::system_clock::now() ) );
     } );
 }
 
-Clock::~Clock() { /* std::cout << "Clock destruct" << std::endl;*/
-    mAclock.off();
+Clock::~Clock() {
+    mTicks.disconnect();
+    mOnce.disconnect();
     mParent->remove( *mLayout );
 }
 
 Clock::AclockNJEntity Clock::getValues() const {
-    return AclockNJEntity {
-        static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
-        static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
-        static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
-        mVolume->get_value()
-    };
+    return AclockNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
+                            static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
+                            static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
+                            mVolume->get_value() };
 }
 
 double Clock::getSoundVolume() const { return mVolume->get_value(); }

@@ -23,9 +23,6 @@
 #pragma once
 
 #include "configure/configure.hpp"
-#include "aclock/aclock.hpp"
-
-#include <functional>
 
 #include <gtkmm/button.h>
 #include <glibmm/dispatcher.h>
@@ -51,10 +48,15 @@ private:
     Gtk::SpinButton *  mSpinHours, *mSpinMinutes, *mSpinSeconds;
     Gtk::ScaleButton * mVolume;
 
-    Glib::Dispatcher      dispatcher_;
-    Glib::Dispatcher      mProgressBarDispetcher;
-    Aclock                mAclock;
+    Glib::Dispatcher dispatcher_;
+    Glib::Dispatcher mProgressBarDispetcher;
+
     std::atomic< double > mProgressBarPercent;
+
+    sigc::connection mTicks;
+    sigc::connection mOnce;
+
+    std::atomic_bool mIsActive { false };
 
 public:
     Clock( Gtk::Grid & parent );

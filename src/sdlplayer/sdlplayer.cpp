@@ -32,12 +32,8 @@ std::mutex SdlPlayer::sdlPlayerMutex {};
 SdlPlayer::SdlPlayer() {
     if ( SDL_Init( SDL_INIT_AUDIO ) < 0 )
         throw std::runtime_error( SDL_GetError() );
-    if ( Mix_OpenAudioDevice( 48000,
-                              MIX_DEFAULT_FORMAT,
-                              MIX_DEFAULT_CHANNELS,
-                              4096,
-                              nullptr,
-                              SDL_AUDIO_ALLOW_ANY_CHANGE ) < 0 )
+    if ( Mix_OpenAudioDevice(
+         48000, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096, nullptr, SDL_AUDIO_ALLOW_ANY_CHANGE ) < 0 )
         throw std::runtime_error( Mix_GetError() );
 }
 
@@ -46,8 +42,7 @@ SdlPlayer::~SdlPlayer() {
     SDL_Quit();
 }
 
-void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
-                                 double                volume ) {
+void SdlPlayer::playFromWavFile( std::filesystem::path wavFile, double volume ) {
     std::lock_guard mutLock( sdlPlayerMutex );
 
     auto chunk = Mix_LoadWAV( wavFile.generic_string().c_str() );
@@ -59,8 +54,7 @@ void SdlPlayer::playFromWavFile( std::filesystem::path wavFile,
     SDL_Delay( 5000 );
 }
 
-void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile,
-                                  double                volume ) {
+void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile, double volume ) {
     std::lock_guard mutLock( sdlPlayerMutex );
 
     Mix_Init( MIX_INIT_OPUS );
@@ -81,8 +75,7 @@ namespace core::player {
 void beep( double volume ) {
     static sdlplayer::SdlPlayer sdlPlayer {};
 
-    const auto audioFile =
-    configure::Configure::init()->getParams().pathToAlarmAudio;
+    const auto audioFile = configure::Configure::init()->getParams().pathToAlarmAudio;
 
     sdlPlayer.playFromOpusFile( audioFile, volume );
 }

@@ -11,3 +11,4 @@ build
 a.out
 initialVar.sh
 .clangd
+src/unused.in

@@ -27,27 +27,20 @@
 
 namespace core::ui::entity {
 
-Manager::Manager() {}
+Manager::Manager() = default;
 
-Manager::Manager( DynamicEntitiesLayouts layouts ) :
-mEntitiesLayouts( std::move( layouts ) ) {
-    loadFromConfig();
-}
+Manager::Manager( DynamicEntitiesLayouts layouts ) : mEntitiesLayouts( std::move( layouts ) ) { loadFromConfig(); }
 
-Manager::~Manager() {}
+Manager::~Manager() = default;
 
-void Manager::setDynamicEntitiesLayouts(
-DynamicEntitiesLayouts layouts ) {
-    mEntitiesLayouts = std::move( layouts );
-}
+void Manager::setDynamicEntitiesLayouts( DynamicEntitiesLayouts layouts ) { mEntitiesLayouts = std::move( layouts ); }
 
 void Manager::pushAcloack() {
     mElements.clocks.emplace_back( *mEntitiesLayouts.clock );
 
     auto clock = std::prev( mElements.clocks.end() );
 
-    clock->mDestroyBtn->signal_clicked().connect(
-    [ this, clock ]() { mElements.clocks.erase( clock ); } );
+    clock->mDestroyBtn->signal_clicked().connect( [ this, clock ]() { mElements.clocks.erase( clock ); } );
 }
 
 void Manager::pushTimer() {
@@ -55,8 +48,7 @@ void Manager::pushTimer() {
 
     auto timer = std::prev( mElements.timers.end() );
 
-    timer->mDestroyBtn->signal_clicked().connect(
-    [ this, timer ]() { mElements.timers.erase( timer ); } );
+    timer->mDestroyBtn->signal_clicked().connect( [ this, timer ]() { mElements.timers.erase( timer ); } );
 }
 
 void Manager::pushLogger() {
@@ -64,41 +56,34 @@ void Manager::pushLogger() {
 
     auto log = std::prev( mElements.logs.end() );
 
-    log->mDestroyBtn->signal_clicked().connect(
-    [ this, log ]() { mElements.logs.erase( log ); } );
+    log->mDestroyBtn->signal_clicked().connect( [ this, log ]() { mElements.logs.erase( log ); } );
 }
 
 void Manager::loadFromConfig() {
     auto conf = configure::Configure::init()->getParams();
 
     for ( auto logElement : conf.logs ) {
-        mElements.logs.emplace_back( *mEntitiesLayouts.log,
-                                     logElement );
+        mElements.logs.emplace_back( *mEntitiesLayouts.log, logElement );
         auto log = std::prev( mElements.logs.end() );
 
-        log->mDestroyBtn->signal_clicked().connect(
-        [ this, log ]() { mElements.logs.erase( log ); } );
+        log->mDestroyBtn->signal_clicked().connect( [ this, log ]() { mElements.logs.erase( log ); } );
     }
     for ( auto timerElement : conf.timers ) {
         auto [ h, m, s, v ] = timerElement;
-        mElements.timers.emplace_back(
-        *mEntitiesLayouts.timer, h, m, s, v );
+        mElements.timers.emplace_back( *mEntitiesLayouts.timer, h, m, s, v );
 
         auto timer = std::prev( mElements.timers.end() );
 
-        timer->mDestroyBtn->signal_clicked().connect(
-        [ this, timer ]() { mElements.timers.erase( timer ); } );
+        timer->mDestroyBtn->signal_clicked().connect( [ this, timer ]() { mElements.timers.erase( timer ); } );
     }
 
     for ( auto clockElement : conf.aclocks ) {
         auto [ h, m, s, v ] = clockElement;
-        mElements.clocks.emplace_back(
-        *mEntitiesLayouts.clock, h, m, s, v );
+        mElements.clocks.emplace_back( *mEntitiesLayouts.clock, h, m, s, v );
 
         auto clock = std::prev( mElements.clocks.end() );
 
-        clock->mDestroyBtn->signal_clicked().connect(
-        [ this, clock ]() { mElements.clocks.erase( clock ); } );
+        clock->mDestroyBtn->signal_clicked().connect( [ this, clock ]() { mElements.clocks.erase( clock ); } );
     }
 }
 

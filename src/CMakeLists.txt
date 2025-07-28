@@ -18,7 +18,7 @@
 #You should have received a copy of the GNU General Public License along with
 #watcher. If not, see <https://www.gnu.org/licenses/>.
 
-set(CMAKE_CXX_STANDARD 20 REQUARED)
+# set(CMAKE_CXX_STANDARD 23 REQUARED)
 
 
 link_directories(
@@ -43,17 +43,17 @@ target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE timer)
+# target_link_libraries(${PROJECT_NAME} PRIVATE timer)
 target_link_libraries(${PROJECT_NAME} PRIVATE logger)
-target_link_libraries(${PROJECT_NAME} PRIVATE aclock)
+# target_link_libraries(${PROJECT_NAME} PRIVATE aclock)
 target_link_libraries(${PROJECT_NAME} PRIVATE mainWindow)
 target_link_libraries(${PROJECT_NAME} PRIVATE configure)
 #target_link_libraries(${PROJECT_NAME} PRIVATE opusdecoder)
 target_link_libraries(${PROJECT_NAME} PRIVATE sdlplayer)
 
-add_subdirectory( timer )
+# add_subdirectory( timer )
 add_subdirectory( logger )
-add_subdirectory( aclock )
+# add_subdirectory( aclock )
 add_subdirectory( ui )
 add_subdirectory( configure )
 add_subdirectory( sdlplayer )

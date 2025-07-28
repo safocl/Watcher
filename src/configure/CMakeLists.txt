@@ -18,8 +18,8 @@
 #You should have received a copy of the GNU General Public License along with
 #watcher. If not, see <https://www.gnu.org/licenses/>.
 
-cmake_minimum_required( VERSION 3.12 )
-set( CMAKE_CXX_STANDARD 20 REQUARED )
+# cmake_minimum_required( VERSION 3.12 )
+# set( CMAKE_CXX_STANDARD 23 REQUARED )
 
 file( GLOB cpps
         *.cpp )

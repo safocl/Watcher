@@ -28,8 +28,6 @@
 #include <SDL2/SDL_timer.h>
 #include <mutex>
 #include <filesystem>
-#include <iostream>
-#include <stdexcept>
 #include <SDL2/SDL_mixer.h>
 
 namespace core::sdlplayer {
@@ -40,14 +38,13 @@ class SdlPlayer final {
 public:
     SdlPlayer();
     ~SdlPlayer();
-    void playFromOpusFile( std::filesystem::path wavFile,
-                           double                volume );
-    void playFromWavFile( std::filesystem::path wavFile,
-                          double                volume );
+    void playFromOpusFile( std::filesystem::path wavFile, double volume );
+    void playFromWavFile( std::filesystem::path wavFile, double volume );
 };
 
 }   // namespace core::sdlplayer
 
 namespace core::player {
 void beep( double volume );
-}
+
+}   // namespace core::player

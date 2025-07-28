@@ -41,7 +41,7 @@ class MainWindow final : public Gtk::Window {
     entity::Manager mEntityManager;
 
 public:
-    MainWindow( Glib::RefPtr< Gtk::Application > );
+    explicit MainWindow( Glib::RefPtr< Gtk::Application > );
     ~MainWindow();
 };
 
