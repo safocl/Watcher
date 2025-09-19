@@ -21,121 +21,128 @@
  */
 
 module;
-
-#include "glibmm/refptr.h"
-#include "gtkmm/builder.h"
-
-#include <gtkmm/window.h>
+#include <glibmm.h>
+#include <sigc++/sigc++.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/spinbutton.h>
 #include <gtkmm/button.h>
-#include <gtkmm/application.h>
 #include <gtkmm/grid.h>
+#include <gtkmm/label.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/scalebutton.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/switch.h>
+#include <gtkmm/window.h>
+#include <gtkmm/application.h>
+#include <gtkmm/textview.h>
 
-export module Watcher;
+export module Watcher:Mainform;
 
 import std;
+// import Gtkmm;
+import Watcher.config;
+import :EntityManager;
 
-export {
-    class MainWindow final : public Gtk::Window {
-        Glib::RefPtr< Gtk::Builder > mMainWindowBuilder;
+export class MainWindow final : public Gtk::Window {
+    Glib::RefPtr< Gtk::Builder > mMainWindowBuilder;
 
-        Glib::RefPtr< Gtk::Application > mApp;
+    Glib::RefPtr< Gtk::Application > mApp;
 
-        entity::Manager mEntityManager;
+    Manager mEntityManager;
 
-    public:
-        explicit MainWindow( Glib::RefPtr< Gtk::Application > );
-        ~MainWindow();
-    };
+public:
+    explicit MainWindow( Glib::RefPtr< Gtk::Application > );
+    ~MainWindow();
+};
 
-    MainWindow::MainWindow( Glib::RefPtr< Gtk::Application > app ) :
-    mMainWindowBuilder( Gtk::Builder::create_from_file(
-    [] {
-        auto conf = configure::Configure::init()->getParams();
+MainWindow::MainWindow( Glib::RefPtr< Gtk::Application > app ) :
+mMainWindowBuilder( Gtk::Builder::create_from_file(
+[] {
+    auto conf = Configure::init()->getParams();
 
-        std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4main.ui";
+    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4main.ui";
 
-        if ( !std::filesystem::exists( uiFile ) )
-            uiFile = conf.systemPathToUiDir / "gtk4main.ui";
+    if ( !std::filesystem::exists( uiFile ) )
+        uiFile = conf.systemPathToUiDir / "gtk4main.ui";
 
-        if ( !std::filesystem::exists( uiFile ) )
-            throw std::runtime_error( "File gtk4main.ui is not exist in the system" );
+    if ( !std::filesystem::exists( uiFile ) )
+        throw std::runtime_error( "File gtk4main.ui is not exist in the system" );
 
-        return uiFile.native();
-    }(),
-    "mainWindowLayout" ) ),
-    mApp( std::move( app ) ), mEntityManager( entity::Manager::DynamicEntitiesLayouts {
-                              .clock = mMainWindowBuilder->get_widget< Gtk::Grid >( "clockLayout" ),
-                              .timer = mMainWindowBuilder->get_widget< Gtk::Grid >( "timerLayout" ),
-                              .log   = mMainWindowBuilder->get_widget< Gtk::Grid >( "logLayout" ) } ) {
-        auto mainLayout = mMainWindowBuilder->get_widget< Gtk::Grid >( "mainWindowLayout" );
+    return uiFile.native();
+}(),
+"mainWindowLayout" ) ),
+mApp( std::move( app ) ), mEntityManager( Manager::DynamicEntitiesLayouts {
+                          .clock = mMainWindowBuilder->get_widget< Gtk::Grid >( "clockLayout" ),
+                          .timer = mMainWindowBuilder->get_widget< Gtk::Grid >( "timerLayout" ),
+                          .log   = mMainWindowBuilder->get_widget< Gtk::Grid >( "logLayout" ) } ) {
+    auto mainLayout = mMainWindowBuilder->get_widget< Gtk::Grid >( "mainWindowLayout" );
 
-        auto quitBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "btnQuit" );
+    auto quitBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "btnQuit" );
 
-        quitBtn->signal_clicked().connect( [ this ] {
-            mEntityManager.saveToConfig();
+    quitBtn->signal_clicked().connect( [ this ] {
+        mEntityManager.saveToConfig();
 
-            auto conf = configure::Configure::init();
-            conf->saveToConfigFile();
-            this->mApp->quit();
-        } );
+        auto conf = Configure::init();
+        conf->saveToConfigFile();
+        this->mApp->quit();
+    } );
 
-        auto clockAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "clockAddBtn" );
-        clockAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushAcloack(); } );
+    auto clockAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "clockAddBtn" );
+    clockAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushAcloack(); } );
 
-        auto timerAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "timerAddBtn" );
-        timerAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushTimer(); } );
+    auto timerAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "timerAddBtn" );
+    timerAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushTimer(); } );
 
-        auto logAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "logAddBtn" );
-        logAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushLogger(); } );
+    auto logAddBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "logAddBtn" );
+    logAddBtn->signal_clicked().connect( [ this ] { mEntityManager.pushLogger(); } );
 
-        auto loggerReader = mMainWindowBuilder->get_widget< Gtk::TextView >( "loggerReaderTextView" );
+    auto loggerReader = mMainWindowBuilder->get_widget< Gtk::TextView >( "loggerReaderTextView" );
 
-        auto loggerReaderNeedLinesRefreshSpin =
-        mMainWindowBuilder->get_widget< Gtk::SpinButton >( "loggerReaderNeedLinesRefreshSpin" );
+    auto loggerReaderNeedLinesRefreshSpin =
+    mMainWindowBuilder->get_widget< Gtk::SpinButton >( "loggerReaderNeedLinesRefreshSpin" );
 
-        auto loggerReaderRefreshBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "loggerReaderRefreshBtn" );
-        loggerReaderRefreshBtn->signal_clicked().connect( [ loggerReader, loggerReaderNeedLinesRefreshSpin ] {
-            auto conf = configure::Configure::init()->getParams();
+    auto loggerReaderRefreshBtn = mMainWindowBuilder->get_widget< Gtk::Button >( "loggerReaderRefreshBtn" );
+    loggerReaderRefreshBtn->signal_clicked().connect( [ loggerReader, loggerReaderNeedLinesRefreshSpin ] {
+        auto conf = Configure::init()->getParams();
 
-            auto logFile = std::ifstream( conf.pathToLogFile );
+        auto logFile = std::ifstream( conf.pathToLogFile );
 
-            auto logBuffer = loggerReader->get_buffer();
-            logBuffer->set_text( "" );
+        auto logBuffer = loggerReader->get_buffer();
+        logBuffer->set_text( "" );
 
-            constexpr decltype( logFile )::off_type offsetAtEnd = 0;
-            logFile.seekg( offsetAtEnd, decltype( logFile )::end );
+        constexpr decltype( logFile )::off_type offsetAtEnd = 0;
+        logFile.seekg( offsetAtEnd, decltype( logFile )::end );
 
-            const int needLines = loggerReaderNeedLinesRefreshSpin->get_value_as_int();
+        const int needLines = loggerReaderNeedLinesRefreshSpin->get_value_as_int();
 
-            bool isEof = false;
-            int  endOfLines {};
-            for ( ; endOfLines < needLines + 1; logFile.seekg( -1, decltype( logFile )::cur ) ) {
-                if ( !logFile.good() ) {
-                    isEof = true;
-                    break;
-                }
-
-                if ( logFile.peek() == '\n' )
-                    ++endOfLines;
+        bool isEof = false;
+        int  endOfLines {};
+        for ( ; endOfLines < needLines + 1; logFile.seekg( -1, decltype( logFile )::cur ) ) {
+            if ( !logFile.good() ) {
+                isEof = true;
+                break;
             }
 
-            if ( !isEof )
-                logFile.seekg( 2, decltype( logFile )::cur );
-            else {
-                logFile.close();
-                logFile = std::ifstream( conf.pathToLogFile );
-            }
+            if ( logFile.peek() == '\n' )
+                ++endOfLines;
+        }
 
-            for ( int i = 0; i < endOfLines; ++i ) {
-                std::string line;
-                std::getline( logFile, line );
-                logBuffer->insert( logBuffer->end(), line + "\n" );
-            }
-        } );
+        if ( !isEof )
+            logFile.seekg( 2, decltype( logFile )::cur );
+        else {
+            logFile.close();
+            logFile = std::ifstream( conf.pathToLogFile );
+        }
 
-        set_child( *mainLayout );
-    }
+        for ( int i = 0; i < endOfLines; ++i ) {
+            std::string line;
+            std::getline( logFile, line );
+            logBuffer->insert( logBuffer->end(), line + "\n" );
+        }
+    } );
 
-    MainWindow::~MainWindow() {}
+    set_child( *mainLayout );
+}
 
-}   // namespace Entity
+MainWindow::~MainWindow() {}

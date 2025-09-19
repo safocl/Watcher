@@ -21,72 +21,77 @@
  */
 
 module;
-
-#include <gtkmm/entry.h>
-#include <gtkmm/builder.h>
-#include <glibmm/ustring.h>
+#include <glibmm.h>
+#include <sigc++/sigc++.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/spinbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
+#include <gtkmm/label.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/scalebutton.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/switch.h>
+#include <gtkmm/window.h>
+#include <gtkmm/application.h>
 
-export module Watcher;
+export module Watcher:LogEntity;
 
 import std;
-import Watcher:Configure;
+// import Gtkmm;
+import Watcher.logger;
+import Watcher.config;
 
-export {
-    class Log final {
-    public:
-        using LoggerNJEntity = configure::LoggerNJEntity;
+export class Log final {
+public:
+    using LoggerNJEntity = LoggerNJEntity;
 
-        Gtk::Button * mDestroyBtn;
+    Gtk::Button * mDestroyBtn;
 
-    private:
-        Gtk::Grid * mParent;
-        Gtk::Grid * mLayout;
+private:
+    Gtk::Grid * mParent;
+    Gtk::Grid * mLayout;
 
-        Gtk::Entry * mEntry;
+    Gtk::Entry * mEntry;
 
-        Logger mLogger;
+    Logger mLogger;
 
-    public:
-        Log( Gtk::Grid & parent );
-        Log( Gtk::Grid & parent, std::string entry );
-        ~Log();
-        LoggerNJEntity getValues() const;
-    };
+public:
+    Log( Gtk::Grid & parent );
+    Log( Gtk::Grid & parent, std::string entry );
+    ~Log();
+    LoggerNJEntity getValues() const;
+};
 
-    Log::Log( Gtk::Grid & parent ) : Log( parent, "" ) {}
+Log::Log( Gtk::Grid & parent ) : Log( parent, "" ) {}
 
-    Log::Log( Gtk::Grid & parent, std::string text ) : mParent( &parent ) {
-        auto conf = configure::Configure::init()->getParams();
+Log::Log( Gtk::Grid & parent, std::string text ) : mParent( &parent ) {
+    auto conf = Configure::init()->getParams();
 
-        std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4logger.ui";
+    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4logger.ui";
 
-        if ( !std::filesystem::exists( uiFile ) )
-            uiFile = conf.systemPathToUiDir / "gtk4logger.ui";
+    if ( !std::filesystem::exists( uiFile ) )
+        uiFile = conf.systemPathToUiDir / "gtk4logger.ui";
 
-        if ( !std::filesystem::exists( uiFile ) )
-            throw std::runtime_error( "File gtk4logger.ui is not exist in the system" );
+    if ( !std::filesystem::exists( uiFile ) )
+        throw std::runtime_error( "File gtk4logger.ui is not exist in the system" );
 
-        auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
+    auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
 
-        mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
+    mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
-        mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
+    mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
 
-        mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
+    mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-        mEntry = builder->get_widget< Gtk::Entry >( "entry" );
-        mEntry->set_text( Glib::locale_to_utf8( text ) );
+    mEntry = builder->get_widget< Gtk::Entry >( "entry" );
+    mEntry->set_text( Glib::locale_to_utf8( text ) );
 
-        auto logBtn = builder->get_widget< Gtk::Button >( "loginBtn" );
-        logBtn->signal_clicked().connect( [ this ]() { mLogger.log( Glib::locale_from_utf8( mEntry->get_text() ) ); } );
-    }
+    auto logBtn = builder->get_widget< Gtk::Button >( "loginBtn" );
+    logBtn->signal_clicked().connect( [ this ]() { mLogger.log( Glib::locale_from_utf8( mEntry->get_text() ) ); } );
+}
 
-    Log::~Log() { mParent->remove( *mLayout ); }
+Log::~Log() { mParent->remove( *mLayout ); }
 
-    Log::LoggerNJEntity Log::getValues() const {
-        return LoggerNJEntity { Glib::locale_from_utf8( mEntry->get_text() ) };
-    }
-
-}   // namespace Entity
+Log::LoggerNJEntity Log::getValues() const { return LoggerNJEntity { Glib::locale_from_utf8( mEntry->get_text() ) }; }

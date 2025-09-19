@@ -20,14 +20,14 @@
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// module;
-//
-// #include "nlohmann/json.hpp"
-
-export module Watcher;
+export module Watcher.config;
 
 import std;
 import nlohmann.json;
+
+std::filesystem::path defineSysConfPath();
+std::filesystem::path defineUserDataPath();
+std::filesystem::path defineSysDataPath();
 
 export {
     using VolumeNodeJson = double;
@@ -105,61 +105,6 @@ export {
         static std::shared_ptr< ConfImpl > init();
     };
 }
-
-namespace {
-std::filesystem::path defineSysDataPath() {
-    std::filesystem::path pathToData {};
-#ifdef __linux__
-    pathToData = "/usr/share";
-#elif _WIN32
-    pathToData = std::string { std::getenv( "APPDATA" ) };
-#endif
-
-    if ( pathToData.empty() )
-        throw std::runtime_error( "The data path is undefined." );
-    else
-        pathToData /= "watcher";
-    return pathToData;
-}
-
-std::filesystem::path defineUserDataPath() {
-    std::filesystem::path pathToUserData {};
-#ifdef __linux__
-    auto dir = std::getenv( "XDG_DATA_HOME" );
-    if ( dir )
-        pathToUserData = std::string { dir };
-    else
-        pathToUserData = std::string( std::getenv( "HOME" ) ) + "/.local/share";
-#elif _WIN32
-    pathToUserData = std::string { std::getenv( "APPDATA" ) };
-#endif
-
-    if ( pathToUserData.empty() )
-        throw std::runtime_error( "The config path is undefined." );
-    else
-        pathToUserData /= "watcher";
-    return pathToUserData;
-}
-
-std::filesystem::path defineSysConfPath() {
-    std::filesystem::path mPathToConfig {};
-#ifdef __linux__
-    auto dir = std::getenv( "XDG_CONFIG_HOME" );
-    if ( dir )
-        mPathToConfig = std::string { dir };
-    else
-        mPathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
-#elif _WIN32
-    mPathToConfig = std::string { std::getenv( "APPDATA" ) };
-#endif
-
-    if ( mPathToConfig.empty() )
-        throw std::runtime_error( "The config path is undefined." );
-    else
-        mPathToConfig /= "watcher/config.json";
-    return mPathToConfig;
-}
-}   // namespace
 
 Configure::ConfImpl::ConfImpl( std::filesystem::path argv0 ) : mPathToConfig { defineSysConfPath() }, mArgv0 { argv0 } {
     fillDefaultParams();
@@ -321,4 +266,84 @@ void from_json( const json & j, ParametresImpl & p ) {
     try {
         j.at( "pathToLogFile" ).get_to( p.pathToLogFile );
     } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+}
+
+void to_json( json & j, const TimingNodes & n ) {
+    j = json {
+        { "hour", n.hour },
+        { "minute", n.minute },
+        { "second", n.second },
+        { "volume", n.volume },
+    };
+}
+void from_json( const json & j, TimingNodes & n ) {
+    try {
+        j.at( "hour" ).get_to( n.hour );
+    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+
+    try {
+        j.at( "minute" ).get_to( n.minute );
+    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+
+    try {
+        j.at( "second" ).get_to( n.second );
+    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+
+    try {
+        j.at( "volume" ).get_to( n.volume );
+    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+}
+
+// module :private;
+std::filesystem::path defineSysDataPath() {
+    std::filesystem::path pathToData {};
+#ifdef __linux__
+    pathToData = "/usr/share";
+#elif _WIN32
+    pathToData = std::string { std::getenv( "APPDATA" ) };
+#endif
+
+    if ( pathToData.empty() )
+        throw std::runtime_error( "The data path is undefined." );
+    else
+        pathToData /= "watcher";
+    return pathToData;
+}
+
+std::filesystem::path defineUserDataPath() {
+    std::filesystem::path pathToUserData {};
+#ifdef __linux__
+    auto dir = std::getenv( "XDG_DATA_HOME" );
+    if ( dir )
+        pathToUserData = std::string { dir };
+    else
+        pathToUserData = std::string( std::getenv( "HOME" ) ) + "/.local/share";
+#elif _WIN32
+    pathToUserData = std::string { std::getenv( "APPDATA" ) };
+#endif
+
+    if ( pathToUserData.empty() )
+        throw std::runtime_error( "The config path is undefined." );
+    else
+        pathToUserData /= "watcher";
+    return pathToUserData;
+}
+
+std::filesystem::path defineSysConfPath() {
+    std::filesystem::path mPathToConfig {};
+#ifdef __linux__
+    auto dir = std::getenv( "XDG_CONFIG_HOME" );
+    if ( dir )
+        mPathToConfig = std::string { dir };
+    else
+        mPathToConfig = std::string( std::getenv( "HOME" ) ) + "/.config";
+#elif _WIN32
+    mPathToConfig = std::string { std::getenv( "APPDATA" ) };
+#endif
+
+    if ( mPathToConfig.empty() )
+        throw std::runtime_error( "The config path is undefined." );
+    else
+        mPathToConfig /= "watcher/config.json";
+    return mPathToConfig;
 }

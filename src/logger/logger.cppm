@@ -19,46 +19,42 @@
  You should have received a copy of the GNU General Public License along with
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
-module;
 
-#include <glibmm/ustring.h>
-
-export module Watcher;
+export module Watcher.logger;
 
 import std;
+import Watcher.config;
 
-export {
-    struct Logger final {
-        std::filesystem::path pathToLogFile;
+export struct Logger final {
+    std::filesystem::path pathToLogFile;
 
-        Logger();
-        void log( const std::string_view message );
-    };
+    Logger();
+    void log( const std::string_view message );
+};
 
-    Logger::Logger() : pathToLogFile() {
-        auto conf     = core::configure::Configure::init();
-        pathToLogFile = conf->getParams().pathToLogFile;
-        if ( !pathToLogFile.has_filename() )
-            throw std::runtime_error( "Path do not have file" );
-    }
-    void Logger::log( const std::string_view str ) {
-        auto t = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
+Logger::Logger() : pathToLogFile() {
+    auto conf     = Configure::init();
+    pathToLogFile = conf->getParams().pathToLogFile;
+    if ( !pathToLogFile.has_filename() )
+        throw std::runtime_error( "Path do not have file" );
+}
+void Logger::log( const std::string_view str ) {
+    auto t = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
 
-        std::fstream logFileStream;
-        logFileStream.open( pathToLogFile.string() );
+    std::fstream logFileStream;
+    logFileStream.open( pathToLogFile.string() );
 
-        if ( !logFileStream.is_open() ) {
-            logFileStream.clear();
-            logFileStream.open( pathToLogFile.string(), std::ios::out );
-            logFileStream.close();
-            logFileStream.open( pathToLogFile.string() );
-        }
-        logFileStream.seekp( 0, std::ios_base::end );
-        logFileStream.imbue( std::locale( "en_US.utf8" ) );
-        logFileStream << str << " [" << std::put_time( std::localtime( &t ), "%F %T" ) << "]" << std::endl;
-
+    if ( !logFileStream.is_open() ) {
+        logFileStream.clear();
+        logFileStream.open( pathToLogFile.string(), std::ios::out );
         logFileStream.close();
-
-        std::cout << str << " [" << std::put_time( std::localtime( &t ), "%F %T" ) << "]" << std::endl;
+        logFileStream.open( pathToLogFile.string() );
     }
+    logFileStream.seekp( 0, std::ios_base::end );
+    logFileStream.imbue( std::locale( "en_US.utf8" ) );
+    logFileStream << str << " [" << std::put_time( std::localtime( &t ), "%F %T" ) << "]" << std::endl;
+
+    logFileStream.close();
+
+    std::cout << str << " [" << std::put_time( std::localtime( &t ), "%F %T" ) << "]" << std::endl;
 }

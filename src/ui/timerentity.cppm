@@ -21,167 +21,171 @@
  */
 
 module;
-
-#include <sigc++/connection.h>
+#include <glibmm.h>
+#include <sigc++/sigc++.h>
+#include <gtkmm/enums.h>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/label.h>
-#include <glibmm/dispatcher.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scalebutton.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/switch.h>
+#include <gtkmm/window.h>
+#include <gtkmm/application.h>
 
-export module Watcher;
+export module Watcher:TimerEntity;
 
 import std;
+// import Gtkmm;
+import Watcher.config;
+import Watcher.player;
 
-export {
-    class Timer final {
-    public:
-        using TimerNJEntity = configure::TimerNJEntity;
+export class Timer final {
+public:
+    using TimerNJEntity = TimerNJEntity;
 
-        Gtk::Button * mDestroyBtn;
+    Gtk::Button * mDestroyBtn;
 
-    private:
-        Gtk::Grid * mParent;
-        Gtk::Grid * mLayout;
+private:
+    Gtk::Grid * mParent;
+    Gtk::Grid * mLayout;
 
-        Gtk::SpinButton *  mSpinHours, *mSpinMinutes, *mSpinSeconds;
-        Gtk::ScaleButton * mVolume;
-        Glib::Dispatcher   dispatcher_;
-        Glib::Dispatcher   mProgressBarDispetcher;
+    Gtk::SpinButton *  mSpinHours, *mSpinMinutes, *mSpinSeconds;
+    Gtk::ScaleButton * mVolume;
+    Glib::Dispatcher   dispatcher_;
+    Glib::Dispatcher   mProgressBarDispetcher;
 
-        std::atomic< double > mProgressBarPercent;
+    std::atomic< double > mProgressBarPercent;
 
-        sigc::connection mTicks;
-        sigc::connection mOnce;
+    sigc::connection mTicks;
+    sigc::connection mOnce;
 
-    public:
-        Timer( Gtk::Grid & parent );
-        Timer( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
-        ~Timer();
-        TimerNJEntity getValues() const;
-        double        getSoundVolume() const;
-    };
+public:
+    Timer( Gtk::Grid & parent );
+    Timer( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
+    ~Timer();
+    TimerNJEntity getValues() const;
+    double        getSoundVolume() const;
+};
 
-    Timer::Timer( Gtk::Grid & parent ) : Timer( parent, 0, 0, 0, 50.0 ) {}
+Timer::Timer( Gtk::Grid & parent ) : Timer( parent, 0, 0, 0, 50.0 ) {}
 
-    Timer::Timer( Gtk::Grid & parent, int h, int m, int s, double v ) : mParent( &parent ) {
-        auto conf = configure::Configure::init()->getParams();
+Timer::Timer( Gtk::Grid & parent, int h, int m, int s, double v ) : mParent( &parent ) {
+    auto conf = Configure::init()->getParams();
 
-        std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4timer.ui";
+    std::filesystem::path uiFile = conf.userPathToUiDir / "gtk4timer.ui";
 
-        if ( !std::filesystem::exists( uiFile ) )
-            uiFile = conf.systemPathToUiDir / "gtk4timer.ui";
+    if ( !std::filesystem::exists( uiFile ) )
+        uiFile = conf.systemPathToUiDir / "gtk4timer.ui";
 
-        if ( !std::filesystem::exists( uiFile ) )
-            throw std::runtime_error( "File gtk4timer.ui is not exist in the system" );
+    if ( !std::filesystem::exists( uiFile ) )
+        throw std::runtime_error( "File gtk4timer.ui is not exist in the system" );
 
-        auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
+    auto builder = Gtk::Builder::create_from_file( uiFile.native(), "mainLayout" );
 
-        mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
+    mLayout = builder->get_widget< Gtk::Grid >( "mainLayout" );
 
-        mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
+    mParent->attach_next_to( *mLayout, Gtk::PositionType::BOTTOM );
 
-        auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
-        mProgressBarDispetcher.connect(
-        [ this, mProgressBar ]() { mProgressBar->set_fraction( mProgressBarPercent ); } );
+    auto mProgressBar = builder->get_widget< Gtk::ProgressBar >( "progress" );
+    mProgressBarDispetcher.connect( [ this, mProgressBar ]() { mProgressBar->set_fraction( mProgressBarPercent ); } );
 
-        mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
-        mSpinHours->set_value( h );
+    mSpinHours = builder->get_widget< Gtk::SpinButton >( "spinHours" );
+    mSpinHours->set_value( h );
 
-        mSpinMinutes = builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
-        mSpinMinutes->set_value( m );
+    mSpinMinutes = builder->get_widget< Gtk::SpinButton >( "spinMinutes" );
+    mSpinMinutes->set_value( m );
 
-        mSpinSeconds = builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
-        mSpinSeconds->set_value( s );
+    mSpinSeconds = builder->get_widget< Gtk::SpinButton >( "spinSeconds" );
+    mSpinSeconds->set_value( s );
 
-        mVolume = builder->get_widget< Gtk::ScaleButton >( "volumeBtn" );
-        mVolume->set_value( v );
+    mVolume = builder->get_widget< Gtk::ScaleButton >( "volumeBtn" );
+    mVolume->set_value( v );
 
-        auto mBtn = builder->get_widget< Gtk::Button >( "startStopBtn" );
-        mBtn->signal_clicked().connect( [ this, mBtn ]() {
-            if ( mBtn->get_label() == "Start" ) {
-                const std::chrono::seconds secValue { mSpinSeconds->get_value_as_int() };
-                const std::chrono::minutes minValue { mSpinMinutes->get_value_as_int() };
-                const std::chrono::hours   hourValue { mSpinHours->get_value_as_int() };
-                const std::chrono::seconds fullDuration { secValue + minValue + hourValue };
+    auto mBtn = builder->get_widget< Gtk::Button >( "startStopBtn" );
+    mBtn->signal_clicked().connect( [ this, mBtn ]() {
+        if ( mBtn->get_label() == Glib::ustring( "Start" ) ) {
+            const std::chrono::seconds secValue { mSpinSeconds->get_value_as_int() };
+            const std::chrono::minutes minValue { mSpinMinutes->get_value_as_int() };
+            const std::chrono::hours   hourValue { mSpinHours->get_value_as_int() };
+            const std::chrono::seconds fullDuration { secValue + minValue + hourValue };
 
-                const auto timeoutStamp = std::chrono::system_clock::now() + fullDuration;
-                std::println( "Timestamp is: {0:%F %X}", std::chrono::current_zone()->to_local( timeoutStamp ) );
+            const auto timeoutStamp = std::chrono::system_clock::now() + fullDuration;
+            std::println( "Timestamp is: {0:%F %X}", std::chrono::current_zone()->to_local( timeoutStamp ) );
 
-                mSpinHours->set_sensitive( false );
-                mSpinMinutes->set_sensitive( false );
-                mSpinSeconds->set_sensitive( false );
-                mBtn->set_label( "Stop" );
+            mSpinHours->set_sensitive( false );
+            mSpinMinutes->set_sensitive( false );
+            mSpinSeconds->set_sensitive( false );
+            mBtn->set_label( "Stop" );
 
-                using namespace std::chrono_literals;
-                mTicks = Glib::signal_timeout().connect(
-                [ this, fullDuration, timeoutStamp ]() {
-                    const auto leftDuration = std::chrono::duration_cast< std::chrono::seconds >(
-                    timeoutStamp - std::chrono::system_clock::now() );
-                    const double percent = double( leftDuration.count() ) / fullDuration.count();
-                    mProgressBarPercent  = std::clamp( percent, 0.0, 1.0 );
+            using namespace std::chrono_literals;
+            mTicks = Glib::signal_timeout().connect(
+            [ this, fullDuration, timeoutStamp ]() {
+                const auto leftDuration =
+                std::chrono::duration_cast< std::chrono::seconds >( timeoutStamp - std::chrono::system_clock::now() );
+                const double percent = double( leftDuration.count() ) / fullDuration.count();
+                mProgressBarPercent  = std::clamp( percent, 0.0, 1.0 );
 
-                    mProgressBarDispetcher.emit();
+                mProgressBarDispetcher.emit();
 
-                    return true;
-                },
-                ( 100ms ).count() );
+                return true;
+            },
+            ( 100ms ).count() );
 
-                mOnce = Glib::signal_timeout().connect_seconds(
-                [ this ] {
-                    player::beep( mVolume->get_value() );
-                    dispatcher_.emit();
-
-                    return false;
-                },
-                fullDuration.count() );
-
-            } else {
+            mOnce = Glib::signal_timeout().connect_seconds(
+            [ this ] {
+                beep( mVolume->get_value() );
                 dispatcher_.emit();
-            }
-        } );
 
-        dispatcher_.connect( [ this, mProgressBar, mBtn ] {
-            mTicks.disconnect();
-            mOnce.disconnect();
-            mSpinHours->set_sensitive();
-            mSpinMinutes->set_sensitive();
-            mSpinSeconds->set_sensitive();
-            mBtn->set_label( "Start" );
-            mProgressBar->set_fraction( 0 );
+                return false;
+            },
+            fullDuration.count() );
 
-            std::println( "Timer stoped at: {0:%F %X}",
-                          std::chrono::current_zone()->to_local( std::chrono::system_clock::now() ) );
-        } );
+        } else {
+            dispatcher_.emit();
+        }
+    } );
 
-        mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
-    }
-
-    Timer::~Timer() {
+    dispatcher_.connect( [ this, mProgressBar, mBtn ] {
         mTicks.disconnect();
         mOnce.disconnect();
-        mParent->remove( *mLayout );
-    }
+        mSpinHours->set_sensitive();
+        mSpinMinutes->set_sensitive();
+        mSpinSeconds->set_sensitive();
+        mBtn->set_label( "Start" );
+        mProgressBar->set_fraction( 0 );
 
-    Timer::TimerNJEntity Timer::getValues() const {
-        return TimerNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
-                               static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
-                               static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
-                               getSoundVolume() };
-    }
+        std::println( "Timer stoped at: {0:%F %X}",
+                      std::chrono::current_zone()->to_local( std::chrono::system_clock::now() ) );
+    } );
 
-    double Timer::getSoundVolume() const { return mVolume->get_value(); }
+    mDestroyBtn = builder->get_widget< Gtk::Button >( "destroyBtn" );
+}
 
-    //void Timer::setProgressBarPercent( double percent ) {
-    //if ( percent < 0 )
-    //progressBarPercent = 0;
-    //else if ( percent > 1 )
-    //progressBarPercent = 0;
-    //else
-    //progressBarPercent = percent;
-    //progressBarDispetcher.emit();
-    //}
+Timer::~Timer() {
+    mTicks.disconnect();
+    mOnce.disconnect();
+    mParent->remove( *mLayout );
+}
 
-}   // namespace Entity
+Timer::TimerNJEntity Timer::getValues() const {
+    return TimerNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
+                           static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
+                           static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
+                           getSoundVolume() };
+}
+
+double Timer::getSoundVolume() const { return mVolume->get_value(); }
+
+//void Timer::setProgressBarPercent( double percent ) {
+//if ( percent < 0 )
+//progressBarPercent = 0;
+//else if ( percent > 1 )
+//progressBarPercent = 0;
+//else
+//progressBarPercent = percent;
+//progressBarDispetcher.emit();
+//}

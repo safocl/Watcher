@@ -1,5 +1,5 @@
 /**
- *@file json.cpp
+ *@file watcher.cpp
  *@copyright GPL-3.0-or-later
  *@author safocl (megaSafocl)
  *@date 2023
@@ -20,20 +20,26 @@
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// #include <gtkmm/application.h>
-// #include <SDL3/SDL_filesystem.h>
-
 module;
+#include <glibmm.h>
+#include <sigc++/sigc++.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/spinbutton.h>
+#include <gtkmm/button.h>
+#include <gtkmm/grid.h>
+#include <gtkmm/label.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/scalebutton.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/switch.h>
+#include <gtkmm/window.h>
+#include <gtkmm/application.h>
 
-#include <nlohmann/json.hpp>
-
-export module nlohmann.json;
-
-export namespace nlohmann {
-using ::nlohmann::adl_serializer;
-using ::nlohmann::basic_json;
-using ::nlohmann::json;
-using ::nlohmann::json_pointer;
-using ::nlohmann::ordered_json;
-using ::nlohmann::ordered_map;
-}   // namespace nlohmann
+export module Watcher;
+export import :TimerEntity;
+export import :LogEntity;
+export import :ClockEntity;
+export import :EntityManager;
+export import :Mainform;
+export import :App;

@@ -20,127 +20,142 @@
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export module Watcher;
+module;
+#include <glibmm.h>
+#include <sigc++/sigc++.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/spinbutton.h>
+#include <gtkmm/button.h>
+#include <gtkmm/grid.h>
+#include <gtkmm/label.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/scalebutton.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/switch.h>
+#include <gtkmm/window.h>
+#include <gtkmm/application.h>
+
+export module Watcher:EntityManager;
 
 import std;
+// import Gtkmm;
+import :ClockEntity;
+import :TimerEntity;
+import :LogEntity;
 
-export {
-    class Manager {
-    public:
-        struct DynamicEntitiesLayouts {
-            Gtk::Grid * clock;
-            Gtk::Grid * timer;
-            Gtk::Grid * log;
-        };
-
-    private:
-        struct DynamicElements {
-            std::list< Clock > clocks;
-            std::list< Timer > timers;
-            std::list< Log >   logs;
-        };
-
-        DynamicElements        mElements;
-        DynamicEntitiesLayouts mEntitiesLayouts;
-
-    public:
-        Manager();
-        Manager( DynamicEntitiesLayouts );
-        ~Manager();
-
-        void setDynamicEntitiesLayouts( DynamicEntitiesLayouts );
-
-        void pushAcloack();
-        void pushTimer();
-        void pushLogger();
-
-        void loadFromConfig();
-        void saveToConfig();
+export class Manager {
+public:
+    struct DynamicEntitiesLayouts {
+        Gtk::Grid * clock;
+        Gtk::Grid * timer;
+        Gtk::Grid * log;
     };
 
-    Manager::Manager() = default;
+private:
+    struct DynamicElements {
+        std::list< Clock > clocks;
+        std::list< Timer > timers;
+        std::list< Log >   logs;
+    };
 
-    Manager::Manager( DynamicEntitiesLayouts layouts ) : mEntitiesLayouts( std::move( layouts ) ) { loadFromConfig(); }
+    DynamicElements        mElements;
+    DynamicEntitiesLayouts mEntitiesLayouts;
 
-    Manager::~Manager() = default;
+public:
+    Manager();
+    Manager( DynamicEntitiesLayouts );
+    ~Manager();
 
-    void Manager::setDynamicEntitiesLayouts( DynamicEntitiesLayouts layouts ) {
-        mEntitiesLayouts = std::move( layouts );
+    void setDynamicEntitiesLayouts( DynamicEntitiesLayouts );
+
+    void pushAcloack();
+    void pushTimer();
+    void pushLogger();
+
+    void loadFromConfig();
+    void saveToConfig();
+};
+
+Manager::Manager() = default;
+
+Manager::Manager( DynamicEntitiesLayouts layouts ) : mEntitiesLayouts( std::move( layouts ) ) { loadFromConfig(); }
+
+Manager::~Manager() = default;
+
+void Manager::setDynamicEntitiesLayouts( DynamicEntitiesLayouts layouts ) { mEntitiesLayouts = std::move( layouts ); }
+
+void Manager::pushAcloack() {
+    mElements.clocks.emplace_back( *mEntitiesLayouts.clock );
+
+    auto clock = std::prev( mElements.clocks.end() );
+
+    clock->mDestroyBtn->signal_clicked().connect( [ this, clock ]() { mElements.clocks.erase( clock ); } );
+}
+
+void Manager::pushTimer() {
+    mElements.timers.emplace_back( *mEntitiesLayouts.timer );
+
+    auto timer = std::prev( mElements.timers.end() );
+
+    timer->mDestroyBtn->signal_clicked().connect( [ this, timer ]() { mElements.timers.erase( timer ); } );
+}
+
+void Manager::pushLogger() {
+    mElements.logs.emplace_back( *mEntitiesLayouts.log );
+
+    auto log = std::prev( mElements.logs.end() );
+
+    log->mDestroyBtn->signal_clicked().connect( [ this, log ]() { mElements.logs.erase( log ); } );
+}
+
+void Manager::loadFromConfig() {
+    auto conf = Configure::init()->getParams();
+
+    for ( auto logElement : conf.logs ) {
+        mElements.logs.emplace_back( *mEntitiesLayouts.log, logElement );
+        auto log = std::prev( mElements.logs.end() );
+
+        log->mDestroyBtn->signal_clicked().connect( [ this, log ]() { mElements.logs.erase( log ); } );
     }
-
-    void Manager::pushAcloack() {
-        mElements.clocks.emplace_back( *mEntitiesLayouts.clock );
-
-        auto clock = std::prev( mElements.clocks.end() );
-
-        clock->mDestroyBtn->signal_clicked().connect( [ this, clock ]() { mElements.clocks.erase( clock ); } );
-    }
-
-    void Manager::pushTimer() {
-        mElements.timers.emplace_back( *mEntitiesLayouts.timer );
+    for ( auto timerElement : conf.timers ) {
+        auto [ h, m, s, v ] = timerElement;
+        mElements.timers.emplace_back( *mEntitiesLayouts.timer, h, m, s, v );
 
         auto timer = std::prev( mElements.timers.end() );
 
         timer->mDestroyBtn->signal_clicked().connect( [ this, timer ]() { mElements.timers.erase( timer ); } );
     }
 
-    void Manager::pushLogger() {
-        mElements.logs.emplace_back( *mEntitiesLayouts.log );
+    for ( auto clockElement : conf.aclocks ) {
+        auto [ h, m, s, v ] = clockElement;
+        mElements.clocks.emplace_back( *mEntitiesLayouts.clock, h, m, s, v );
 
-        auto log = std::prev( mElements.logs.end() );
+        auto clock = std::prev( mElements.clocks.end() );
 
-        log->mDestroyBtn->signal_clicked().connect( [ this, log ]() { mElements.logs.erase( log ); } );
+        clock->mDestroyBtn->signal_clicked().connect( [ this, clock ]() { mElements.clocks.erase( clock ); } );
     }
+}
 
-    void Manager::loadFromConfig() {
-        auto conf = configure::Configure::init()->getParams();
+void Manager::saveToConfig() {
+    LoggerNodeJson logs;
+    for ( auto & log : mElements.logs )
+        logs.push_back( log.getValues() );
 
-        for ( auto logElement : conf.logs ) {
-            mElements.logs.emplace_back( *mEntitiesLayouts.log, logElement );
-            auto log = std::prev( mElements.logs.end() );
+    TimerNodeJson timers;
+    for ( auto & timer : mElements.timers )
+        timers.push_back( timer.getValues() );
 
-            log->mDestroyBtn->signal_clicked().connect( [ this, log ]() { mElements.logs.erase( log ); } );
-        }
-        for ( auto timerElement : conf.timers ) {
-            auto [ h, m, s, v ] = timerElement;
-            mElements.timers.emplace_back( *mEntitiesLayouts.timer, h, m, s, v );
+    TimerNodeJson clocks;
+    for ( auto & clock : mElements.clocks )
+        clocks.push_back( clock.getValues() );
 
-            auto timer = std::prev( mElements.timers.end() );
+    auto conf         = Configure::init();
+    auto paramsToSave = conf->getParams();
 
-            timer->mDestroyBtn->signal_clicked().connect( [ this, timer ]() { mElements.timers.erase( timer ); } );
-        }
+    paramsToSave.logs.swap( logs );
+    paramsToSave.timers.swap( timers );
+    paramsToSave.aclocks.swap( clocks );
 
-        for ( auto clockElement : conf.aclocks ) {
-            auto [ h, m, s, v ] = clockElement;
-            mElements.clocks.emplace_back( *mEntitiesLayouts.clock, h, m, s, v );
-
-            auto clock = std::prev( mElements.clocks.end() );
-
-            clock->mDestroyBtn->signal_clicked().connect( [ this, clock ]() { mElements.clocks.erase( clock ); } );
-        }
-    }
-
-    void Manager::saveToConfig() {
-        configure::LoggerNodeJson logs;
-        for ( auto & log : mElements.logs )
-            logs.push_back( log.getValues() );
-
-        configure::TimerNodeJson timers;
-        for ( auto & timer : mElements.timers )
-            timers.push_back( timer.getValues() );
-
-        configure::TimerNodeJson clocks;
-        for ( auto & clock : mElements.clocks )
-            clocks.push_back( clock.getValues() );
-
-        auto conf         = configure::Configure::init();
-        auto paramsToSave = conf->getParams();
-
-        paramsToSave.logs.swap( logs );
-        paramsToSave.timers.swap( timers );
-        paramsToSave.aclocks.swap( clocks );
-
-        conf->import( paramsToSave );
-    }
-
-};   // namespace core::ui::entity
+    conf->import( paramsToSave );
+}

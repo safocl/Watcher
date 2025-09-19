@@ -37,13 +37,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
 
-# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./ui/logentity.cppm ./ui/mainform.cppm ./ui/entityManager.cppm ./ui/clockentity.cppm ./ui/timerentity.cppm )
-# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./sdlplayer/sdlplayer.cppm )
-# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./logger/logger.cppm )
+target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./ui/logentity.cppm ./ui/mainform.cppm ./ui/entityManager.cppm ./ui/clockentity.cppm ./ui/timerentity.cppm ./ui/application.cppm watcher.cppm )
+target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./sdlplayer/sdlplayer.cppm )
+target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./logger/logger.cppm )
 target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./configure/configure.cppm )
 target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./json.cppm )
+# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./ui/gtkmm.cppm )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -1,5 +1,5 @@
 /**
- *@file json.cpp
+ *@file application.hpp
  *@copyright GPL-3.0-or-later
  *@author safocl (megaSafocl)
  *@date 2023
@@ -20,20 +20,18 @@
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// #include <gtkmm/application.h>
-// #include <SDL3/SDL_filesystem.h>
-
 module;
+#include <glibmm.h>
+#include <gtkmm/window.h>
+#include <gtkmm/application.h>
 
-#include <nlohmann/json.hpp>
+export module Watcher:App;
 
-export module nlohmann.json;
+import :Mainform;
 
-export namespace nlohmann {
-using ::nlohmann::adl_serializer;
-using ::nlohmann::basic_json;
-using ::nlohmann::json;
-using ::nlohmann::json_pointer;
-using ::nlohmann::ordered_json;
-using ::nlohmann::ordered_map;
-}   // namespace nlohmann
+export namespace App {
+auto makeAndRun( int argc, char ** argv ) {
+    auto app = Gtk::Application::create( "org.safocl.watchertest" );
+    return app->make_window_and_run< MainWindow >( argc, argv, app );
+}
+}   // namespace App
