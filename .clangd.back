@@ -1,0 +1,4 @@
+CompileFlags:
+  Remove: [-fmodule-mapper=src/CMakeFiles/watcher.dir/configure/configure.cppm.o.modmap, -fmodule-mapper=src/CMakeFiles/watcher.dir/ui/mainform.cppm.o.modmap, -fmodule-mapper=src/CMakeFiles/watcher.dir/ui/entityManager.cppm.o.modmap, -fmodule-mapper=src/CMakeFiles/watcher.dir/ui/logentity.cppm.o.modmap, -fmodule-mapper=src/CMakeFiles/watcher.dir/ui/timerentity.cppm.o.modmap, -fmodule-mapper=src/CMakeFiles/watcher.dir/ui/clockentity.cppm.o.modmap, -fmodule-mapper=src/ui/CMakeFiles/mainWindow.dir/clockentity.cppm.o.modmap, -fmodule-mapper=src/ui/CMakeFiles/mainWindow.dir/timerentity.cppm.o.modmap, -fmodules-ts, -fdeps-format=p1689r5, -fmodule-mapper=src/CMakeFiles/watcher.dir/main.cpp.o.modmap]
+Diagnostics:
+  UnusedIncludes: None

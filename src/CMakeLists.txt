@@ -18,18 +18,14 @@
 #You should have received a copy of the GNU General Public License along with
 #watcher. If not, see <https://www.gnu.org/licenses/>.
 
-# set(CMAKE_CXX_STANDARD 23 REQUARED)
-
 
 link_directories(
     ${GTKMM_LIBRARY_DIRS}  )
-#message("src: " ${GTKMM_LIBRARIES})
 
 include_directories(
     ${GTKMM_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 
 
-#file( GLOB_RECURSE objFiles ./ *.o)
 add_executable( ${PROJECT_NAME} main.cpp )
 
 find_package(Threads)
@@ -38,26 +34,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 find_package(SDL2)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 
-#target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
-# target_link_libraries(${PROJECT_NAME} PRIVATE timer)
-target_link_libraries(${PROJECT_NAME} PRIVATE logger)
-# target_link_libraries(${PROJECT_NAME} PRIVATE aclock)
-target_link_libraries(${PROJECT_NAME} PRIVATE mainWindow)
-target_link_libraries(${PROJECT_NAME} PRIVATE configure)
-#target_link_libraries(${PROJECT_NAME} PRIVATE opusdecoder)
-target_link_libraries(${PROJECT_NAME} PRIVATE sdlplayer)
-
-# add_subdirectory( timer )
-add_subdirectory( logger )
-# add_subdirectory( aclock )
-add_subdirectory( ui )
-add_subdirectory( configure )
-add_subdirectory( sdlplayer )
-#add_subdirectory( opusdecoder )
+# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./ui/logentity.cppm ./ui/mainform.cppm ./ui/entityManager.cppm ./ui/clockentity.cppm ./ui/timerentity.cppm )
+# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./sdlplayer/sdlplayer.cppm )
+# target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./logger/logger.cppm )
+target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./configure/configure.cppm )
+target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./json.cppm )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})

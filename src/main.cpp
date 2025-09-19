@@ -20,22 +20,18 @@
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
-#include <filesystem>
-#include <iostream>
 #include <gtkmm/application.h>
-#include "ui/mainform.hpp"
-#include "configure/configure.hpp"
-#include <memory>
-#include <stdexcept>
-#include <streambuf>
-#include <unistd.h>
-#include <SDL2/SDL_filesystem.h>
+#include <SDL3/SDL_filesystem.h>
+
+import Watcher;
+// import std;
+
+// import <gtkmm/application.h>;
+// import <SDL2/SDL_filesystem.h>;
 
 //namespace fs = std::filesystem;
-int main( [[maybe_unused]] int    argc,
-          [[maybe_unused]] char * argv[] ) {
-    auto conf = core::configure::Configure::init( SDL_GetBasePath() );
+int main( [[maybe_unused]] int argc, [[maybe_unused]] char * argv[] ) {
+    auto conf = Configure::init( SDL_GetBasePath() );
     conf->loadFromConfigFile();
 
     auto app = Gtk::Application::create( "org.safocl.watchertest" );
@@ -47,6 +43,5 @@ int main( [[maybe_unused]] int    argc,
     //    app->run();
     //    app->add_window( window );
 
-    return app->make_window_and_run< core::ui::MainWindow >(
-    argc, argv, app );
+    // return app->make_window_and_run< ui::MainWindow >( argc, argv, app );
 }
