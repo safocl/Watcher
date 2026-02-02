@@ -45,7 +45,7 @@ import Watcher.player;
 
 export class Clock final {
 public:
-    using AclockNJEntity = AclockNJEntity;
+    using NJEntity = AclockNJEntity;
 
     Gtk::Button * mDestroyBtn;
 
@@ -71,8 +71,8 @@ public:
     Clock( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
     ~Clock();
 
-    AclockNJEntity getValues() const;
-    double         getSoundVolume() const;
+    NJEntity getValues() const;
+    double   getSoundVolume() const;
 };
 
 Clock::Clock( Gtk::Grid & parent ) : Clock( parent, 0, 0, 0, 50.0 ) {}
@@ -186,7 +186,7 @@ Clock::~Clock() {
     mParent->remove( *mLayout );
 }
 
-Clock::AclockNJEntity Clock::getValues() const {
+Clock::NJEntity Clock::getValues() const {
     return AclockNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
                             static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
                             static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),

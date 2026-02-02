@@ -18,13 +18,13 @@
 #You should have received a copy of the GNU General Public License along with
 #watcher. If not, see <https://www.gnu.org/licenses/>.
 
-cmake_minimum_required( VERSION 3.30 )
+cmake_minimum_required( VERSION 4.01 )
 
 set( CMAKE_EXPERIMENTAL_CXX_IMPORT_STD d0edc3af-4c50-42ea-a356-e2862fe7a444 )
 set( CMAKE_CXX_MODULE_STD ON )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
-set( CMAKE_CXX_STANDARD 23 REQUIRED )
-
+set( CMAKE_CXX_STANDARD 26 REQUIRED )
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 project( watcher LANGUAGES CXX )
 
@@ -52,6 +52,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
 	find_package(nlohmann_json REQUIRED)
 endif()
+
+set(NLOHMANN_JSON_BUILD_MODULES ON CACHE BOOL "Enable nlohmann.json module support")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     include(windows.cmake)

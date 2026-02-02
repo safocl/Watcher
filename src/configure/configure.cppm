@@ -116,10 +116,15 @@ std::shared_ptr< Configure::ConfImpl > Configure::init( std::filesystem::path ar
         confImpl->loadFromConfigFile();
 
         auto params = confImpl->getParams();
-        std::cout << "\nLog file path is: " << params.pathToLogFile
-                  << "\nAlarm audio file path is: " << params.pathToAlarmAudio
-                  << "\nUser ui dir path is: " << params.userPathToUiDir
-                  << "\nSystem ui dir path is: " << params.systemPathToUiDir << "\n\n";
+        std::println( "\nLog file path is: {}", params.pathToLogFile.generic_string() );
+        std::println( "\nAlarm audio file path is: {}", params.pathToAlarmAudio.generic_string() );
+        std::println( "\nUser ui dir path is: {}", params.userPathToUiDir.generic_string() );
+        std::println( "\nSystem ui dir path is: {}\n", params.systemPathToUiDir.generic_string() );
+
+        // std::cout << "\nLog file path is: " << params.pathToLogFile
+        //           << "\nAlarm audio file path is: " << params.pathToAlarmAudio
+        //           << "\nUser ui dir path is: " << params.userPathToUiDir
+        //           << "\nSystem ui dir path is: " << params.systemPathToUiDir << "\n\n";
     }
     return confImpl;
 }
@@ -127,11 +132,15 @@ std::shared_ptr< Configure::ConfImpl > Configure::init( std::filesystem::path ar
 std::shared_ptr< Configure::ConfImpl > Configure::init() { return confImpl; }
 
 void Configure::ConfImpl::fillDefaultParams() {
-    mDefaultParams.pathToLogFile = defineUserDataPath() / "log.txt";
+    mDefaultParams.pathToLogFile = defineUserDataPath();
+    mDefaultParams.pathToLogFile.append( "log.txt" );
 
-    mDefaultParams.pathToAlarmAudio = defineUserDataPath() / "alarm.opus";
-    if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
-        mDefaultParams.pathToAlarmAudio = defineSysDataPath() / "alarm.opus";
+    mDefaultParams.pathToAlarmAudio = defineUserDataPath();
+    mDefaultParams.pathToAlarmAudio.append( "alarm.opus" );
+    if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) ) {
+        mDefaultParams.pathToAlarmAudio = defineSysDataPath();
+        mDefaultParams.pathToAlarmAudio.append( "alarm.opus" );
+    }
 
     if ( !std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
         throw std::runtime_error( "System audio file for a BEEP is not found" );
@@ -152,10 +161,11 @@ void Configure::ConfImpl::fillParams( const Parametres & params ) {
         if ( std::filesystem::exists( params.pathToLogFile ) )
             mParams.pathToLogFile = params.pathToLogFile;
         else {
-            std::cout << "Not valid pathToLogFile in config file" << std::endl
-                      << "load default pathToLogFile" << std::endl;
+            std::println( "Not valid pathToLogFile in config file\nload default pathToLogFile" );
+            // std::cout << "Not valid pathToLogFile in config file" << std::endl
+            //           << "load default pathToLogFile" << std::endl;
         }
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) { std::println( "{}", err.what() ); }
 
     try {
         if ( std::filesystem::exists( params.pathToAlarmAudio ) )
@@ -163,8 +173,8 @@ void Configure::ConfImpl::fillParams( const Parametres & params ) {
         else if ( std::filesystem::exists( mDefaultParams.pathToAlarmAudio ) )
             mParams.pathToAlarmAudio = mDefaultParams.pathToAlarmAudio;
         else
-            std::cout << "Alarm audio file is not exists.";
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+            std::println( "Alarm audio file is not exists." );
+    } catch ( const std::exception & err ) { std::println( "{}", err.what() ); }
 
     mParams.aclocks = params.aclocks;
 
@@ -174,11 +184,11 @@ void Configure::ConfImpl::fillParams( const Parametres & params ) {
 
     try {
         mParams.systemPathToUiDir = params.systemPathToUiDir;
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) { std::println( "{}", err.what() ); }
 
     try {
         mParams.userPathToUiDir = params.userPathToUiDir;
-    } catch ( const std::exception & err ) { std::cout << err.what() << std::endl; }
+    } catch ( const std::exception & err ) { std::println( "{}", err.what() ); }
 }
 
 void Configure::ConfImpl::loadFromConfigFile() {
@@ -211,7 +221,7 @@ void Configure::ConfImpl::loadFromConfigFile() {
 
     mLastLoadConfig = std::chrono::system_clock::now();
 
-    std::cout << "\nConfig file path is: " << confImpl->mPathToConfig << "\n\n";
+    std::println( "\nConfig file path is: {}\n", confImpl->mPathToConfig.generic_string() );
 }
 
 Configure::Parametres Configure::ConfImpl::getParams() const { return mParams; }
@@ -241,31 +251,31 @@ void to_json( json & j, const ParametresImpl & p ) {
 void from_json( const json & j, ParametresImpl & p ) {
     try {
         j.at( "aclocks" ).get_to( p.aclocks );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "timers" ).get_to( p.timers );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "logs" ).get_to( p.logs );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "pathToAlarmAudio" ).get_to( p.pathToAlarmAudio );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "systemPathToUiDir" ).get_to( p.systemPathToUiDir );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "userPathToUiDir" ).get_to( p.userPathToUiDir );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "pathToLogFile" ).get_to( p.pathToLogFile );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 }
 
 void to_json( json & j, const TimingNodes & n ) {
@@ -279,19 +289,19 @@ void to_json( json & j, const TimingNodes & n ) {
 void from_json( const json & j, TimingNodes & n ) {
     try {
         j.at( "hour" ).get_to( n.hour );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "minute" ).get_to( n.minute );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "second" ).get_to( n.second );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
     try {
         j.at( "volume" ).get_to( n.volume );
-    } catch ( const std::exception & e ) { std::cout << e.what() << std::endl; }
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 }
 
 // module :private;

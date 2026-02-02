@@ -45,7 +45,7 @@ import Watcher.config;
 
 export class Log final {
 public:
-    using LoggerNJEntity = LoggerNJEntity;
+    using NJEntity = LoggerNJEntity;
 
     Gtk::Button * mDestroyBtn;
 
@@ -61,7 +61,7 @@ public:
     Log( Gtk::Grid & parent );
     Log( Gtk::Grid & parent, std::string entry );
     ~Log();
-    LoggerNJEntity getValues() const;
+    NJEntity getValues() const;
 };
 
 Log::Log( Gtk::Grid & parent ) : Log( parent, "" ) {}
@@ -94,4 +94,4 @@ Log::Log( Gtk::Grid & parent, std::string text ) : mParent( &parent ) {
 
 Log::~Log() { mParent->remove( *mLayout ); }
 
-Log::LoggerNJEntity Log::getValues() const { return LoggerNJEntity { Glib::locale_from_utf8( mEntry->get_text() ) }; }
+Log::NJEntity Log::getValues() const { return LoggerNJEntity { Glib::locale_from_utf8( mEntry->get_text() ) }; }

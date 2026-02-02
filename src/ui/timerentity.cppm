@@ -45,7 +45,7 @@ import Watcher.player;
 
 export class Timer final {
 public:
-    using TimerNJEntity = TimerNJEntity;
+    using NJEntity = TimerNJEntity;
 
     Gtk::Button * mDestroyBtn;
 
@@ -67,8 +67,8 @@ public:
     Timer( Gtk::Grid & parent );
     Timer( Gtk::Grid & parent, int hours, int minutes, int seconds, double volume );
     ~Timer();
-    TimerNJEntity getValues() const;
-    double        getSoundVolume() const;
+    NJEntity getValues() const;
+    double   getSoundVolume() const;
 };
 
 Timer::Timer( Gtk::Grid & parent ) : Timer( parent, 0, 0, 0, 50.0 ) {}
@@ -171,7 +171,7 @@ Timer::~Timer() {
     mParent->remove( *mLayout );
 }
 
-Timer::TimerNJEntity Timer::getValues() const {
+Timer::NJEntity Timer::getValues() const {
     return TimerNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
                            static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
                            static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
