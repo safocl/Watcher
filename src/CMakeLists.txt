@@ -36,8 +36,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
-# target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json_modules)
+target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
+# target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json_modules)
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE NLOHMANN_JSON_BUILD_MODULES

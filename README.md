@@ -9,22 +9,9 @@
 on GNU/Linux:
 
 ```bash
-$ mkdir build && cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ..
+$ cmake -B build -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr # import std; only supported by clang++
 $ make -jN DESTDIR=./ install # N -- number threads of you processor
 ```
-
-on Windows using minGW-w64 (needs installed mingw-w64):
-
-after cloning this repository, you should do `git submodule update --init`.
-
-```bash
-$ ./7zip/7za.exe x -- x86_64-w64-mingw32.7z x86_64-w64-mingw32
-$ mkdir build && cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release ..
-$ make -jN DESTDIR=./ install # N -- number threads of you processor
-```
-
 the run file will been in the build/bin directoriy
 
 

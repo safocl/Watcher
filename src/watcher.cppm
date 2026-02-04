@@ -20,21 +20,21 @@
  watcher. If not, see <https://www.gnu.org/licenses/>.
  */
 
-module;
-#include <glibmm.h>
-#include <sigc++/sigc++.h>
-#include <gtkmm/enums.h>
-#include <gtkmm/spinbutton.h>
-#include <gtkmm/button.h>
-#include <gtkmm/grid.h>
-#include <gtkmm/label.h>
-#include <gtkmm/progressbar.h>
-#include <gtkmm/scalebutton.h>
-#include <gtkmm/entry.h>
-#include <gtkmm/builder.h>
-#include <gtkmm/switch.h>
-#include <gtkmm/window.h>
-#include <gtkmm/application.h>
+// module;
+// #include <glibmm.h>
+// #include <sigc++/sigc++.h>
+// #include <gtkmm/enums.h>
+// #include <gtkmm/spinbutton.h>
+// #include <gtkmm/button.h>
+// #include <gtkmm/grid.h>
+// #include <gtkmm/label.h>
+// #include <gtkmm/progressbar.h>
+// #include <gtkmm/scalebutton.h>
+// #include <gtkmm/entry.h>
+// #include <gtkmm/builder.h>
+// #include <gtkmm/switch.h>
+// #include <gtkmm/window.h>
+// #include <gtkmm/application.h>
 
 export module Watcher;
 export import :TimerEntity;
