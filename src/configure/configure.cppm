@@ -35,9 +35,9 @@ export {
     using json = nlohmann::json;
 
     struct TimingNodes final {
-        std::uint8_t   hour;
-        std::uint8_t   minute;
-        std::uint8_t   second;
+        int            hour;
+        int            minute;
+        int            second;
         VolumeNodeJson volume;
 
         // NLOHMANN_DEFINE_TYPE_INTRUSIVE( TimingNodes, hour, minute, second, volume );
@@ -149,11 +149,12 @@ void Configure::ConfImpl::fillDefaultParams() {
     mDefaultParams.userPathToUiDir   = defineUserDataPath();
 
     LoggerNodeJson lnj { { "uppu" } };
-    mDefaultParams.logs = lnj;
     AclockNodeJson anj { { 9, 10, 12, 100 } };
+    TimerNodeJson  tnj { { 8, 8, 8, 100 } };
+
+    mDefaultParams.logs    = lnj;
     mDefaultParams.aclocks = anj;
-    TimerNodeJson tnj { { 8, 8, 8, 100 } };
-    mDefaultParams.timers = tnj;
+    mDefaultParams.timers  = tnj;
 }
 
 void Configure::ConfImpl::fillParams( const Parametres & params ) {
@@ -249,33 +250,18 @@ void to_json( json & j, const ParametresImpl & p ) {
 }
 
 void from_json( const json & j, ParametresImpl & p ) {
+    ParametresImpl tmp = p;
     try {
-        j.at( "aclocks" ).get_to( p.aclocks );
+        j.at( "aclocks" ).get_to( tmp.aclocks );
+        j.at( "timers" ).get_to( tmp.timers );
+        j.at( "logs" ).get_to( tmp.logs );
+        j.at( "pathToAlarmAudio" ).get_to( tmp.pathToAlarmAudio );
+        j.at( "systemPathToUiDir" ).get_to( tmp.systemPathToUiDir );
+        j.at( "userPathToUiDir" ).get_to( tmp.userPathToUiDir );
+        j.at( "pathToLogFile" ).get_to( tmp.pathToLogFile );
     } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
-    try {
-        j.at( "timers" ).get_to( p.timers );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
-
-    try {
-        j.at( "logs" ).get_to( p.logs );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
-
-    try {
-        j.at( "pathToAlarmAudio" ).get_to( p.pathToAlarmAudio );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
-
-    try {
-        j.at( "systemPathToUiDir" ).get_to( p.systemPathToUiDir );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
-
-    try {
-        j.at( "userPathToUiDir" ).get_to( p.userPathToUiDir );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
-
-    try {
-        j.at( "pathToLogFile" ).get_to( p.pathToLogFile );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
+    p = std::move( tmp );
 }
 
 void to_json( json & j, const TimingNodes & n ) {
@@ -286,22 +272,18 @@ void to_json( json & j, const TimingNodes & n ) {
         { "volume", n.volume },
     };
 }
+
 void from_json( const json & j, TimingNodes & n ) {
-    try {
-        j.at( "hour" ).get_to( n.hour );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
+    TimingNodes tmp = n;
 
     try {
-        j.at( "minute" ).get_to( n.minute );
+        j.at( "hour" ).get_to( tmp.hour );
+        j.at( "minute" ).get_to( tmp.minute );
+        j.at( "second" ).get_to( tmp.second );
+        j.at( "volume" ).get_to( tmp.volume );
     } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 
-    try {
-        j.at( "second" ).get_to( n.second );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
-
-    try {
-        j.at( "volume" ).get_to( n.volume );
-    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
+    n = std::move( tmp );
 }
 
 // module :private;

@@ -172,10 +172,10 @@ Timer::~Timer() {
 }
 
 Timer::NJEntity Timer::getValues() const {
-    return TimerNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
-                           static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
-                           static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
-                           getSoundVolume() };
+    return { mSpinHours->get_value_as_int(),
+             mSpinMinutes->get_value_as_int(),
+             mSpinSeconds->get_value_as_int(),
+             getSoundVolume() };
 }
 
 double Timer::getSoundVolume() const { return mVolume->get_value(); }

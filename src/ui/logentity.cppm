@@ -94,4 +94,4 @@ Log::Log( Gtk::Grid & parent, std::string text ) : mParent( &parent ) {
 
 Log::~Log() { mParent->remove( *mLayout ); }
 
-Log::NJEntity Log::getValues() const { return LoggerNJEntity { Glib::locale_from_utf8( mEntry->get_text() ) }; }
+Log::NJEntity Log::getValues() const { return { Glib::locale_from_utf8( mEntry->get_text() ) }; }

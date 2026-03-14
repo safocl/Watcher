@@ -187,10 +187,10 @@ Clock::~Clock() {
 }
 
 Clock::NJEntity Clock::getValues() const {
-    return AclockNJEntity { static_cast< std::uint8_t >( mSpinHours->get_value_as_int() ),
-                            static_cast< std::uint8_t >( mSpinMinutes->get_value_as_int() ),
-                            static_cast< std::uint8_t >( mSpinSeconds->get_value_as_int() ),
-                            mVolume->get_value() };
+    return { mSpinHours->get_value_as_int(),
+             mSpinMinutes->get_value_as_int(),
+             mSpinSeconds->get_value_as_int(),
+             mVolume->get_value() };
 }
 
 double Clock::getSoundVolume() const { return mVolume->get_value(); }
