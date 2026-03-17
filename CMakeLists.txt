@@ -53,8 +53,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	find_package(nlohmann_json REQUIRED)
 endif()
 
-set(NLOHMANN_JSON_BUILD_MODULES ON CACHE BOOL "Enable nlohmann.json module support")
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     include(windows.cmake)
 endif()

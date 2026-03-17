@@ -19,13 +19,13 @@
 #watcher. If not, see <https://www.gnu.org/licenses/>.
 
 
-link_directories(
-    ${GTKMM_LIBRARY_DIRS}  )
-
-include_directories(
-    ${GTKMM_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
-
 add_executable( ${PROJECT_NAME} main.cpp )
+
+target_link_directories(
+	${PROJECT_NAME} PRIVATE ${GTKMM_LIBRARY_DIRS}  )
+
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS} )
 
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
@@ -38,10 +38,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
 # target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json_modules)
-
-target_compile_definitions(${PROJECT_NAME}
-    PRIVATE NLOHMANN_JSON_BUILD_MODULES
-)
 
 target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./json.cppm )
 target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES watcher.cppm ./ui/logentity.cppm ./ui/mainform.cppm ./ui/entityManager.cppm ./ui/clockentity.cppm ./ui/timerentity.cppm ./ui/application.cppm )
