@@ -30,10 +30,8 @@ target_include_directories(
 find_package(Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-find_package(SDL2)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_mixer::SDL3_mixer)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)

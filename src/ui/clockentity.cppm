@@ -152,7 +152,7 @@ Clock::Clock( Gtk::Grid & parent, int h, int m, int s, double v ) : mParent( &pa
 
             mOnce = Glib::signal_timeout().connect_seconds(
             [ this ] {
-                beep( mVolume->get_value() );
+                beep( mVolume->get_value() / mVolume->get_adjustment()->get_upper() );
                 dispatcher_.emit();
 
                 return false;

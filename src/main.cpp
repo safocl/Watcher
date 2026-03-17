@@ -29,7 +29,7 @@ import Watcher.config;
 // import std;
 
 #include <gtkmm/application.h>
-#include <SDL2/SDL_filesystem.h>
+#include <SDL3/SDL_filesystem.h>
 
 //namespace fs = std::filesystem;
 int main( [[maybe_unused]] int argc, [[maybe_unused]] char * argv[] ) {

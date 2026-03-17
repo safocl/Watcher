@@ -48,8 +48,9 @@ message("Build system is ${CMAKE_SYSTEM_NAME}")
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig)
     pkg_search_module( GTKMM REQUIRED gtkmm-4.0 )
-    pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
 
+	find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
+	find_package(SDL3_mixer REQUIRED)
 	find_package(nlohmann_json REQUIRED)
 endif()
 

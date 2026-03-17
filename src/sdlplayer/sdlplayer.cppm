@@ -22,11 +22,11 @@
 
 module;
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
-#include <SDL2/SDL_error.h>
-#include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_audio.h>
+#include <SDL3/SDL_error.h>
+#include <SDL3/SDL_timer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 export module Watcher.player;
 
@@ -35,64 +35,52 @@ import Watcher.config;
 
 export {
     class SdlPlayer final {
-        static std::mutex sdlPlayerMutex;
+        static std::mutex mSdlPlayerMutex;
+
+        /// TODO: auto-management for this pointer or move it to the playFromFile function locally
+        MIX_Mixer * mMixer;
 
     public:
         SdlPlayer();
         ~SdlPlayer();
-        void playFromOpusFile( std::filesystem::path wavFile, double volume );
-        void playFromWavFile( std::filesystem::path wavFile, double volume );
+        void playFromFile( std::filesystem::path wavFile, double volume );
     };
 
     void beep( double volume );
 }
 
-std::mutex SdlPlayer::sdlPlayerMutex {};
+std::mutex SdlPlayer::mSdlPlayerMutex {};
 
 SdlPlayer::SdlPlayer() {
-    if ( SDL_Init( SDL_INIT_AUDIO ) < 0 )
+    if ( !( SDL_Init( SDL_INIT_AUDIO ) && MIX_Init() &&
+            ( mMixer = MIX_CreateMixerDevice( SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr ) ) ) )
         throw std::runtime_error( SDL_GetError() );
-    if ( Mix_OpenAudioDevice(
-         48000, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096, nullptr, SDL_AUDIO_ALLOW_ANY_CHANGE ) < 0 )
-        throw std::runtime_error( Mix_GetError() );
 }
 
 SdlPlayer::~SdlPlayer() {
-    Mix_CloseAudio();
+    MIX_DestroyMixer( mMixer );
+    MIX_Quit();
     SDL_Quit();
 }
 
-void SdlPlayer::playFromWavFile( std::filesystem::path wavFile, double volume ) {
-    std::lock_guard mutLock( sdlPlayerMutex );
+void SdlPlayer::playFromFile( std::filesystem::path opusFile, double gain ) {
+    std::lock_guard mutLock( mSdlPlayerMutex );
 
-    auto chunk = Mix_LoadWAV( wavFile.generic_string().c_str() );
-    Mix_VolumeMusic( MIX_MAX_VOLUME * ( volume * 0.01 ) );
+    auto chunk = MIX_LoadAudio( mMixer, opusFile.generic_string().c_str(), true );
     if ( chunk == nullptr )
-        throw std::runtime_error( Mix_GetError() );
-    if ( Mix_PlayChannel( -1, chunk, 0 ) < 0 )
-        throw std::runtime_error( Mix_GetError() );
+        throw std::runtime_error( SDL_GetError() );
+    MIX_SetMixerGain( mMixer, gain );
+    if ( !MIX_PlayAudio( mMixer, chunk ) )
+        throw std::runtime_error( SDL_GetError() );
     SDL_Delay( 5000 );
+    MIX_StopAllTracks( mMixer, 0 );
+    MIX_DestroyAudio( chunk );
 }
 
-void SdlPlayer::playFromOpusFile( std::filesystem::path opusFile, double volume ) {
-    std::lock_guard mutLock( sdlPlayerMutex );
-
-    Mix_Init( MIX_INIT_OPUS );
-    auto chunk = Mix_LoadMUS( opusFile.generic_string().c_str() );
-    if ( chunk == nullptr )
-        throw std::runtime_error( Mix_GetError() );
-    Mix_VolumeMusic( MIX_MAX_VOLUME * ( volume * 0.01 ) );
-    if ( Mix_PlayMusic( chunk, 1 ) < 0 )
-        throw std::runtime_error( Mix_GetError() );
-    SDL_Delay( 5000 );
-    Mix_FreeMusic( chunk );
-    Mix_Quit();
-}
-
-void beep( double volume ) {
+void beep( double gain ) {
     static SdlPlayer sdlPlayer {};
 
     const auto audioFile = Configure::init()->getParams().pathToAlarmAudio;
 
-    sdlPlayer.playFromOpusFile( audioFile, volume );
+    sdlPlayer.playFromFile( audioFile, std::ranges::clamp( gain, 0.0, 1.0 ) );
 }
