@@ -10,7 +10,7 @@ on GNU/Linux:
 
 ```bash
 $ cmake -B build -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr # import std; only supported by clang++
-$ make -jN DESTDIR=./ install # N -- number threads of you processor
+$ cmake --build build # N -- number threads of you processor
 ```
 the run file will been in the build/bin directoriy
 
