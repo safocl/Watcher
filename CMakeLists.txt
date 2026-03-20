@@ -34,7 +34,6 @@ project( watcher LANGUAGES CXX )
 
 message( "Build type is ${CMAKE_BUILD_TYPE}" )
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror)
     set(CMAKE_CXX_FLAGS_DEBUG -g -O0 -fsanitize=address,undefined)
 endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
