@@ -21,6 +21,7 @@
  */
 
 module;
+#include <algorithm>
 #include <glibmm.h>
 #include <sigc++/sigc++.h>
 #include <gtkmm/enums.h>
@@ -135,7 +136,7 @@ mApp( std::move( app ) ), mEntityManager( Manager::DynamicEntitiesLayouts {
             logFile = std::ifstream( conf.pathToLogFile );
         }
 
-        for ( int i = 0; i < endOfLines; ++i ) {
+        for ( const auto _ : std::views::iota( 0, endOfLines ) ) {
             std::string line;
             std::getline( logFile, line );
             logBuffer->insert( logBuffer->end(), line + "\n" );
