@@ -37,7 +37,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${GTKMM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
 # target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json_modules)
 
-add_compile_options(-Wall -Wextra -pedantic -pedantic-errors -Werror -Werror=format-security -fstack-clash-protection -fcf-protection -pipe -fno-plt )
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -pedantic-errors -Werror -Wno-reserved-module-identifier -Werror=format-security -fstack-clash-protection -pipe -fno-plt )
 
 target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES ./json.cppm )
 target_sources( ${PROJECT_NAME} PUBLIC FILE_SET CXX_MODULES FILES watcher.cppm ./ui/logentity.cppm ./ui/mainform.cppm ./ui/entityManager.cppm ./ui/clockentity.cppm ./ui/timerentity.cppm ./ui/application.cppm )

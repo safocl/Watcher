@@ -26,24 +26,14 @@
 import Watcher;
 import Watcher.config;
 // import Gtkmm;
-// import std;
+import std;
 
-#include <gtkmm/application.h>
 #include <SDL3/SDL_filesystem.h>
 
-//namespace fs = std::filesystem;
 int main( [[maybe_unused]] int argc, [[maybe_unused]] char * argv[] ) {
-    auto conf = Configure::init( SDL_GetBasePath() );
-    conf->loadFromConfigFile();
+    try {
+        auto conf = Configure::init( SDL_GetBasePath() );
 
-    // auto app = Gtk::Application::create( "org.safocl.watchertest" );
-
-    //core::mForm::MainWindow window { app.get() };
-    //window.set_default_size( 400, 400 );
-
-    //    window.show();
-    //    app->run();
-    //    app->add_window( window );
-
-    return App::makeAndRun( argc, argv );
+        return App::makeAndRun( argc, argv );
+    } catch ( const std::exception & e ) { std::println( "{}", e.what() ); }
 }
