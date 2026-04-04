@@ -34,6 +34,23 @@ import std;
 import Watcher.config;
 
 export {
+    class Gain final {
+        double mGain {};
+
+    public:
+        ///
+        /// @param volume : between 0 and maxVolume
+        constexpr Gain( std::convertible_to< double > auto volume, std::convertible_to< double > auto maxVolume ) :
+        mGain( std::ranges::clamp( static_cast< double >( volume ), 0.0, static_cast< double >( maxVolume ) ) /
+               maxVolume ) {}
+
+        ///
+        /// @param gain : clamped to a value between 0.0 and 1.0
+        constexpr Gain( double gain ) : mGain( std::ranges::clamp( gain, 0.0, 1.0 ) ) {}
+
+        constexpr double getValue() const { return mGain; }
+    };
+
     class SdlPlayer final {
         static std::mutex mSdlPlayerMutex;
 
@@ -43,10 +60,10 @@ export {
     public:
         SdlPlayer();
         ~SdlPlayer();
-        void playFromFile( std::filesystem::path wavFile, double volume );
+        void playFromFile( std::filesystem::path wavFile, Gain gain );
     };
 
-    void beep( double volume );
+    void beep( Gain gain );
 }
 
 std::mutex SdlPlayer::mSdlPlayerMutex {};
@@ -63,13 +80,13 @@ SdlPlayer::~SdlPlayer() {
     SDL_Quit();
 }
 
-void SdlPlayer::playFromFile( std::filesystem::path opusFile, double gain ) {
+void SdlPlayer::playFromFile( std::filesystem::path opusFile, Gain gain ) {
     std::lock_guard mutLock( mSdlPlayerMutex );
 
     auto chunk = MIX_LoadAudio( mMixer, opusFile.generic_string().c_str(), true );
     if ( chunk == nullptr )
         throw std::runtime_error( SDL_GetError() );
-    MIX_SetMixerGain( mMixer, gain );
+    MIX_SetMixerGain( mMixer, gain.getValue() );
     if ( !MIX_PlayAudio( mMixer, chunk ) )
         throw std::runtime_error( SDL_GetError() );
     SDL_Delay( 5000 );
@@ -77,10 +94,10 @@ void SdlPlayer::playFromFile( std::filesystem::path opusFile, double gain ) {
     MIX_DestroyAudio( chunk );
 }
 
-void beep( double gain ) {
+void beep( Gain gain ) {
     static SdlPlayer sdlPlayer {};
 
     const auto audioFile = Configure::init()->getParams().pathToAlarmAudio;
 
-    sdlPlayer.playFromFile( audioFile, std::ranges::clamp( gain, 0.0, 1.0 ) );
+    sdlPlayer.playFromFile( audioFile, gain );
 }
